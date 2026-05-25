@@ -724,22 +724,29 @@ async function handleEnhance(prompt) {
     loadingMsg.remove();
 
     if (result.success) {
+      // Map backend response fields to frontend expected format
+      const enhanced = result.enhanced || result.enhanced_prompt || result.text || '';
+      const originalScore = result.original_score || result.original_quality || result.original_scores || {};
+      const enhancedScore = result.enhanced_score || result.enhanced_quality || result.enhanced_scores || {};
+      const improvement = result.improvement || 0;
+      const modelUsed = result.model || result.model_used || 'pipeline';
+      
       // ── Welcome / greeting ──────────────────────────────────────────────
-      if (result.type === 'welcome') {
-        const html = `<div class="welcome-reply">${renderMarkdown(result.enhanced)}</div>`;
+      if (result.type === 'welcome' || result.mode === 'greeting') {
+        const html = `<div class="welcome-reply">${renderMarkdown(enhanced)}</div>`;
         addAssistantMessage(html);
         saveMsgToSession('assistant', html);
         return;
       }
 
       // ── URL / website analysis ──────────────────────────────────────────
-      if (result.type === 'url_analysis') {
+      if (result.type === 'url_analysis' || result.mode === 'url_analysis') {
         const url = result.url;
         const domain = getDomain(url);
         const favicon = getFaviconUrl(url);
         const pagesScraped = result.pages_scraped || 0;
         const totalChars = result.total_chars || result.char_count || 0;
-        const rawText = result.enhanced || '';
+        const rawText = enhanced;
 
         // ── Page chips ──────────────────────────────────────────────────
         const pageChips = (result.pages || []).map(p => {
@@ -869,20 +876,21 @@ async function handleEnhance(prompt) {
       }
 
       // ── Deep research ───────────────────────────────────────────────────
-      if (result.type === 'deep_research') {
+      if (result.type === 'deep_research' || result.mode === 'deep_research') {
+        const category = result.classification?.category || result.domain || 'general';
         const html = `
           <div class="analysis-card">
             <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;flex-wrap:wrap;">
               <span style="font-size:0.75rem;font-weight:700;color:#f97316;background:rgba(249,115,22,0.1);padding:0.25rem 0.75rem;border-radius:100px;border:1px solid rgba(249,115,22,0.3);">🔬 Deep Research</span>
-              <span style="font-size:0.72rem;color:var(--text-secondary);background:var(--primary-light);padding:0.2rem 0.65rem;border-radius:100px;border:1px solid var(--border);font-family:var(--font-mono);">${(result.model || result.model_used || "?").toUpperCase()}</span>
-              <span style="font-size:0.72rem;color:var(--text-secondary);background:var(--primary-light);padding:0.2rem 0.65rem;border-radius:100px;border:1px solid var(--border);font-family:var(--font-mono);">${(result.classification result.classification.category.toUpperCase()result.classification.category.toUpperCase() result.classification.category || "general").toUpperCase()}</span>
+              <span style="font-size:0.72rem;color:var(--text-secondary);background:var(--primary-light);padding:0.2rem 0.65rem;border-radius:100px;border:1px solid var(--border);font-family:var(--font-mono);">${modelUsed.toUpperCase()}</span>
+              <span style="font-size:0.72rem;color:var(--text-secondary);background:var(--primary-light);padding:0.2rem 0.65rem;border-radius:100px;border:1px solid var(--border);font-family:var(--font-mono);">${category.toUpperCase()}</span>
             </div>
             ${result.analysis ? `
             <details style="margin-bottom:1rem;">
               <summary style="cursor:pointer;font-size:0.78rem;color:var(--text-muted);padding:0.5rem;background:rgba(0,0,0,0.2);border-radius:6px;border:1px solid var(--border);">📋 Request Analysis (expand)</summary>
               <div style="padding:0.75rem;background:rgba(0,0,0,0.15);border-radius:0 0 6px 6px;font-size:0.82rem;color:var(--text-secondary);line-height:1.6;border:1px solid var(--border);border-top:none;">${renderMarkdown(result.analysis)}</div>
             </details>` : ''}
-            <div style="line-height:1.8;">${renderMarkdown(result.enhanced)}</div>
+            <div style="line-height:1.8;">${renderMarkdown(enhanced)}</div>
             <div class="message-actions" style="margin-top:1rem;">
               <button onclick="copyText(decodeURIComponent('${encodeURIComponent(result.enhanced).replace(/'/g, '%27')}'))">
                 <i data-lucide="copy"></i> Copy Full Answer
@@ -897,18 +905,21 @@ async function handleEnhance(prompt) {
       }
 
       // ── Standard enhancement ────────────────────────────────────────────
+      const category = result.classification?.category || result.domain || 'general';
+      const origQuality = originalScore.quality || originalScore.overall || result.original_quality || 0;
+      const enhQuality = enhancedScore.quality || enhancedScore.overall || result.enhanced_quality || 0;
       const html = `
         <div class="analysis-card" style="padding:0;">
           <div class="enhanced-content-body" style="line-height:1.75;color:var(--text-primary);margin-bottom:1.5rem;">
-            ${renderMarkdown(result.enhanced)}
+            ${renderMarkdown(enhanced)}
           </div>
           <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.85rem;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:1rem;">
-            <span style="font-size:0.72rem;color:var(--text-secondary);background:var(--bg-sidebar);padding:0.25rem 0.65rem;border-radius:100px;border:1px solid var(--border);font-family:var(--font-mono);">${(result.model || result.model_used || "?").toUpperCase()}</span>
-            <span style="font-size:0.72rem;color:var(--text-secondary);background:var(--bg-sidebar);padding:0.25rem 0.65rem;border-radius:100px;border:1px solid var(--border);font-family:var(--font-mono);">${(result.classification result.classification.category.toUpperCase()result.classification.category.toUpperCase() result.classification.category || "general").toUpperCase()}</span>
-            <span style="font-size:0.72rem;color:var(--primary);background:var(--primary-ultra-light);padding:0.25rem 0.65rem;border-radius:100px;border:1px solid var(--primary-light);font-family:var(--font-mono);">${result.original_score.quality} → ${result.enhanced_score.quality} (+${result.improvement} pts)</span>
+            <span style="font-size:0.72rem;color:var(--text-secondary);background:var(--bg-sidebar);padding:0.25rem 0.65rem;border-radius:100px;border:1px solid var(--border);font-family:var(--font-mono);">${modelUsed.toUpperCase()}</span>
+            <span style="font-size:0.72rem;color:var(--text-secondary);background:var(--bg-sidebar);padding:0.25rem 0.65rem;border-radius:100px;border:1px solid var(--border);font-family:var(--font-mono);">${category.toUpperCase()}</span>
+            <span style="font-size:0.72rem;color:var(--primary);background:var(--primary-ultra-light);padding:0.25rem 0.65rem;border-radius:100px;border:1px solid var(--primary-light);font-family:var(--font-mono);">${typeof origQuality === 'number' ? origQuality.toFixed(2) : origQuality} → ${typeof enhQuality === 'number' ? enhQuality.toFixed(2) : enhQuality} (+${typeof improvement === 'number' ? improvement.toFixed(2) : improvement} pts)</span>
           </div>
           <div class="message-actions">
-            <button onclick="copyText(decodeURIComponent('${encodeURIComponent(result.enhanced).replace(/'/g, '%27')}'))" style="background:transparent;border:1px solid var(--border);color:var(--text-secondary);padding:0.4rem 0.8rem;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;transition:all 0.2s;">
+            <button onclick="copyText(decodeURIComponent('${encodeURIComponent(enhanced).replace(/'/g, '%27')}'))" style="background:transparent;border:1px solid var(--border);color:var(--text-secondary);padding:0.4rem 0.8rem;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;transition:all 0.2s;">
               <i data-lucide="copy" style="width:14px;height:14px;"></i> Copy
             </button>
           </div>
@@ -953,40 +964,44 @@ async function handleAnalyze(prompt) {
     loadingMsg.remove();
 
     if (result.success) {
-      const a = result.data;
-      const m = a.metrics;
+      // Backend returns quality directly, not nested under data
+      const q = result.quality || result.data || {};
+      const overall = q.overall || 0;
+      const grade = q.grade || 'F';
+      const dims = q.dimensions || q.metrics || {};
+      const suggestions = q.deductions || q.suggestions || [];
+      
       const html = `
         <div class="analysis-card">
           <h3 style="margin-bottom:1.25rem;color:var(--primary);font-family:var(--font-mono);font-size:0.9rem;">[///] Quality Analysis</h3>
           <div style="display:flex;gap:2rem;justify-content:center;margin-bottom:1.5rem;padding:1.25rem;background:rgba(0,0,0,0.3);border-radius:10px;border:1px solid var(--border);">
             <div style="text-align:center;">
-              <div style="font-size:2.2rem;font-weight:800;color:var(--primary);font-family:var(--font-display);text-shadow:0 0 20px rgba(0,255,65,0.3);">${a.overall}</div>
+              <div style="font-size:2.2rem;font-weight:800;color:var(--primary);font-family:var(--font-display);text-shadow:0 0 20px rgba(0,255,65,0.3);">${overall.toFixed ? overall.toFixed(2) : overall}</div>
               <div style="color:var(--text-muted);font-size:0.72rem;font-family:var(--font-mono);">SCORE</div>
             </div>
             <div style="text-align:center;">
-              <div style="font-size:2.2rem;font-weight:800;color:var(--primary);font-family:var(--font-display);text-shadow:0 0 20px rgba(0,255,65,0.3);">${a.grade}</div>
+              <div style="font-size:2.2rem;font-weight:800;color:var(--primary);font-family:var(--font-display);text-shadow:0 0 20px rgba(0,255,65,0.3);">${grade}</div>
               <div style="color:var(--text-muted);font-size:0.72rem;font-family:var(--font-mono);">GRADE</div>
             </div>
           </div>
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.6rem;margin-bottom:1.25rem;">
-            ${Object.entries(m).map(([k,v]) => `
+            ${Object.entries(dims).map(([k,v]) => `
               <div style="background:rgba(0,0,0,0.3);padding:0.75rem;border-radius:8px;border:1px solid var(--border);">
                 <div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:0.35rem;text-transform:uppercase;font-family:var(--font-mono);">${k.replace('_',' ')}</div>
                 <div style="height:5px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;margin-bottom:0.35rem;">
-                  <div style="height:100%;width:${(v.score/10)*100}%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:3px;box-shadow:0 0 8px rgba(0,255,65,0.3);"></div>
+                  <div style="height:100%;width:${((v.score || v)/10)*100}%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:3px;box-shadow:0 0 8px rgba(0,255,65,0.3);"></div>
                 </div>
-                <div style="font-size:0.9rem;font-weight:700;color:var(--primary);font-family:var(--font-mono);">${v.score}/10</div>
+                <div style="font-size:0.9rem;font-weight:700;color:var(--primary);font-family:var(--font-mono);">${(v.score || v).toFixed ? (v.score || v).toFixed(1) : (v.score || v)}/10</div>
               </div>
             `).join('')}
           </div>
-          ${a.suggestions.length > 0 ? `
+          ${suggestions.length > 0 ? `
             <div style="background:var(--primary-light);border:1px solid var(--border);border-radius:10px;padding:1rem;">
-              <h4 style="margin-bottom:0.6rem;color:var(--primary);font-size:0.8rem;font-family:var(--font-mono);">[TIP] Suggestions</h4>
-              ${a.suggestions.map(s => `
+              <h4 style="margin-bottom:0.6rem;color:var(--primary);font-size:0.8rem;font-family:var(--font-mono);">[TIP] Issues Detected</h4>
+              ${suggestions.map(s => `
                 <div style="margin-bottom:0.6rem;padding-bottom:0.6rem;border-bottom:1px solid var(--border);">
-                  <div style="font-weight:600;color:var(--primary);margin-bottom:0.25rem;font-size:0.78rem;">${s.category}</div>
-                  <div style="color:var(--text-secondary);font-size:0.76rem;margin-bottom:0.25rem;">${s.issue}</div>
-                  <div style="color:var(--success);font-size:0.76rem;font-family:var(--font-mono);">[FIX] ${s.fix}</div>
+                  <div style="color:var(--text-secondary);font-size:0.76rem;">${typeof s === 'string' ? s : s.issue || s.message}</div>
+                  ${s.fix ? `<div style="color:var(--success);font-size:0.76rem;font-family:var(--font-mono);">[FIX] ${s.fix}</div>` : ''}
                 </div>
               `).join('')}
             </div>
