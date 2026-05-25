@@ -45,15 +45,24 @@ class ContextBuilder:
         for section_name in structure:
             builder_method = getattr(self, f'_build_{section_name}', None)
             if builder_method:
-                section = builder_method(
-                    analysis=analysis,
-                    intent=intent,
-                    domain=domain,
-                    task_type=task_type,
-                    missing=missing,
-                    complexity=complexity_level,
-                    preferences=user_preferences,
-                )
+                import inspect
+                sig = inspect.signature(builder_method)
+                params = sig.parameters
+
+                kwargs = {
+                    'intent': intent,
+                    'domain': domain,
+                    'task_type': task_type,
+                    'missing': missing,
+                    'complexity': complexity_level,
+                    'preferences': user_preferences,
+                }
+
+                filtered = {}
+                for key, value in kwargs.items():
+                    if key in params:
+                        filtered[key] = value
+                section = builder_method(analysis=analysis, **filtered)
                 if section and section.content.strip():
                     sections.append(section)
 
@@ -377,7 +386,7 @@ class ContextBuilder:
         )
 
     def _build_analysis_task(self, analysis, **kwargs) -> PromptSection:
-        return self._build_task(analysis, 'analyze', **kwargs)
+        return self._build_task(analysis, 'analyze', analysis.intent.domain, analysis.intent.task_type)
 
     def _build_framework(self, analysis, **kwargs) -> PromptSection:
         return PromptSection(
@@ -427,7 +436,7 @@ class ContextBuilder:
         )
 
     def _build_content_to_summarize(self, analysis, **kwargs) -> PromptSection:
-        return self._build_task(analysis, 'summarize', **kwargs)
+        return self._build_task(analysis, 'summarize', analysis.intent.domain, analysis.intent.task_type)
 
     def _build_summary_type(self, analysis, **kwargs) -> PromptSection:
         return PromptSection(
@@ -454,7 +463,7 @@ class ContextBuilder:
         )
 
     def _build_problem_description(self, analysis, **kwargs) -> PromptSection:
-        return self._build_task(analysis, 'fix', **kwargs)
+        return self._build_task(analysis, 'fix', analysis.intent.domain, analysis.intent.task_type)
 
     def _build_error_details(self, analysis, **kwargs) -> PromptSection:
         return PromptSection(
@@ -471,7 +480,7 @@ class ContextBuilder:
         )
 
     def _build_topic(self, analysis, **kwargs) -> PromptSection:
-        return self._build_task(analysis, 'brainstorm', **kwargs)
+        return self._build_task(analysis, 'brainstorm', analysis.intent.domain, analysis.intent.task_type)
 
     def _build_quantity(self, analysis, **kwargs) -> PromptSection:
         return PromptSection(
@@ -493,7 +502,7 @@ class ContextBuilder:
         )
 
     def _build_task_to_teach(self, analysis, **kwargs) -> PromptSection:
-        return self._build_task(analysis, 'instruct', **kwargs)
+        return self._build_task(analysis, 'instruct', analysis.intent.domain, analysis.intent.task_type)
 
     def _build_prerequisites(self, analysis, **kwargs) -> PromptSection:
         return PromptSection(
@@ -510,7 +519,7 @@ class ContextBuilder:
         )
 
     def _build_research_topic(self, analysis, **kwargs) -> PromptSection:
-        return self._build_task(analysis, 'research', **kwargs)
+        return self._build_task(analysis, 'research', analysis.intent.domain, analysis.intent.task_type)
 
     def _build_scope(self, analysis, **kwargs) -> PromptSection:
         return PromptSection(

@@ -153,13 +153,13 @@ async function sendMessage() {
 }
 
 async function callAPI(prompt) {
-  let endpoint = '/api/enhance';
+  let endpoint = '/api/v1/enhance/';
   let payload = { prompt, model: currentModel };
 
   if (currentTool === 'analyze') {
-    endpoint = '/api/quality-heatmap';
+    endpoint = '/api/v1/analyze/';
   } else if (currentTool === 'abtest') {
-    endpoint = '/api/ab-test';
+    endpoint = '/api/v1/ab-test/';
   }
 
   const response = await fetch(endpoint, {

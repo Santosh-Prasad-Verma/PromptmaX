@@ -319,12 +319,14 @@ class PromptValidator:
                                     suggestion='Verify your min/max values are correct.'
                                 ))
                     else:
+                        rpl = desc.split(" vs ")
+                        suggestion = f'Clarify whether you want {rpl[0]} or {rpl[1]}.' if len(rpl) >= 2 else f'Review the contradiction: {desc}.'
                         issues.append(ValidationIssue(
                             severity='warning',
                             category='logical_consistency',
                             message=f'Potentially contradictory: {desc}',
                             location='entire_prompt',
-                            suggestion=f'Clarify whether you want {desc.split(" vs ")[0]} or {desc.split(" vs ")[1]}.'
+                            suggestion=suggestion,
                         ))
 
         return issues

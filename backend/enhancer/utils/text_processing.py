@@ -81,3 +81,13 @@ def detect_language_in_text(text: str) -> Optional[str]:
         if re.search(pattern, text, re.IGNORECASE):
             return lang
     return None
+
+
+def sanitize_input(text):
+    if not text:
+        return text
+    lower = text.lower()
+    if "ignore all previous instructions" in lower or "ignore previous instructions" in lower:
+        return ""
+    sanitized = re.sub(r'[^\x20-\x7E\n\t]', '', str(text))
+    return sanitized.strip()

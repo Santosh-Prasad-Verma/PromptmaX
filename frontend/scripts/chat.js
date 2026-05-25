@@ -2,9 +2,15 @@
    PromptX Chat Page — JavaScript
    ============================ */
 
-// Force API URL to always use localhost:8000
+// API URL - dynamically determined for production compatibility
 if (typeof window.API_BASE === 'undefined') {
-  window.API_BASE = 'http://127.0.0.1:8000/api';
+  window.API_BASE = (function() {
+    const loc = window.location;
+    if (loc.hostname === 'localhost' || loc.hostname === '127.0.0.1') {
+      return 'http://127.0.0.1:8000/api/v1';
+    }
+    return `${loc.protocol}//${loc.host}/api/v1`;
+  })();
 }
 const API_BASE = window.API_BASE;
 
@@ -560,8 +566,8 @@ function addThinkingMessage(steps, previewText = '') {
   const uniqueId = `thinking-${Date.now()}`;
   div.className = 'message assistant thinking-msg';
   div.innerHTML = `
-    <div class="message-avatar" style="background:#ffffff;border:1px solid rgba(255,102,0,0.3);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(255,102,0,0.15);">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff6600" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <div class="message-avatar" style="background:var(--bg-card);border:1px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(255,255,255,0.15);">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"></path>
         <path d="M8.5 8.5v.01"></path>
         <path d="M15.5 8.5v.01"></path>
@@ -638,6 +644,28 @@ function activateThinkingStep(thinkingDiv, stepIndex, status = 'active', preview
 }
 
 // ===== ENHANCE =====
+/**
+ * Retry wrapper for fetch with exponential backoff
+ * @param {string} url - The URL to fetch
+ * @param {object} options - Fetch options
+ * @param {number} retries - Number of retries (default 2)
+ * @returns {Promise<Response>}
+ */
+async function fetchWithRetry(url, options, retries = 2) {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const response = await fetch(url, options);
+      if (response.ok || i === retries) return response;
+      // Wait before retry with exponential backoff
+      if (i < retries) await new Promise(r => setTimeout(r, 1000 * Math.pow(2, i)));
+    } catch (err) {
+      if (i === retries) throw err;
+      if (i < retries) await new Promise(r => setTimeout(r, 1000 * Math.pow(2, i)));
+    }
+  }
+  return fetch(url, options);
+}
+
 async function handleEnhance(prompt) {
   const urls = extractUrls(prompt);
   const isUrlRequest = urls.length > 0;
@@ -676,13 +704,13 @@ async function handleEnhance(prompt) {
     }
 
     console.log('=== MAKING API CALL ===');
-    console.log('URL:', `${API_BASE}/enhance`);
+    console.log('URL:', `${API_BASE}/enhance/`);
     console.log('Body:', body);
     console.log('Headers:', headers);
 
-    const res = await fetch(`${API_BASE}/enhance`, {
+    const res = await fetchWithRetry(`${API_BASE}/enhance/`, {
       method: 'POST', headers, body: JSON.stringify(body)
-    });
+    }, 2);
     
     console.log('=== RESPONSE RECEIVED ===');
     console.log('Status:', res.status);
@@ -846,8 +874,8 @@ async function handleEnhance(prompt) {
           <div class="analysis-card">
             <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;flex-wrap:wrap;">
               <span style="font-size:0.75rem;font-weight:700;color:#f97316;background:rgba(249,115,22,0.1);padding:0.25rem 0.75rem;border-radius:100px;border:1px solid rgba(249,115,22,0.3);">🔬 Deep Research</span>
-              <span style="font-size:0.72rem;color:var(--text-secondary);background:var(--primary-light);padding:0.2rem 0.65rem;border-radius:100px;border:1px solid var(--border);font-family:var(--font-mono);">${result.model.toUpperCase()}</span>
-              <span style="font-size:0.72rem;color:var(--text-secondary);background:var(--primary-light);padding:0.2rem 0.65rem;border-radius:100px;border:1px solid var(--border);font-family:var(--font-mono);">${result.classification.category.toUpperCase()}</span>
+              <span style="font-size:0.72rem;color:var(--text-secondary);background:var(--primary-light);padding:0.2rem 0.65rem;border-radius:100px;border:1px solid var(--border);font-family:var(--font-mono);">${(result.model || result.model_used || "?").toUpperCase()}</span>
+              <span style="font-size:0.72rem;color:var(--text-secondary);background:var(--primary-light);padding:0.2rem 0.65rem;border-radius:100px;border:1px solid var(--border);font-family:var(--font-mono);">${(result.classification result.classification.category.toUpperCase()result.classification.category.toUpperCase() result.classification.category || "general").toUpperCase()}</span>
             </div>
             ${result.analysis ? `
             <details style="margin-bottom:1rem;">
@@ -875,8 +903,8 @@ async function handleEnhance(prompt) {
             ${renderMarkdown(result.enhanced)}
           </div>
           <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.85rem;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:1rem;">
-            <span style="font-size:0.72rem;color:var(--text-secondary);background:var(--bg-sidebar);padding:0.25rem 0.65rem;border-radius:100px;border:1px solid var(--border);font-family:var(--font-mono);">${result.model.toUpperCase()}</span>
-            <span style="font-size:0.72rem;color:var(--text-secondary);background:var(--bg-sidebar);padding:0.25rem 0.65rem;border-radius:100px;border:1px solid var(--border);font-family:var(--font-mono);">${result.classification.category.toUpperCase()}</span>
+            <span style="font-size:0.72rem;color:var(--text-secondary);background:var(--bg-sidebar);padding:0.25rem 0.65rem;border-radius:100px;border:1px solid var(--border);font-family:var(--font-mono);">${(result.model || result.model_used || "?").toUpperCase()}</span>
+            <span style="font-size:0.72rem;color:var(--text-secondary);background:var(--bg-sidebar);padding:0.25rem 0.65rem;border-radius:100px;border:1px solid var(--border);font-family:var(--font-mono);">${(result.classification result.classification.category.toUpperCase()result.classification.category.toUpperCase() result.classification.category || "general").toUpperCase()}</span>
             <span style="font-size:0.72rem;color:var(--primary);background:var(--primary-ultra-light);padding:0.25rem 0.65rem;border-radius:100px;border:1px solid var(--primary-light);font-family:var(--font-mono);">${result.original_score.quality} → ${result.enhanced_score.quality} (+${result.improvement} pts)</span>
           </div>
           <div class="message-actions">
@@ -918,9 +946,9 @@ async function handleAnalyze(prompt) {
     const headers = { 'Content-Type': 'application/json' };
     if (apiKey) headers['X-API-Key'] = apiKey;
 
-    const res = await fetch(`${API_BASE}/quality-heatmap`, {
+    const res = await fetchWithRetry(`${API_BASE}/quality-heatmap/`, {
       method: 'POST', headers, body: JSON.stringify(body)
-    });
+    }, 2);
     const result = await res.json();
     loadingMsg.remove();
 
@@ -992,7 +1020,7 @@ async function handleCompare(prompt) {
     const headers = { 'Content-Type': 'application/json' };
     if (apiKey) headers['X-API-Key'] = apiKey;
 
-    const res = await fetch(`${API_BASE}/ab-test`, {
+    const res = await fetch(`${API_BASE}/ab-test/`, {
       method: 'POST', headers, body: JSON.stringify(body)
     });
     const result = await res.json();
@@ -1050,12 +1078,13 @@ function escapeHtml(text) {
 }
 
 function renderMarkdown(text) {
+  if (!text || typeof text !== 'string') return '';
   if (typeof marked !== 'undefined' && typeof DOMPurify !== 'undefined') {
     // Custom handling for D2 diagram blocks (e.g. ```d2 ... ```)
     if (text.toLowerCase().includes('```d2')) {
       text = text.replace(/```d2\s*([\s\S]*?)```/gi, (match, code) => {
-        return `<div class="analysis-section diagram-section" style="margin:1rem 0;background:#ffffff;border:1px solid var(--border);border-radius:8px;overflow:hidden;box-shadow:var(--shadow);position:relative;">
-          <div class="section-heading" style="padding:0.75rem 1rem;background:#fafafa;border-bottom:1px solid var(--border);font-weight:700;font-size:0.8rem;display:flex;justify-content:space-between;align-items:center;color:#000;">
+        return `<div class="analysis-section diagram-section" style="margin:1rem 0;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;overflow:hidden;box-shadow:var(--shadow);position:relative;">
+          <div class="section-heading" style="padding:0.75rem 1rem;background:var(--bg-darker);border-bottom:1px solid var(--border);font-weight:700;font-size:0.8rem;display:flex;justify-content:space-between;align-items:center;color:var(--text-primary);">
             <div style="display:flex;align-items:center;gap:0.5rem;">
               <span>📐 System Architecture View</span>
             </div>
@@ -1065,7 +1094,7 @@ function renderMarkdown(text) {
               <button onclick="downloadDiagram(this)" title="Download PNG" style="background:none;border:none;cursor:pointer;font-size:1rem;padding:2px;margin-left:5px;">💾</button>
             </div>
           </div>
-          <div class="section-body diagram-wrapper" style="padding:0;display:flex;justify-content:center;background:#ffffff;min-height:300px;overflow:auto;position:relative;">
+          <div class="section-body diagram-wrapper" style="padding:0;display:flex;justify-content:center;background:var(--bg-card);min-height:300px;overflow:auto;position:relative;">
             <div class="d2-diagram-container zoom-target" data-d2="${encodeURIComponent(code.trim())}" style="width:100%;height:auto;display:flex;align-items:center;justify-content:center;transform-origin:top center;transition:transform 0.2s;">
               <div style="padding:2rem;color:var(--text-muted);font-size:0.75rem;">Initializing high-fidelity diagram...</div>
             </div>
@@ -1087,11 +1116,11 @@ function renderMarkdown(text) {
       }
       if (d2Buffer.length > 2) {
         const code = d2Buffer.join('\n');
-        const diagramHtml = `<div class="analysis-section diagram-section" style="margin:1rem 0;background:#ffffff;border:1px solid var(--border);border-radius:8px;overflow:hidden;box-shadow:var(--shadow);">
-          <div class="section-heading" style="padding:0.75rem 1rem;background:#fafafa;border-bottom:1px solid var(--border);font-weight:700;font-size:0.8rem;display:flex;align-items:center;gap:0.5rem;color:#000;">
+        const diagramHtml = `<div class="analysis-section diagram-section" style="margin:1rem 0;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;overflow:hidden;box-shadow:var(--shadow);">
+          <div class="section-heading" style="padding:0.75rem 1rem;background:var(--bg-darker);border-bottom:1px solid var(--border);font-weight:700;font-size:0.8rem;display:flex;align-items:center;gap:0.5rem;color:var(--text-primary);">
             <span>📐 System Architecture View (Auto-Detected)</span>
           </div>
-          <div class="section-body" style="padding:0;display:flex;justify-content:center;background:#ffffff;min-height:300px;">
+          <div class="section-body" style="padding:0;display:flex;justify-content:center;background:var(--bg-card);min-height:300px;">
             <div class="d2-diagram-container" data-d2="${encodeURIComponent(code.trim())}" style="width:100%;height:auto;display:flex;align-items:center;justify-content:center;">
               <div style="padding:2rem;color:var(--text-muted);font-size:0.75rem;">Initializing high-fidelity diagram...</div>
             </div>
@@ -1199,11 +1228,11 @@ async function renderAllD2() {
       const rawCode = codeAttr ? decodeURIComponent(codeAttr) : '';
       
       el.innerHTML = `
-        <div style="background:#ffffff;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm);">
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm);">
           <div style="background:#f8fafc;padding:0.75rem 1.25rem;border-bottom:1px solid var(--border);display:flex;justify-content:between;align-items:center;">
              <span style="font-size:0.7rem;font-weight:800;color:var(--primary);text-transform:uppercase;letter-spacing:1px;">📐 System Logic Specification</span>
           </div>
-          <div style="padding:1.5rem;background:#ffffff;font-family:var(--font-mono);font-size:0.88rem;color:#1e293b;line-height:1.7;white-space:pre-wrap;">${escapeHtml(rawCode)}</div>
+          <div style="padding:1.5rem;background:var(--bg-card);font-family:var(--font-mono);font-size:0.88rem;color:var(--text-primary);line-height:1.7;white-space:pre-wrap;">${escapeHtml(rawCode)}</div>
         </div>
       `;
     }
