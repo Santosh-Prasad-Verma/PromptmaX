@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PromptX - AI Prompt Workspace</title>
+  <title>Promptrix — AI Prompt Workspace</title>
   <meta name="description"
     content="PromptX prompt workspace for enhancing, analyzing, and comparing prompts in a cleaner guided UI.">
   <meta name="theme-color" content="#000000">
@@ -80,8 +80,8 @@
   <aside class="chat-sidebar" id="chat-sidebar">
     <div class="sidebar-header">
       <a href="/" class="sidebar-brand">
-        <img src="/Public/PROMPTX-banner.png" alt="PromptX"
-          style="height: 22px; width: auto; filter: drop-shadow(0 0 8px rgba(255,255,255,0.2));">
+        <img src="/Public/PROMPTX.png" alt="Promptrix"
+          style="height: 36px; width: auto;">
       </a>
       <button class="sidebar-close-btn" id="sidebar-close" title="Close sidebar">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -109,6 +109,9 @@
         </button>
         <button class="mode-item" data-mode="compare">
           <span class="mode-icon">⇄</span> Compare
+        </button>
+        <button class="mode-item" data-mode="multi">
+          <span class="mode-icon">⚡</span> Multi-Run
         </button>
       </div>
     </div>
@@ -151,7 +154,6 @@
         </div>
       </div>
       <div class="topbar-right">
-        <span class="topbar-model-badge" id="topbar-model-badge">Gemini 2.0 Flash</span>
       </div>
     </div>
 
@@ -159,7 +161,7 @@
     <div class="chat-messages-area" id="chat-messages">
       <div class="welcome-screen" id="welcome-screen">
         <div class="welcome-badge">PROMPT WORKSPACE</div>
-        <h1 class="welcome-title">PromptX<span> Workspace</span></h1>
+        <h1 class="welcome-title">Promptrix<span> Workspace</span></h1>
         <p class="welcome-subtitle">Enhance rough prompts, analyze quality, compare rewrites, and turn raw ideas into
           clearer AI-ready instructions.</p>
 
@@ -213,11 +215,10 @@
         <div class="input-actions-left">
           <select id="model-dropdown" class="model-dropdown">
             <option value="auto">Auto</option>
-            <option value="gemini_flash">Gemini 2.0 Flash</option>
-            <option value="gemini_flash_8b">Gemini 2.0 Flash Lite</option>
-            <option value="gemini_pro">Gemini 2.5 Pro</option>
-            <option value="nvidia_minimax">NVIDIA Minimax</option>
-            <option value="groq">Groq (Llama 3)</option>
+            <option value="g4f_gpt4o">GPT-4o</option>
+            <option value="g4f_gemini_flash">DeepSeek R1</option>
+            <option value="g4f_llama3_70b">Llama 3.3 70B</option>
+            <option value="g4f_gpt5_nano">GPT-5 Nano</option>
           </select>
         </div>
         <textarea id="chat-input" placeholder="Type here..." rows="1"></textarea>

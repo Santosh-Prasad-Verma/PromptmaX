@@ -8,8 +8,12 @@ dj-database-url>=2.1,<3.0
 whitenoise>=6.6,<7.0
 gunicorn>=21.2,<23.0
 
-# AI models (NVIDIA only)
-openai>=1.12,<2.0
+# AI models (GPT4Free — free LLM access via multiple providers)
+g4f>=0.4.0
+
+# Async task queue
+celery>=5.3,<6.0
+redis>=5.0,<6.0
 
 # Email
 resend>=0.8,<1.0

@@ -210,6 +210,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="/scripts/effects.js"></script>
   <script>
+    // API URL
+    const API_BASE = (() => {
+      const l = window.location;
+      if (l.hostname === 'localhost' || l.hostname === '127.0.0.1' || l.protocol === 'file:') return 'http://127.0.0.1:8000/api/v1';
+      return 'https://promptx-hkfx.onrender.com/api/v1';
+    })();
     lucide.createIcons();
     
     // Razorpay Payment
@@ -245,7 +251,7 @@
       
       // Create order via backend API
       try {
-        const response = await fetch('/api/create-order/', {
+        const response = await fetch(`${API_BASE}/create-order/`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ plan: planKey })

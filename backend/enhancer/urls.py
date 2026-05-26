@@ -17,6 +17,8 @@ from .views import (
     PromptAssetViewSet,
     PromptVersionViewSet,
     ExecutePromptView,
+    TaskStatusView,
+    MultiModelView,
 )
 from .views_auth import (
     RegisterView,
@@ -42,6 +44,7 @@ urlpatterns = [
     path('validate/', ValidatePromptView.as_view(), name='validate'),
     path('compare/', ComparePromptsView.as_view(), name='compare'),
     path('ab-test/', ABTestView.as_view(), name='ab-test'),
+    path('multi-model/', MultiModelView.as_view(), name='multi-model'),
     path('analyze-url/', AnalyzeURLView.as_view(), name='analyze-url'),
     path('web-search/', WebSearchView.as_view(), name='web-search'),
     path('ideas/', IdeasView.as_view(), name='ideas'),
@@ -49,6 +52,8 @@ urlpatterns = [
     path('batch-enhance/', BatchEnhanceView.as_view(), name='batch-enhance'),
     path('feedback/', FeedbackView.as_view(), name='feedback'),
     path('health/', HealthCheckView.as_view(), name='health'),
+    path('task/<str:task_id>/status/', TaskStatusView.as_view(), name='task-status'),
+    path('task/<str:task_id>/status', TaskStatusView.as_view()),
 
     # Backward-compatible aliases for frontend JS
     path('enhance', EnhancePromptView.as_view()),

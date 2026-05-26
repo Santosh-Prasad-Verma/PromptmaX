@@ -9,7 +9,7 @@ if (typeof window.API_BASE === 'undefined') {
     if (loc.hostname === 'localhost' || loc.hostname === '127.0.0.1') {
       return 'http://127.0.0.1:8000/api/v1';
     }
-    return `${loc.protocol}//${loc.host}/api/v1`;
+    return 'https://promptx-hkfx.onrender.com/api/v1';
   })();
 }
 const API_BASE = window.API_BASE;
@@ -129,7 +129,8 @@ function updateModeDisplay() {
   const modeLabels = {
     enhance: 'Enhance Mode',
     analyze: 'Analyze Mode',
-    compare: 'Compare Mode'
+    compare: 'Compare Mode',
+    multi: 'Multi-Run Mode',
   };
   const label = modeLabels[currentMode] || 'Enhance Mode';
   
@@ -141,15 +142,14 @@ function updateModeDisplay() {
 function setupModelSelector() {
   const modelBtns = document.querySelectorAll('.model-option');
   const dropdown = document.getElementById('model-dropdown');
-  const badge = document.getElementById('topbar-model-badge');
 
   const modelLabels = {
     auto: 'Auto',
-    gemini_flash: 'Gemini 2.0 Flash',
-    gemini_flash_8b: 'Gemini 2.0 Flash Lite',
-    gemini_pro: 'Gemini 2.5 Pro',
-    nvidia_minimax: 'NVIDIA Minimax',
-    groq: 'Groq'
+    g4f_gpt4o: 'GPT-4o',
+    g4f_gemini_flash: 'DeepSeek R1',
+    g4f_llama3_70b: 'Llama 3.3 70B',
+    g4f_gpt4o_mini: 'GPT-4o Mini',
+    g4f_gpt5_nano: 'GPT-5 Nano',
   };
   
   // Handle dropdown change
@@ -348,6 +348,7 @@ async function handleSend() {
   if (currentMode === 'enhance') await handleEnhance(message);
   else if (currentMode === 'analyze') await handleAnalyze(message);
   else if (currentMode === 'compare') await handleCompare(message);
+  else if (currentMode === 'multi') await handleMultiModel(message);
   
   saveChatSessions();
   renderHistory();
@@ -463,8 +464,8 @@ function startNewChat() {
   const container = document.getElementById('chat-messages');
   container.innerHTML = `
     <div class="welcome-screen" id="welcome-screen">
-      <img src="Public/bot-img.png" alt="PromptX" class="welcome-logo">
-      <h1>PromptX</h1>
+      <img src="Public/PROMPTX.png" alt="Promptrix" class="welcome-logo">
+      <h1>Promptrix</h1>
       <p>Pick a mode below, type your prompt, and hit send.</p>
       <div class="welcome-cards">
         <button class="welcome-card" data-action="enhance">
@@ -523,7 +524,7 @@ function addAssistantMessage(content) {
   const div = document.createElement('div');
   div.className = 'message assistant';
   div.innerHTML = `
-    <div class="message-avatar"><img src="Public/bot-img.png" alt="AI" style="width:100%;height:100%;object-fit:cover;border-radius:10px;"></div>
+    <div class="message-avatar"><img src="Public/PROMPTX.png" alt="Promptrix" style="width:100%;height:100%;object-fit:cover;border-radius:10px;"></div>
     <div class="message-content">${content}</div>
   `;
   container.appendChild(div);
@@ -645,6 +646,30 @@ function activateThinkingStep(thinkingDiv, stepIndex, status = 'active', preview
 
 // ===== ENHANCE =====
 /**
+ * Poll a Celery task for completion, returning the result data.
+ * @param {string} taskId - Celery task UUID
+ * @param {number} maxWaitMs - Max time to poll (default 120 seconds)
+ * @returns {Promise<object>} The task result data
+ */
+async function pollTask(taskId, maxWaitMs = 120000) {
+  const start = Date.now();
+  const pollInterval = 1500;
+  while (Date.now() - start < maxWaitMs) {
+    await new Promise(r => setTimeout(r, pollInterval));
+    try {
+      const res = await fetch(`${API_BASE}/task/${taskId}/status/`);
+      if (!res.ok) continue;
+      const status = await res.json();
+      if (status.status === 'completed') return status.data;
+      if (status.status === 'failed') throw new Error(status.error || 'Task failed');
+    } catch (e) {
+      if (e.message && e.message !== 'Task failed') throw e;
+    }
+  }
+  throw new Error('Task timed out');
+}
+
+/**
  * Retry wrapper for fetch with exponential backoff
  * @param {string} url - The URL to fetch
  * @param {object} options - Fetch options
@@ -653,14 +678,17 @@ function activateThinkingStep(thinkingDiv, stepIndex, status = 'active', preview
  */
 async function fetchWithRetry(url, options, retries = 2) {
   const controller = new AbortController();
+<<<<<<< HEAD
   const timeout = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+=======
+  const timeout = setTimeout(() => controller.abort(), 60000);
+>>>>>>> 099bf4d (feat: full production rewrite — Celery, glass UI, 4-model runner, Promptrix rebrand)
   
   for (let i = 0; i <= retries; i++) {
     try {
       const response = await fetch(url, { ...options, signal: controller.signal });
       clearTimeout(timeout);
       if (response.ok || i === retries) return response;
-      // Wait before retry with exponential backoff
       if (i < retries) await new Promise(r => setTimeout(r, 1000 * Math.pow(2, i)));
     } catch (err) {
       clearTimeout(timeout);
@@ -676,7 +704,6 @@ async function handleEnhance(prompt) {
   const urls = extractUrls(prompt);
   const isUrlRequest = urls.length > 0;
 
-  // For URL requests show a richer thinking UI
   let loadingMsg;
   if (isUrlRequest) {
     const domain = getDomain(urls[0]);
@@ -699,7 +726,7 @@ async function handleEnhance(prompt) {
     const headers = { 'Content-Type': 'application/json' };
     if (apiKey) headers['X-API-Key'] = apiKey;
 
-    // Simulate step progression for URL requests (backend is synchronous)
+    // Simulate step progression for URL requests
     let stepTimer;
     if (isUrlRequest) {
       let step = 0;
@@ -709,246 +736,186 @@ async function handleEnhance(prompt) {
       }, 4000);
     }
 
-    console.log('=== MAKING API CALL ===');
-    console.log('URL:', `${API_BASE}/enhance/`);
+    console.log('=== MAKING ASYNC API CALL ===');
+    console.log('URL:', `${API_BASE}/enhance/?async=true`);
     console.log('Body:', body);
-    console.log('Headers:', headers);
 
-    const res = await fetchWithRetry(`${API_BASE}/enhance/`, {
+    const res = await fetchWithRetry(`${API_BASE}/enhance/?async=true`, {
       method: 'POST', headers, body: JSON.stringify(body)
     }, 2);
-    
-    console.log('=== RESPONSE RECEIVED ===');
-    console.log('Status:', res.status);
-    console.log('OK:', res.ok);
-    
-    const result = await res.json();
-    console.log('=== PARSED RESULT ===');
-    console.log('Result:', result);
+
+    const dispatchResult = await res.json();
+    console.log('=== DISPATCH RESULT ===', dispatchResult);
 
     if (stepTimer) clearInterval(stepTimer);
-    loadingMsg.remove();
 
-    if (result.success) {
-      // Map backend response fields to frontend expected format
-      const enhanced = result.enhanced || result.enhanced_prompt || result.text || '';
-      const originalScore = result.original_score || result.original_quality || result.original_scores || {};
-      const enhancedScore = result.enhanced_score || result.enhanced_quality || result.enhanced_scores || {};
-      const improvement = result.improvement || 0;
-      const modelUsed = result.model || result.model_used || 'pipeline';
-      
-      // ── Welcome / greeting ──────────────────────────────────────────────
-      if (result.type === 'welcome' || result.mode === 'greeting') {
-        const html = `<div class="welcome-reply">${renderMarkdown(enhanced)}</div>`;
-        addAssistantMessage(html);
-        saveMsgToSession('assistant', html);
-        return;
-      }
-
-      // ── URL / website analysis ──────────────────────────────────────────
-      if (result.type === 'url_analysis' || result.mode === 'url_analysis') {
-        const url = result.url;
-        const domain = getDomain(url);
-        const favicon = getFaviconUrl(url);
-        const pagesScraped = result.pages_scraped || 0;
-        const totalChars = result.total_chars || result.char_count || 0;
-        const rawText = enhanced;
-
-        // ── Page chips ──────────────────────────────────────────────────
-        const pageChips = (result.pages || []).map(p => {
-          const path = (() => { try { return new URL(p.url).pathname || '/'; } catch { return '/'; } })();
-          return `<a href="${escapeHtml(p.url)}" target="_blank" rel="noopener" class="page-chip" title="${escapeHtml(p.url)}">
-            <img src="https://www.google.com/s2/favicons?domain=${escapeHtml(p.url)}&sz=16" width="12" height="12" style="border-radius:2px;flex-shrink:0;" onerror="this.style.display='none'">
-            <span>${escapeHtml(path === '/' ? domain : path)}</span>
-          </a>`;
-        }).join('');
-
-        // ── Split the AI response into named sections ───────────────────
-        // Sections are delimited by ## or # headings
-        function splitSections(text) {
-          const lines = text.split('\n');
-          const sections = [];
-          let current = { level: 2, title: 'Overview', body: [] };
-          let hasHeaders = false;
-          
-          for (const line of lines) {
-            const h1 = line.match(/^#\s+(.+)/);
-            const h2 = line.match(/^##\s+(.+)/);
-            const h3 = line.match(/^###\s+(.+)/);
-            
-            if (h1 || h2 || h3) {
-              hasHeaders = true;
-              if (current && current.body.join('').trim().length > 0) sections.push(current);
-              current = { level: 2, title: (h1 || h2 || h3)[1].trim(), body: [] };
-            } else if (current) {
-              current.body.push(line);
-            }
-          }
-          
-          if (current && current.body.join('').trim().length > 0) sections.push(current);
-          return sections;
-        }
-
-        // ── Detect if a section is the "How to Build" or "AI Prompts" section
-        function isBuildSection(title) {
-          const t = title.toLowerCase();
-          return t.includes('how to build') || t.includes('build this') || t.includes('step-by-step');
-        }
-        function isAgentSection(title) {
-          const t = title.toLowerCase();
-          return t.includes('ai agent') || t.includes('ready prompt') || t.includes('copy & use') || t.includes('copy and use');
-        }
-        function isFeatureSection(title) {
-          const t = title.toLowerCase();
-          return t.includes('feature') || t.includes('functionality') || t.includes('capabilities') || t.includes('what it does');
-        }
-        // ── Automatic Feature Detection (for fallback diagrams) ───────
-        function hasFeatures(t) {
-          t = t.toLowerCase();
-          const keywords = ['feature', 'functionality', 'breakdown', 'architecture', 'process', 'platform', 'how it works', 'steps'];
-          return keywords.some(k => t.includes(k));
-        }
-
-        // ── Build use-case diagram from feature list (D2 format) ────────
-        function buildUseCaseDiagram(text) {
-          const features = [];
-          const lines = text.split('\n');
-          for (const line of lines) {
-            const m = line.match(/^[-*•]\s+\*{0,2}([^*\n:]{4,60})\*{0,2}/);
-            if (m) features.push(m[1].trim().replace(/[^a-zA-Z0-9 &]/g, '').trim());
-          }
-          const top = features.slice(0, 8);
-          if (top.length < 2) return '';
-          
-          let d2Code = 'direction: right\n';
-          d2Code += 'User: {\n  shape: person\n  label: 👤 User\n}\n';
-          top.forEach((f, i) => {
-            d2Code += `F${i}: "${f}"\n`;
-            d2Code += `User -> F${i}: use\n`;
-          });
-          return d2Code;
-        }
-
-        const sections = splitSections(rawText);
-
-        // ── Render each section as a card ───────────────────────────────
-        let sectionsHtml = '';
-
-        for (const sec of sections) {
-          const bodyText = sec.body.join('\n');
-          const rendered = renderMarkdown(bodyText);
-
-          // Skip AI Agent and Build sections completely
-          if (isAgentSection(sec.title) || isBuildSection(sec.title)) {
-            continue;
-          }
-
-          // Render all other sections
-          const emoji = sec.title.match(/^[\u{1F300}-\u{1FFFF}🌐✨🏗️🔌📡🎨📊🔐⚠️💡]/u)?.[0] || '📌';
-          sectionsHtml += `
-            <details class="analysis-section" open>
-              <summary class="section-heading">
-                <span class="section-emoji">${emoji}</span>
-                <span>${escapeHtml(sec.title.replace(/^[\u{1F300}-\u{1FFFF}🌐✨🏗️🔌📡🎨📊🔐⚠️💡]\s*/u, ''))}</span>
-                <span class="section-toggle">▾</span>
-              </summary>
-              <div class="section-body">${rendered}</div>
-            </details>`;
-        }
-
-        const html = `
-          <div class="analysis-card url-analysis-card">
-            <!-- ── Analysis sections ── -->
-            <div class="url-analysis-body">
-              ${sectionsHtml}
-            </div>
-
-            <!-- ── Actions ── -->
-            <div class="message-actions" style="padding:0 1.25rem 1rem;">
-              <button onclick="copyText(decodeURIComponent('${encodeURIComponent(rawText).replace(/'/g, '%27')}'))">
-                <i data-lucide="copy"></i> Copy Full Analysis
-              </button>
-              <a href="${escapeHtml(url)}" target="_blank" rel="noopener" class="url-visit-btn">
-                <i data-lucide="external-link"></i> Open Site
-              </a>
-            </div>
-          </div>
-        `;
-        addAssistantMessage(html);
-        saveMsgToSession('assistant', html);
-        try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch(e) {}
-        renderAllD2();
-        return;
-      }
-
-      // ── Deep research ───────────────────────────────────────────────────
-      if (result.type === 'deep_research' || result.mode === 'deep_research') {
-        const category = result.classification?.category || result.domain || 'general';
-        const html = `
-          <div class="analysis-card">
-            <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;flex-wrap:wrap;">
-              <span style="font-size:0.75rem;font-weight:700;color:#f97316;background:rgba(249,115,22,0.1);padding:0.25rem 0.75rem;border-radius:100px;border:1px solid rgba(249,115,22,0.3);">🔬 Deep Research</span>
-              <span style="font-size:0.72rem;color:var(--text-secondary);background:var(--primary-light);padding:0.2rem 0.65rem;border-radius:100px;border:1px solid var(--border);font-family:var(--font-mono);">${modelUsed.toUpperCase()}</span>
-              <span style="font-size:0.72rem;color:var(--text-secondary);background:var(--primary-light);padding:0.2rem 0.65rem;border-radius:100px;border:1px solid var(--border);font-family:var(--font-mono);">${category.toUpperCase()}</span>
-            </div>
-            ${result.analysis ? `
-            <details style="margin-bottom:1rem;">
-              <summary style="cursor:pointer;font-size:0.78rem;color:var(--text-muted);padding:0.5rem;background:rgba(0,0,0,0.2);border-radius:6px;border:1px solid var(--border);">📋 Request Analysis (expand)</summary>
-              <div style="padding:0.75rem;background:rgba(0,0,0,0.15);border-radius:0 0 6px 6px;font-size:0.82rem;color:var(--text-secondary);line-height:1.6;border:1px solid var(--border);border-top:none;">${renderMarkdown(result.analysis)}</div>
-            </details>` : ''}
-            <div style="line-height:1.8;">${renderMarkdown(enhanced)}</div>
-            <div class="message-actions" style="margin-top:1rem;">
-              <button onclick="copyText(decodeURIComponent('${encodeURIComponent(result.enhanced).replace(/'/g, '%27')}'))">
-                <i data-lucide="copy"></i> Copy Full Answer
-              </button>
-            </div>
-          </div>
-        `;
-        addAssistantMessage(html);
-        saveMsgToSession('assistant', html);
-        try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch(e) {}
-        return;
-      }
-
-      // ── Standard enhancement ────────────────────────────────────────────
-      const category = result.classification?.category || result.domain || 'general';
-      const origQuality = originalScore.quality || originalScore.overall || result.original_quality || 0;
-      const enhQuality = enhancedScore.quality || enhancedScore.overall || result.enhanced_quality || 0;
-      const html = `
-        <div class="analysis-card" style="padding:0;">
-          <div class="enhanced-content-body" style="line-height:1.75;color:var(--text-primary);margin-bottom:1.5rem;">
-            ${renderMarkdown(enhanced)}
-          </div>
-          <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.85rem;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:1rem;">
-            <span style="font-size:0.72rem;color:var(--text-secondary);background:var(--bg-sidebar);padding:0.25rem 0.65rem;border-radius:100px;border:1px solid var(--border);font-family:var(--font-mono);">${modelUsed.toUpperCase()}</span>
-            <span style="font-size:0.72rem;color:var(--text-secondary);background:var(--bg-sidebar);padding:0.25rem 0.65rem;border-radius:100px;border:1px solid var(--border);font-family:var(--font-mono);">${category.toUpperCase()}</span>
-            <span style="font-size:0.72rem;color:var(--primary);background:var(--primary-ultra-light);padding:0.25rem 0.65rem;border-radius:100px;border:1px solid var(--primary-light);font-family:var(--font-mono);">${typeof origQuality === 'number' ? origQuality.toFixed(2) : origQuality} → ${typeof enhQuality === 'number' ? enhQuality.toFixed(2) : enhQuality} (+${typeof improvement === 'number' ? improvement.toFixed(2) : improvement} pts)</span>
-          </div>
-          <div class="message-actions">
-            <button onclick="copyText(decodeURIComponent('${encodeURIComponent(enhanced).replace(/'/g, '%27')}'))" style="background:transparent;border:1px solid var(--border);color:var(--text-secondary);padding:0.4rem 0.8rem;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;transition:all 0.2s;">
-              <i data-lucide="copy" style="width:14px;height:14px;"></i> Copy
-            </button>
-          </div>
-        </div>
-      `;
-      addAssistantMessage(html);
-      saveMsgToSession('assistant', html);
-    } else {
-      const errHtml = `<div class="error-msg">${escapeHtml(result.error || 'Enhancement failed')}</div>`;
+    if (!dispatchResult.async || !dispatchResult.task_id) {
+      loadingMsg.remove();
+      const errHtml = `<div class="error-msg">Server did not accept async request</div>`;
       addAssistantMessage(errHtml);
       saveMsgToSession('assistant', errHtml);
+      return;
     }
+
+    console.log('Polling task:', dispatchResult.task_id);
+    const result = await pollTask(dispatchResult.task_id, 180000);
+    console.log('=== TASK COMPLETE ===', result);
+
+    loadingMsg.remove();
+    renderEnhanceResult(result, prompt);
   } catch (error) {
     if (loadingMsg) loadingMsg.remove();
-    console.error('=== ENHANCE ERROR ===');
-    console.error('Error type:', error.name);
-    console.error('Error message:', error.message);
-    console.error('Full error:', error);
-    console.error('API_BASE:', API_BASE);
+    console.error('=== ENHANCE ERROR ===', error);
     const errHtml = `<div class="error-msg">Connection failed — is the server running at ${API_BASE}?<br><small style="opacity:0.7">Error: ${error.message}</small></div>`;
     addAssistantMessage(errHtml);
     saveMsgToSession('assistant', errHtml);
   }
+}
+
+function renderEnhanceResult(result, prompt) {
+  if (!result || !result.success) {
+    const errHtml = `<div class="error-msg">${escapeHtml(result?.error || 'Enhancement failed')}</div>`;
+    addAssistantMessage(errHtml);
+    saveMsgToSession('assistant', errHtml);
+    return;
+  }
+
+  const enhanced = result.enhanced || result.enhanced_prompt || result.text || '';
+  const modelUsed = result.model || result.model_used || 'pipeline';
+  const classification = result.classification || {};
+
+  if (result.type === 'welcome' || result.mode === 'greeting') {
+    const html = `<div class="welcome-reply">${renderMarkdown(enhanced)}</div>`;
+    addAssistantMessage(html);
+    saveMsgToSession('assistant', html);
+    return;
+  }
+
+  if (result.type === 'url_analysis' || result.mode === 'url_analysis') {
+    renderUrlAnalysisResult(result, enhanced, modelUsed);
+    return;
+  }
+
+  if (result.type === 'deep_research' || result.mode === 'deep_research') {
+    const category = classification?.category || 'general';
+    const html = `
+      <div class="analysis-card">
+        <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;flex-wrap:wrap;">
+          <span style="font-size:0.75rem;font-weight:700;color:#f97316;background:rgba(249,115,22,0.1);padding:0.25rem 0.75rem;border-radius:100px;border:1px solid rgba(249,115,22,0.3);">🔬 Deep Research</span>
+          <span style="font-size:0.72rem;color:var(--text-secondary);background:var(--primary-light);padding:0.2rem 0.65rem;border-radius:100px;border:1px solid var(--border);font-family:var(--font-mono);">${(modelUsed || '').toUpperCase()}</span>
+          <span style="font-size:0.72rem;color:var(--text-secondary);background:var(--primary-light);padding:0.2rem 0.65rem;border-radius:100px;border:1px solid var(--border);font-family:var(--font-mono);">${category.toUpperCase()}</span>
+        </div>
+        <div style="line-height:1.8;">${renderMarkdown(enhanced)}</div>
+        <div class="message-actions" style="margin-top:1rem;">
+          <button onclick="copyText(decodeURIComponent('${encodeURIComponent(enhanced).replace(/'/g, '%27')}'))">
+            <i data-lucide="copy"></i> Copy Full Answer
+          </button>
+        </div>
+      </div>
+    `;
+    addAssistantMessage(html);
+    saveMsgToSession('assistant', html);
+    try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch(e) {}
+    return;
+  }
+
+  const category = classification?.category || 'general';
+  const html = `
+    <div class="analysis-card" style="padding:0;">
+      <div class="enhanced-content-body" style="line-height:1.75;color:var(--text-primary);margin-bottom:1.5rem;">
+        ${renderMarkdown(enhanced)}
+      </div>
+      <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.85rem;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:1rem;">
+        <span style="font-size:0.72rem;color:var(--text-secondary);background:var(--bg-sidebar);padding:0.25rem 0.65rem;border-radius:100px;border:1px solid var(--border);font-family:var(--font-mono);">${(modelUsed || '').toUpperCase()}</span>
+        <span style="font-size:0.72rem;color:var(--text-secondary);background:var(--bg-sidebar);padding:0.25rem 0.65rem;border-radius:100px;border:1px solid var(--border);font-family:var(--font-mono);">${category.toUpperCase()}</span>
+      </div>
+      <div class="message-actions">
+        <button onclick="copyText(decodeURIComponent('${encodeURIComponent(enhanced).replace(/'/g, '%27')}'))" style="background:transparent;border:1px solid var(--border);color:var(--text-secondary);padding:0.4rem 0.8rem;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;transition:all 0.2s;">
+          <i data-lucide="copy" style="width:14px;height:14px;"></i> Copy
+        </button>
+      </div>
+    </div>
+  `;
+  addAssistantMessage(html);
+  saveMsgToSession('assistant', html);
+}
+
+function renderUrlAnalysisResult(result, enhanced, modelUsed) {
+  const url = result.url;
+  const domain = getDomain(url);
+  const rawText = enhanced;
+
+  function splitSections(text) {
+    const lines = text.split('\n');
+    const sections = [];
+    let current = { level: 2, title: 'Overview', body: [] };
+
+    for (const line of lines) {
+      const h1 = line.match(/^#\s+(.+)/);
+      const h2 = line.match(/^##\s+(.+)/);
+      const h3 = line.match(/^###\s+(.+)/);
+
+      if (h1 || h2 || h3) {
+        if (current && current.body.join('').trim().length > 0) sections.push(current);
+        current = { level: 2, title: (h1 || h2 || h3)[1].trim(), body: [] };
+      } else if (current) {
+        current.body.push(line);
+      }
+    }
+
+    if (current && current.body.join('').trim().length > 0) sections.push(current);
+    return sections;
+  }
+
+  function isBuildSection(title) {
+    const t = title.toLowerCase();
+    return t.includes('how to build') || t.includes('build this') || t.includes('step-by-step');
+  }
+  function isAgentSection(title) {
+    const t = title.toLowerCase();
+    return t.includes('ai agent') || t.includes('ready prompt') || t.includes('copy & use') || t.includes('copy and use');
+  }
+
+  const sections = splitSections(rawText);
+
+  let sectionsHtml = '';
+  for (const sec of sections) {
+    const bodyText = sec.body.join('\n');
+    const rendered = renderMarkdown(bodyText);
+
+    if (isAgentSection(sec.title) || isBuildSection(sec.title)) continue;
+
+    const emoji = sec.title.match(/^[\u{1F300}-\u{1FFFF}🌐✨🏗️🔌📡🎨📊🔐⚠️💡]/u)?.[0] || '📌';
+    sectionsHtml += `
+      <details class="analysis-section" open>
+        <summary class="section-heading">
+          <span class="section-emoji">${emoji}</span>
+          <span>${escapeHtml(sec.title.replace(/^[\u{1F300}-\u{1FFFF}🌐✨🏗️🔌📡🎨📊🔐⚠️💡]\s*/u, ''))}</span>
+          <span class="section-toggle">▾</span>
+        </summary>
+        <div class="section-body">${rendered}</div>
+      </details>`;
+  }
+
+  const html = `
+    <div class="analysis-card url-analysis-card">
+      <div class="url-analysis-body">
+        ${sectionsHtml}
+      </div>
+      <div class="message-actions" style="padding:0 1.25rem 1rem;">
+        <button onclick="copyText(decodeURIComponent('${encodeURIComponent(rawText).replace(/'/g, '%27')}'))">
+          <i data-lucide="copy"></i> Copy Full Analysis
+        </button>
+        <a href="${escapeHtml(url)}" target="_blank" rel="noopener" class="url-visit-btn">
+          <i data-lucide="external-link"></i> Open Site
+        </a>
+      </div>
+    </div>
+  `;
+  addAssistantMessage(html);
+  saveMsgToSession('assistant', html);
+  try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch(e) {}
+  renderAllD2();
 }
 
 // ===== ANALYZE =====
@@ -982,8 +949,8 @@ async function handleAnalyze(prompt) {
           <h3 style="margin-bottom:1.25rem;color:var(--primary);font-family:var(--font-mono);font-size:0.9rem;">[///] Quality Analysis</h3>
           <div style="display:flex;gap:2rem;justify-content:center;margin-bottom:1.5rem;padding:1.25rem;background:rgba(0,0,0,0.3);border-radius:10px;border:1px solid var(--border);">
             <div style="text-align:center;">
-              <div style="font-size:2.2rem;font-weight:800;color:var(--primary);font-family:var(--font-display);text-shadow:0 0 20px rgba(0,255,65,0.3);">${overall.toFixed ? overall.toFixed(2) : overall}</div>
-              <div style="color:var(--text-muted);font-size:0.72rem;font-family:var(--font-mono);">SCORE</div>
+              <div style="font-size:2.2rem;font-weight:800;color:var(--primary);font-family:var(--font-display);text-shadow:0 0 20px rgba(0,255,65,0.3);">${overall.toFixed ? (overall * 10).toFixed(1) : overall}</div>
+              <div style="color:var(--text-muted);font-size:0.72rem;font-family:var(--font-mono);">/10 SCORE</div>
             </div>
             <div style="text-align:center;">
               <div style="font-size:2.2rem;font-weight:800;color:var(--primary);font-family:var(--font-display);text-shadow:0 0 20px rgba(0,255,65,0.3);">${grade}</div>
@@ -991,15 +958,19 @@ async function handleAnalyze(prompt) {
             </div>
           </div>
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.6rem;margin-bottom:1.25rem;">
-            ${Object.entries(dims).map(([k,v]) => `
+            ${Object.entries(dims).map(([k,v]) => {
+              const raw = v.score || v || 0;
+              const displayScore = (raw * 10).toFixed(1);
+              const pct = raw * 100;
+              return `
               <div style="background:rgba(0,0,0,0.3);padding:0.75rem;border-radius:8px;border:1px solid var(--border);">
                 <div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:0.35rem;text-transform:uppercase;font-family:var(--font-mono);">${k.replace('_',' ')}</div>
                 <div style="height:5px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;margin-bottom:0.35rem;">
-                  <div style="height:100%;width:${((v.score || v)/10)*100}%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:3px;box-shadow:0 0 8px rgba(0,255,65,0.3);"></div>
+                  <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:3px;box-shadow:0 0 8px rgba(0,255,65,0.3);"></div>
                 </div>
-                <div style="font-size:0.9rem;font-weight:700;color:var(--primary);font-family:var(--font-mono);">${(v.score || v).toFixed ? (v.score || v).toFixed(1) : (v.score || v)}/10</div>
-              </div>
-            `).join('')}
+                <div style="font-size:0.9rem;font-weight:700;color:var(--primary);font-family:var(--font-mono);">${displayScore}/10</div>
+              </div>`;
+            }).join('')}
           </div>
           ${suggestions.length > 0 ? `
             <div style="background:var(--primary-light);border:1px solid var(--border);border-radius:10px;padding:1rem;">
@@ -1068,7 +1039,7 @@ async function handleCompare(prompt) {
                   ${renderMarkdown(v.text)}
                 </div>
                 <div style="display:flex;gap:1rem;font-size:0.72rem;color:var(--text-muted);font-family:var(--font-mono);">
-                  <span>QUALITY: <strong style="color:var(--primary);">${v.quality.overall}/10</strong></span>
+                  <span>QUALITY: <strong style="color:var(--primary);">${(v.quality.overall * 10).toFixed(1)}/10</strong></span>
                   <span>LENGTH: <strong style="color:var(--text-primary);">${v.length}</strong></span>
                 </div>
               </div>
@@ -1089,6 +1060,101 @@ async function handleCompare(prompt) {
     addAssistantMessage(errHtml);
     saveMsgToSession('assistant', errHtml);
   }
+}
+
+// ===== MULTI-MODEL =====
+async function handleMultiModel(prompt) {
+  const loadingMsg = addThinkingMessage([
+    'Dispatching to GPT-4o',
+    'Running Gemini 2.5 Flash',
+    'Running Llama 3.3 70B',
+    'Running GPT-4o Mini',
+  ]);
+  activateThinkingStep(loadingMsg, 0);
+
+  try {
+    const apiKey = document.getElementById('api-key-input')?.value || '';
+    const headers = { 'Content-Type': 'application/json' };
+    if (apiKey) headers['X-API-Key'] = apiKey;
+
+    const res = await fetchWithRetry(`${API_BASE}/multi-model/?async=true`, {
+      method: 'POST', headers, body: JSON.stringify({ prompt }),
+    }, 2);
+
+    const dispatchResult = await res.json();
+
+    if (!dispatchResult.async || !dispatchResult.task_id) {
+      loadingMsg.remove();
+      addAssistantMessage('<div class="error-msg">Server did not accept async request</div>');
+      return;
+    }
+
+    activateThinkingStep(loadingMsg, 1);
+    const result = await pollTask(dispatchResult.task_id, 180000);
+    loadingMsg.remove();
+
+    if (!result || !result.success) {
+      addAssistantMessage(`<div class="error-msg">Multi-model run failed: ${escapeHtml(result?.error || 'unknown')}</div>`);
+      return;
+    }
+
+    renderMultiModelResult(result);
+  } catch (error) {
+    loadingMsg.remove();
+    addAssistantMessage(`<div class="error-msg">Multi-run failed: ${escapeHtml(error.message)}</div>`);
+  }
+}
+
+function renderMultiModelResult(result) {
+  const results = result.results || [];
+  const winner = result.winner;
+  const prompt = escapeHtml(result.prompt || '');
+
+  const modelColors = {
+    'GPT-4o': '#6366f1',
+    'Mistral Small': '#f59e0b',
+    'DeepSeek R1': '#06b6d4',
+    'GPT-4.1 Nano': '#22c55e',
+  };
+
+  const cards = results.map(r => {
+    const isWinner = r.model === winner;
+    const color = modelColors[r.model] || 'var(--primary)';
+    const badge = isWinner ? '🏆 BEST' : '';
+    const statusIcon = r.success
+      ? `<span style="color:var(--success);" title="Success">●</span>`
+      : `<span style="color:var(--error);" title="Failed: ${escapeHtml(r.error || '')}">●</span>`;
+
+    return `
+      <div class="mm-card${isWinner ? ' mm-winner' : ''}" style="border-top:2px solid ${color};">
+        <div class="mm-card-header">
+          <div class="mm-card-model" style="color:${color};">${escapeHtml(r.model)} ${statusIcon}</div>
+          <div class="mm-card-meta">
+            ${badge ? `<span class="mm-badge">${badge}</span>` : ''}
+            <span class="mm-stat">${r.time}s</span>
+            <span class="mm-stat">${r.chars} chars</span>
+          </div>
+        </div>
+        <div class="mm-card-body">
+          ${r.success
+            ? `<div class="mm-output">${renderMarkdown(r.text.substring(0, 3000))}</div>`
+            : `<div class="mm-error">⚠️ ${escapeHtml(r.error || 'Failed')}</div>`}
+        </div>
+      </div>`;
+  }).join('');
+
+  const html = `
+    <div class="multi-model-result">
+      <div class="mm-prompt-chip">📋 "${prompt.length > 80 ? prompt.substring(0, 80) + '...' : prompt}"</div>
+      <div class="mm-cards">
+        ${cards}
+      </div>
+    </div>
+  `;
+
+  addAssistantMessage(html);
+  saveMsgToSession('assistant', html);
+  renderAllD2();
 }
 
 // ===== UTILITIES =====

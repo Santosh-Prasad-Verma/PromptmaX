@@ -353,6 +353,12 @@
   </div>
 
   <script>
+    // API URL
+    const API_BASE = (() => {
+      const l = window.location;
+      if (l.hostname === 'localhost' || l.hostname === '127.0.0.1' || l.protocol === 'file:') return 'http://127.0.0.1:8000/api/v1';
+      return 'https://promptx-hkfx.onrender.com/api/v1';
+    })();
     let currentEmail = '';
 
     function setTab(tab) {
@@ -403,7 +409,7 @@
       }
 
       try {
-        const response = await fetch(`/api/v1/auth/${type}/`, {
+        const response = await fetch(`${API_BASE}/auth/${type}/`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
@@ -471,7 +477,7 @@
       btn.textContent = 'VERIFYING...';
 
       try {
-        const response = await fetch('/api/v1/auth/verify-otp/', {
+        const response = await fetch(`${API_BASE}/auth/verify-otp/`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: currentEmail, otp: otp })

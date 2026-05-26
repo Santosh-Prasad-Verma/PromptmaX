@@ -2,8 +2,10 @@
 if (typeof window.API_BASE === 'undefined') {
   window.API_BASE = (function() {
     const loc = window.location;
-    if (loc.protocol === 'file:') return 'http://127.0.0.1:8000/api/v1';
-    return `${loc.protocol}//${loc.hostname}:${loc.port || (loc.protocol === 'https:' ? '443' : '80')}/api/v1`;
+    if (loc.hostname === 'localhost' || loc.hostname === '127.0.0.1' || loc.protocol === 'file:') {
+      return 'http://127.0.0.1:8000/api/v1';
+    }
+    return 'https://promptx-hkfx.onrender.com/api/v1';
   })();
 }
 const API_BASE = window.API_BASE;
@@ -248,7 +250,7 @@ function addAssistantMessage(content) {
   const messageDiv = document.createElement('div');
   messageDiv.className = 'message assistant';
   messageDiv.innerHTML = `
-    <div class="message-avatar"><img src="Public/bot-img.png" alt="AI" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+    <div class="message-avatar"><img src="Public/PROMPTX.png" alt="Promptrix" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
     <div class="message-content">${content}</div>
   `;
   messagesContainer.appendChild(messageDiv);
@@ -365,9 +367,9 @@ async function handleAnalyze(prompt) {
                   ${key.replace('_', ' ')}
                 </div>
                 <div style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; margin-bottom: 0.4rem;">
-                  <div style="height: 100%; width: ${(value.score / 10) * 100}%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 3px; box-shadow: 0 0 8px rgba(255,255,255,0.3);"></div>
+                  <div style="height: 100%; width: ${(value.score * 100)}%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 3px; box-shadow: 0 0 8px rgba(255,255,255,0.3);"></div>
                 </div>
-                <div style="font-size: 1rem; font-weight: 700; color: var(--primary); font-family: var(--font-mono);">${value.score}/10</div>
+                <div style="font-size: 1rem; font-weight: 700; color: var(--primary); font-family: var(--font-mono);">${(value.score * 10).toFixed(1)}/10</div>
               </div>
             `).join('')}
           </div>

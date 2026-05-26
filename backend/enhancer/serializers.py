@@ -60,6 +60,10 @@ class ABTestRequestSerializer(serializers.Serializer):
     model = serializers.CharField(required=False, default='auto')
 
 
+class MultiModelRequestSerializer(serializers.Serializer):
+    prompt = serializers.CharField(min_length=1, max_length=10000)
+
+
 class AnalyzeURLRequestSerializer(serializers.Serializer):
     url = serializers.URLField()
     question = serializers.CharField(required=False, allow_blank=True, max_length=2000)
@@ -93,7 +97,11 @@ class BatchEnhanceRequestSerializer(serializers.Serializer):
 class ExecutePromptSerializer(serializers.Serializer):
     prompt_text = serializers.CharField(min_length=1, max_length=15000)
     model = serializers.ChoiceField(
-        choices=['auto', 'nvidia_nemotron', 'nvidia_minimax', 'nvidia_gpt_oss'],
+        choices=[
+            'auto',
+            'g4f_gpt4o', 'g4f_gemini_flash', 'g4f_llama3_70b', 'g4f_gpt4o_mini',
+            'g4f_gpt5_nano',
+        ],
         default='auto'
     )
     max_tokens = serializers.IntegerField(default=1000, min_value=10, max_value=8000)

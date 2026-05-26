@@ -24,6 +24,8 @@ from .serializers import (
     PromptProjectSerializer,
     PromptAssetSerializer,
     PromptVersionSerializer,
+    ExecutePromptSerializer,
+    MultiModelRequestSerializer,
 )
 from .core.pipeline import PromptXPipeline
 from .core.analyzer import PromptAnalyzer
@@ -34,9 +36,10 @@ from .core.ab_testing import generate_ab_variations, compare_variations
 from .core.idea_generator import IdeaGenerator
 from .models import PromptHistory, PromptProject, PromptAsset, PromptVersion
 from .utils.text_processing import hash_text, sanitize_input
-from .utils.prompts import (
-    MASTER_PROMPT, WELCOME_SYSTEM_PROMPT, DEEP_RESEARCH_PROMPT,
-    build_website_analysis_prompt,
+from .utils.prompts import MASTER_PROMPT, build_website_analysis_prompt
+from .tasks import (
+    run_enhance, run_generate, run_deep_research, run_greeting,
+    run_url_analysis, run_ab_test, run_execute,
 )
 
 logger = logging.getLogger('enhancer')
@@ -84,6 +87,11 @@ _IDEA_SIGNALS = [
 _URL_PATTERN = re.compile(r'https?://[^\s<>"\']+|www\.[^\s<>"\']+', re.IGNORECASE)
 
 
+def _classify_prompt(text: str) -> dict:
+    lower = text.lower()
+    return {"category": "general", "domain": "general"}
+
+
 def _is_greeting(text):
     cleaned = text.strip().lower().rstrip('!?.')
     return cleaned in _GREETING_PATTERNS or (
@@ -108,31 +116,63 @@ def _extract_urls(text):
     return [u if u.startswith('http') else f'https://{u}' for u in urls]
 
 
+def _use_async(request):
+    return request.query_params.get("async", "").lower() in ("true", "1")
+
+
+def _dispatch_task(task, *args, **kwargs):
+    result = task.delay(*args, **kwargs)
+    return Response({
+        "success": True,
+        "async": True,
+        "task_id": result.id,
+        "status_url": f"/api/v1/task/{result.id}/status/",
+    }, status=status.HTTP_202_ACCEPTED)
+
+
+class TaskStatusView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, task_id):
+        cached = cache.get(f"task:{task_id}")
+        if cached:
+            return Response(cached, status=status.HTTP_200_OK)
+        return Response({"status": "unknown", "error": "Task not found or expired"}, status=status.HTTP_404_NOT_FOUND)
+
+
 class EnhancePromptView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = EnhanceRequestSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response({'success': False, 'error': 'INVALID_REQUEST', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"success": False, "error": "INVALID_REQUEST", "details": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-        prompt = sanitize_input(serializer.validated_data['prompt'])
+        prompt = sanitize_input(serializer.validated_data["prompt"])
         if not prompt:
-            return Response({'success': False, 'error': 'Prompt contains prohibited content'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"success": False, "error": "Prompt contains prohibited content"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-        level = serializer.validated_data['enhancement_level']
-        mode = serializer.validated_data.get('mode', 'enhance')
-        preferences = serializer.validated_data.get('preferences', {})
-        preferred_model = serializer.validated_data.get('model', 'auto')
+        level = serializer.validated_data["enhancement_level"]
+        mode = serializer.validated_data.get("mode", "enhance")
+        preferences = serializer.validated_data.get("preferences", {})
+        preferred_model = serializer.validated_data.get("model", "auto")
+        async_mode = _use_async(request)
 
         cache_key = f"promptx:enhance:{hash_text(f'{prompt}:{level}:{mode}')}"
         cached = cache.get(cache_key)
         if cached:
-            cached['from_cache'] = True
+            cached["from_cache"] = True
             return Response(cached, status=status.HTTP_200_OK)
 
         urls = _extract_urls(prompt)
 
+<<<<<<< HEAD
         # Route: Greeting (handle in any mode for short inputs)
         if _is_greeting(prompt):
             try:
@@ -144,66 +184,119 @@ class EnhancePromptView(APIView):
             except Exception as e:
                 logger.warning(f"Greeting response failed, falling back to enhancement: {e}")
                 # Fall through to normal enhancement
+=======
+        if _is_greeting(prompt):
+            if async_mode:
+                return _dispatch_task(run_greeting, prompt, preferred_model)
+            try:
+                result = generate_with_fallback(
+                    f"{MASTER_PROMPT}\n\n---\n**CURRENT MODE: MODE 5 — DEEP CONVERSATION**\n\nUser: {prompt}",
+                    max_tokens=300, preferred_model=preferred_model,
+                )
+                return Response(
+                    {"success": True, "type": "welcome", "enhanced": result["text"], "model": result["model"]},
+                    status=status.HTTP_200_OK,
+                )
+            except Exception as e:
+                logger.warning(f"Greeting failed: {e}")
+                return Response(
+                    {"success": True, "type": "welcome", "enhanced": "Hello! I'm Promptrix AI. How can I help you today?", "model": "fallback"},
+                    status=status.HTTP_200_OK,
+                )
+>>>>>>> 099bf4d (feat: full production rewrite — Celery, glass UI, 4-model runner, Promptrix rebrand)
 
-        # Route: URL Analysis
-        if urls and mode == 'generate':
+        if urls and mode == "generate":
+            if async_mode:
+                return _dispatch_task(run_url_analysis, prompt, urls[0], preferred_model)
             try:
                 url = urls[0]
                 scraped = scrape_website_deep(url)
-                if not scraped['success']:
-                    return Response({'success': False, 'error': f"Failed to scrape: {scraped['error']}"}, status=status.HTTP_400_BAD_REQUEST)
-
+                if not scraped["success"]:
+                    return Response(
+                        {"success": False, "error": f"Failed to scrape: {scraped['error']}"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
                 search_context = web_search(prompt)
-                pages_summary = '\n'.join(f"- {p['title']}: {p['url']} ({len(p['text'])} chars)" for p in scraped['pages'])
+                pages_summary = "\n".join(
+                    f"- {p['title']}: {p['url']} ({len(p['text'])} chars)" for p in scraped["pages"]
+                )
                 analysis_prompt = build_website_analysis_prompt(
-                    prompt, scraped['site_title'], url,
-                    scraped['pages_scraped'], scraped['total_chars'],
-                    pages_summary, scraped['combined_text'],
-                    '\n'.join(f"[{s['title']}] {s['snippet']}" for s in search_context),
+                    prompt, scraped["site_title"], url,
+                    scraped["pages_scraped"], scraped["total_chars"],
+                    pages_summary, scraped["combined_text"],
+                    "\n".join(f"[{s['title']}] {s['snippet']}" for s in search_context),
                 )
                 response_data = generate_with_fallback(analysis_prompt, max_tokens=4000, preferred_model=preferred_model)
-                result_dict = {'success': True, 'mode': 'url_analysis', 'text': response_data['text'], 'model': response_data['model'],
-                               'site_title': scraped['site_title'], 'pages_scraped': scraped['pages_scraped'],
-                               'total_chars': scraped['total_chars']}
+                result_dict = {
+                    "success": True, "type": "url_analysis", "mode": "url_analysis",
+                    "enhanced": response_data["text"], "text": response_data["text"],
+                    "model": response_data["model"], "url": url,
+                    "site_title": scraped["site_title"], "pages_scraped": scraped["pages_scraped"],
+                    "total_chars": scraped["total_chars"],
+                    "pages": [{"url": p["url"], "title": p["title"]} for p in scraped["pages"]],
+                }
                 cache.set(cache_key, result_dict, timeout=3600)
                 return Response(result_dict, status=status.HTTP_200_OK)
             except Exception as e:
                 logger.error(f"URL analysis failed: {e}")
-                return Response({'success': False, 'error': f"Analysis failed: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response({"success": False, "error": f"Analysis failed: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+<<<<<<< HEAD
         # Route: Deep Research (auto-detect for enhance mode too)
         if _needs_deep_research(prompt):
+=======
+        if _needs_deep_research(prompt):
+            if async_mode:
+                return _dispatch_task(run_deep_research, prompt, preferred_model)
+>>>>>>> 099bf4d (feat: full production rewrite — Celery, glass UI, 4-model runner, Promptrix rebrand)
             try:
                 response_data = generate_with_fallback(
-                    f"{DEEP_RESEARCH_PROMPT}\n\nUser request: {prompt}",
+                    f"{MASTER_PROMPT}\n\n---\n**CURRENT MODE: MODE 4 — TECH KNOWLEDGE EXPLORER**\n\nUser request: {prompt}",
                     max_tokens=4000, preferred_model=preferred_model,
                 )
+<<<<<<< HEAD
                 return Response({'success': True, 'type': 'deep_research', 'text': response_data['text'], 'model': response_data['model']}, status=status.HTTP_200_OK)
             except Exception as e:
                 logger.warning(f"Deep research failed, falling back to enhancement: {e}")
                 # Fall through to normal enhancement
+=======
+                return Response(
+                    {"success": True, "type": "deep_research", "enhanced": response_data["text"], "model": response_data["model"],
+                     "classification": _classify_prompt(prompt)},
+                    status=status.HTTP_200_OK,
+                )
+            except Exception as e:
+                logger.warning(f"Deep research failed, falling back to enhancement: {e}")
+>>>>>>> 099bf4d (feat: full production rewrite — Celery, glass UI, 4-model runner, Promptrix rebrand)
 
-        # Route: Ideas
-        if _needs_ideas(prompt) and mode == 'generate':
+        if _needs_ideas(prompt) and mode == "generate":
             try:
                 generator = IdeaGenerator()
                 ideas = generator.generate()
-                return Response({'success': True, 'mode': 'ideas', 'ideas': ideas}, status=status.HTTP_200_OK)
+                return Response({"success": True, "mode": "ideas", "ideas": ideas}, status=status.HTTP_200_OK)
             except Exception as e:
-                return Response({'success': False, 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response({"success": False, "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # Route: Generate mode (AI response based on enhanced prompt)
-        if mode == 'generate':
+        if mode == "generate":
+            if async_mode:
+                return _dispatch_task(run_generate, prompt, preferred_model)
             try:
                 response_data = generate_with_fallback(
-                    f"{MASTER_PROMPT}\n\nUser prompt to enhance:\n{prompt}",
+                    f"{MASTER_PROMPT}\n\n---\n**CURRENT MODE: Auto-detected**\n\nUser prompt: {prompt}",
                     max_tokens=2000, preferred_model=preferred_model,
                 )
-                return Response({'success': True, 'mode': 'generate', 'text': response_data['text'], 'model': response_data['model']}, status=status.HTTP_200_OK)
+                return Response(
+                    {"success": True, "mode": "generate", "type": "enhance",
+                     "enhanced": response_data["text"], "text": response_data["text"],
+                     "model": response_data["model"]},
+                    status=status.HTTP_200_OK,
+                )
             except Exception as e:
-                return Response({'success': False, 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response({"success": False, "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # Default: Enhance mode (structured pipeline)
+        if async_mode:
+            return _dispatch_task(run_enhance, prompt, level, mode, preferred_model)
+
         pipeline = PromptXPipeline()
         result = pipeline.execute(prompt=prompt, enhancement_level=level, user_preferences=preferences)
         response_data = result.to_dict()
@@ -384,6 +477,9 @@ class ABTestView(APIView):
 
         prompt = serializer.validated_data['prompt']
         preferred_model = serializer.validated_data.get('model', 'auto')
+
+        if _use_async(request):
+            return _dispatch_task(run_ab_test, prompt, preferred_model)
 
         variations = generate_ab_variations(prompt, preferred_model=preferred_model)
         comparison = compare_variations(prompt, variations)
@@ -671,39 +767,81 @@ class PromptVersionViewSet(viewsets.ReadOnlyModelViewSet):
         return PromptVersion.objects.filter(asset__user=self.request.user)
 
 class ExecutePromptView(APIView):
-    """Live Testing Playground: Execute a prompt against supported LLMs live."""
-    permission_classes = [AllowAny] # Can restrict to Authenticated later
+    permission_classes = [AllowAny]
 
     def post(self, request):
-        from .serializers import ExecutePromptSerializer
         serializer = ExecutePromptSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+
         prompt_text = serializer.validated_data['prompt_text']
         model = serializer.validated_data['model']
         max_tokens = serializer.validated_data['max_tokens']
+
+        if _use_async(request):
+            return _dispatch_task(run_execute, prompt_text, model, max_tokens)
 
         try:
             start_time = time.time()
             result = generate_with_fallback(
                 prompt=prompt_text,
                 max_tokens=max_tokens,
-                preferred_model=model
+                preferred_model=model,
             )
             execution_time = time.time() - start_time
-            
             return Response({
                 'success': True,
                 'result_text': result['text'],
                 'model_used': result['model'],
-                'execution_time_seconds': round(execution_time, 2)
+                'execution_time_seconds': round(execution_time, 2),
             }, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response({
-                'success': False,
-                'error': str(e)
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({'success': False, 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class MultiModelView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        from .serializers import MultiModelRequestSerializer
+        serializer = MultiModelRequestSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                {"success": False, "error": "INVALID_REQUEST", "details": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        prompt = serializer.validated_data["prompt"]
+
+        if _use_async(request):
+            from .tasks import run_multi_model
+            return _dispatch_task(run_multi_model, prompt)
+
+        try:
+            task = run_multi_model.delay(prompt)
+            max_wait = 120
+            elapsed = 0
+            while elapsed < max_wait:
+                cached = cache.get(f"task:{task.id}")
+                if cached and cached["status"] in ("completed", "failed"):
+                    if cached["status"] == "completed":
+                        return Response(cached["data"], status=status.HTTP_200_OK)
+                    return Response(
+                        {"success": False, "error": cached.get("error", "Task failed")},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    )
+                time.sleep(1)
+                elapsed += 1
+            return Response(
+                {"success": False, "error": "Multi-model run timed out"},
+                status=status.HTTP_504_GATEWAY_TIMEOUT,
+            )
+        except Exception as e:
+            return Response(
+                {"success": False, "error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
 
 def fork_asset(request, asset):
     """Helper to fork an asset"""

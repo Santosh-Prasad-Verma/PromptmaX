@@ -3,6 +3,18 @@
    Dual-mode: HTML (iframe srcdoc) + React (WebContainer with Vite)
    ═══════════════════════════════════════════════════════════════════════ */
 
+// API URL
+if (typeof window.API_BASE === 'undefined') {
+  window.API_BASE = (() => {
+    const loc = window.location;
+    if (loc.hostname === 'localhost' || loc.hostname === '127.0.0.1' || loc.protocol === 'file:') {
+      return 'http://127.0.0.1:8000/api/v1';
+    }
+    return 'https://promptx-hkfx.onrender.com/api/v1';
+  })();
+}
+const API_BASE = window.API_BASE;
+
 // ── WebContainer Import (ESM) ────────────────────────────────────────────
 let WebContainer;
 let webcontainerInstance = null;
@@ -357,7 +369,7 @@ async function sendPrompt() {
         const model = $modelSelect.value;
         const existingFiles = VFS.getAll();
 
-        const response = await fetch('/api/generate-app', {
+        const response = await fetch(`${API_BASE}/generate-app`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
