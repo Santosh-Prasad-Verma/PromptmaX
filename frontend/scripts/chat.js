@@ -652,13 +652,19 @@ function activateThinkingStep(thinkingDiv, stepIndex, status = 'active', preview
  * @returns {Promise<Response>}
  */
 async function fetchWithRetry(url, options, retries = 2) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+  
   for (let i = 0; i <= retries; i++) {
     try {
-      const response = await fetch(url, options);
+      const response = await fetch(url, { ...options, signal: controller.signal });
+      clearTimeout(timeout);
       if (response.ok || i === retries) return response;
       // Wait before retry with exponential backoff
       if (i < retries) await new Promise(r => setTimeout(r, 1000 * Math.pow(2, i)));
     } catch (err) {
+      clearTimeout(timeout);
+      if (err.name === 'AbortError') throw new Error('Request timed out after 60 seconds');
       if (i === retries) throw err;
       if (i < retries) await new Promise(r => setTimeout(r, 1000 * Math.pow(2, i)));
     }

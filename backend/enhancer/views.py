@@ -133,16 +133,17 @@ class EnhancePromptView(APIView):
 
         urls = _extract_urls(prompt)
 
-        # Route: Greeting
-        if mode == 'generate' and _is_greeting(prompt):
+        # Route: Greeting (handle in any mode for short inputs)
+        if _is_greeting(prompt):
             try:
                 result = generate_with_fallback(
                     f"{WELCOME_SYSTEM_PROMPT}\n\nUser: {prompt}",
-                    max_tokens=200, preferred_model=preferred_model,
+                    max_tokens=300, preferred_model=preferred_model,
                 )
-                return Response({'success': True, 'mode': 'greeting', 'text': result['text'], 'model': result['model']}, status=status.HTTP_200_OK)
+                return Response({'success': True, 'type': 'welcome', 'text': result['text'], 'model': result['model']}, status=status.HTTP_200_OK)
             except Exception as e:
-                return Response({'success': False, 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                logger.warning(f"Greeting response failed, falling back to enhancement: {e}")
+                # Fall through to normal enhancement
 
         # Route: URL Analysis
         if urls and mode == 'generate':
@@ -170,16 +171,17 @@ class EnhancePromptView(APIView):
                 logger.error(f"URL analysis failed: {e}")
                 return Response({'success': False, 'error': f"Analysis failed: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # Route: Deep Research
-        if _needs_deep_research(prompt) and mode == 'generate':
+        # Route: Deep Research (auto-detect for enhance mode too)
+        if _needs_deep_research(prompt):
             try:
                 response_data = generate_with_fallback(
                     f"{DEEP_RESEARCH_PROMPT}\n\nUser request: {prompt}",
                     max_tokens=4000, preferred_model=preferred_model,
                 )
-                return Response({'success': True, 'mode': 'deep_research', 'text': response_data['text'], 'model': response_data['model']}, status=status.HTTP_200_OK)
+                return Response({'success': True, 'type': 'deep_research', 'text': response_data['text'], 'model': response_data['model']}, status=status.HTTP_200_OK)
             except Exception as e:
-                return Response({'success': False, 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                logger.warning(f"Deep research failed, falling back to enhancement: {e}")
+                # Fall through to normal enhancement
 
         # Route: Ideas
         if _needs_ideas(prompt) and mode == 'generate':
