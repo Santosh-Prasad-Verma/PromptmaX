@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About — PromptX</title>
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" type="image/svg+xml" href="/Public/star.svg">
+  <link rel="stylesheet" href="/styles/page.css">
+  <link rel="stylesheet" href="/styles/effects.css">
+</head>
+<body>
+  <!-- Background Effects -->
+  <canvas id="fc-canvas-particles" aria-hidden="true"></canvas>
+  <div class="fc-float-label" style="top:9%;left:5%;animation-delay:0s;">[ ABOUT ]</div>
+  <div class="fc-float-label" style="top:20%;right:8%;animation-delay:2s;">[ MISSION ]</div>
+  <div class="fc-float-label" style="top:50%;left:3%;animation-delay:4s;">[ OPEN SOURCE ]</div>
+  <div class="fc-float-label" style="top:72%;right:6%;animation-delay:1s;">[ PIPELINE ]</div>
+  <div class="fc-float-label" style="top:88%;left:8%;animation-delay:3s;">[ v2.0 ]</div>
+  <div class="fc-vignette" aria-hidden="true"></div>
+  <span class="fc-spark" style="top:18%;left:25%;">✦</span>
+  <span class="fc-spark" style="top:45%;right:20%;animation-delay:2s;">✦</span>
+  <span class="fc-spark" style="top:70%;left:35%;animation-delay:4s;">✦</span>
+  <div class="glow-orb glow-orb-1"></div>
+  <div class="glow-orb glow-orb-2"></div>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-left">
+      <a href="/" class="nav-logo">
+        <img src="/Public/bot-img.png" alt="PromptX">
+        <span>PromptX</span>
+      </a>
+      <div class="nav-links">
+        <a href="/build">Build</a>
+        <a href="/integrations">Integrations</a>
+        <a href="/pricing">Pricing</a>
+        <a href="/docs">Docs</a>
+      </div>
+    </div>
+    <div class="nav-right">
+      <a href="https://github.com/Santosh-Prasad-Verma/PromptX" target="_blank" class="nav-link">GitHub</a>
+      <a href="/chat" class="btn-primary">Launch Terminal</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="page-hero">
+    <div class="hero-content reveal">
+      <h1>Build the <span class="text-gradient">next generation</span> of AI prompts</h1>
+      <p>PromptX helps developers, researchers, and content creators craft better AI prompts through intelligent enhancement and quality analysis.</p>
+    </div>
+  </section>
+
+  <!-- Mission -->
+  <section class="page-section">
+    <div class="section-header reveal">
+      <h2>Our Mission</h2>
+    </div>
+    <div style="max-width: 800px; margin: 0 auto;">
+      <p style="color: var(--text-secondary); line-height: 1.8; font-size: 1.05rem;">
+        PromptX was created to solve a fundamental problem: most prompts sent to AI systems are vague, incomplete, or poorly structured. This leads to inconsistent outputs, wasted tokens, and frustrated users.
+      </p>
+      <p style="color: var(--text-secondary); line-height: 1.8; font-size: 1.05rem;">
+        We built a 9-stage neural pipeline that transforms raw inputs into precision-engineered instructions. The system analyzes intent, adds missing context, applies best practices from the CREATE algorithm, and scores quality across 6 dimensions.
+      </p>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="page-section" style="background: linear-gradient(180deg, transparent, rgba(255,255,255,0.01), transparent);">
+    <div class="section-header reveal">
+      <h2>What makes us different</h2>
+    </div>
+    <div class="integrations-grid">
+      <div class="api-card">
+        <h3 style="margin-bottom: 12px; color: var(--accent);">9-Stage Pipeline</h3>
+        <p style="color: var(--text-secondary);">Every prompt passes through validation, intent detection, context building, template matching, refinement, fact-checking, and quality scoring.</p>
+      </div>
+      <div class="api-card">
+        <h3 style="margin-bottom: 12px; color: var(--accent);">Multi-Model Fallback</h3>
+        <p style="color: var(--text-secondary);">Primary processing via Gemini 2.0 Flash with automatic fallback to NVIDIA Minimax and Groq Llama 3 for maximum reliability.</p>
+      </div>
+      <div class="api-card">
+        <h3 style="margin-bottom: 12px; color: var(--accent);">Quality Scoring</h3>
+        <p style="color: var(--text-secondary);">Six-dimensional analysis (clarity, specificity, structure, context, constraints, format) with actionable improvement suggestions.</p>
+      </div>
+      <div class="api-card">
+        <h3 style="margin-bottom: 12px; color: var(--accent);">Open Source</h3>
+        <p style="color: var(--text-secondary);">The entire platform is MIT-licensed. Fork it, extend it, deploy it your way. No vendor lock-in, no black boxes.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="page-section">
+    <div class="section-header reveal">
+      <h2>By the numbers</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; max-width: 900px; margin: 0 auto;">
+      <div style="text-align: center;">
+        <div style="font-size: 2.5rem; font-weight: 700; color: var(--primary);">9</div>
+        <div style="color: var(--text-muted); font-size: 0.9rem;">Pipeline Stages</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-size: 2.5rem; font-weight: 700; color: var(--primary);">6</div>
+        <div style="color: var(--text-muted); font-size: 0.9rem;">Quality Dimensions</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-size: 2.5rem; font-weight: 700; color: var(--primary);">3+</div>
+        <div style="color: var(--text-muted); font-size: 0.9rem;">AI Models</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-size: 2.5rem; font-weight: 700; color: var(--primary);">100%</div>
+        <div style="color: var(--text-muted); font-size: 0.9rem;">Open Source</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team -->
+  <section class="page-section" style="background: linear-gradient(180deg, transparent, rgba(255,255,255,0.01), transparent);">
+    <div class="section-header reveal">
+      <h2>Built by developers, for developers</h2>
+    </div>
+    <div style="max-width: 800px; margin: 0 auto;">
+      <p style="color: var(--text-secondary); line-height: 1.8; font-size: 1.05rem; text-align: center;">
+        PromptX is developed by a team of engineers passionate about AI and developer tooling. We use PromptX ourselves every day to improve our own prompts and workflows.
+      </p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="page-cta">
+    <h2>Ready to enhance your prompts?</h2>
+    <p>Start for free. No credit card required.</p>
+    <a href="/chat" class="btn-primary">Launch Terminal</a>
+  </section>
+
+  <!-- Roadmap Timeline -->
+  <section class="page-section" style="background: linear-gradient(180deg, transparent, rgba(255,255,255,0.01), transparent);">
+    <div class="section-header reveal">
+      <h2>Our journey</h2>
+    </div>
+    <div style="max-width: 700px; margin: 0 auto; padding: 0 24px;">
+      <div style="display: flex; gap: 16px; margin-bottom: 32px;">
+        <div style="flex-shrink: 0; width: 48px; height: 48px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700;">Q1</div>
+        <div>
+          <h4 style="font-weight: 600; margin-bottom: 4px;">2025 — Inception</h4>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">First commit. Built the initial 9-stage pipeline prototype with Gemini integration and basic quality scoring. Open-sourced from day one.</p>
+        </div>
+      </div>
+      <div style="display: flex; gap: 16px; margin-bottom: 32px;">
+        <div style="flex-shrink: 0; width: 48px; height: 48px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700;">Q2</div>
+        <div>
+          <h4 style="font-weight: 600; margin-bottom: 4px;">2025 — Multi-Model</h4>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">Added NVIDIA Minimax, Groq Llama 3, and HuggingFace providers. Built the automatic fallback chain. Launched REST API v1 with 6 endpoints.</p>
+        </div>
+      </div>
+      <div style="display: flex; gap: 16px; margin-bottom: 32px;">
+        <div style="flex-shrink: 0; width: 48px; height: 48px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700;">Q3</div>
+        <div>
+          <h4 style="font-weight: 600; margin-bottom: 4px;">2025 — v1.0 Launch</h4>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">Public launch with web playground, Django backend, A/B testing, URL analysis, and the CREATE framework quality scoring system.</p>
+        </div>
+      </div>
+      <div style="display: flex; gap: 16px; margin-bottom: 32px;">
+        <div style="flex-shrink: 0; width: 48px; height: 48px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700;">Q1</div>
+        <div>
+          <h4 style="font-weight: 600; margin-bottom: 4px;">2026 — v2.0</h4>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">Cyberpunk UI redesign, Spline 3D integration, enhanced pipeline with fact checking, iteration loops, and the neural enhancement protocol. Reached 100K+ prompts refined.</p>
+        </div>
+      </div>
+      <div style="display: flex; gap: 16px;">
+        <div style="flex-shrink: 0; width: 48px; height: 48px; background: linear-gradient(135deg, var(--accent), var(--bg-secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700;">→</div>
+        <div>
+          <h4 style="font-weight: 600; margin-bottom: 4px;">2026+ — What's Next</h4>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">Visual prompt builder, team collaboration, version control for prompts, custom fine-tuned models, and enterprise SSO. The pipeline keeps growing.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Open Source -->
+  <section class="page-section">
+    <div class="section-header reveal">
+      <h2>Open source, always</h2>
+    </div>
+    <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+      <p style="color: var(--text-secondary); line-height: 1.8; font-size: 1.05rem;">
+        PromptX is MIT-licensed. The entire codebase — frontend, backend, pipeline, AI integration — is public on GitHub. Fork it, modify it, deploy it your way. No enterprise lock-in, no hidden code paths, no "contact sales for features."
+      </p>
+      <div style="display: flex; gap: 16px; justify-content: center; margin-top: 32px;">
+        <a href="https://github.com/Santosh-Prasad-Verma/PromptX" target="_blank" class="btn-primary">Star on GitHub</a>
+        <a href="/docs" class="btn-ghost" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 26px;">Read the Docs</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <img src="/Public/bot-img.png" alt="PromptX">
+        <span>PromptX</span>
+      </div>
+      <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/build">Build</a>
+        <a href="/pricing">Pricing</a>
+        <a href="/docs">Docs</a>
+        <a href="https://github.com/Santosh-Prasad-Verma/PromptX" target="_blank">GitHub</a>
+      </div>
+      <p>© 2026 PromptX. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="/scripts/effects.js"></script>
+  <script>lucide.createIcons();</script>
+</body>
+</html>

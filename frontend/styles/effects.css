@@ -1,0 +1,107 @@
+/* ═══════════════════════════════════════════════════
+   PROMPTX SHARED BACKGROUND EFFECTS — BLACK THEME
+   ═══════════════════════════════════════════════════ */
+
+#fc-canvas-particles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.fc-grid-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  -webkit-mask-image: radial-gradient(ellipse 60% 60% at 50% 40%, black 30%, transparent 60%);
+  mask-image: radial-gradient(ellipse 60% 60% at 50% 40%, black 30%, transparent 60%);
+}
+
+.fc-float-label {
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+  font-family: 'Inter', monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.06);
+  letter-spacing: 0.1em;
+  opacity: 0;
+  animation: fcLabelFloat 12s infinite;
+}
+
+@keyframes fcLabelFloat {
+  0% { opacity: 0; transform: translateY(10px) scale(0.95); }
+  5% { opacity: 0.08; transform: translateY(0) scale(1); }
+  40% { opacity: 0.08; transform: translateY(-8px) scale(1); }
+  55% { opacity: 0; transform: translateY(-16px) scale(0.95); }
+  100% { opacity: 0; transform: translateY(10px) scale(0.95); }
+}
+
+.fc-ghost-code {
+  position: fixed;
+  top: 8%;
+  right: 2%;
+  pointer-events: none;
+  z-index: 0;
+  font-family: 'Inter', monospace;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.03);
+  line-height: 1.5;
+  max-width: 320px;
+  animation: fcGhostDrift 25s ease-in-out infinite;
+}
+
+@keyframes fcGhostDrift {
+  0%, 100% { transform: translateY(0); opacity: 0.03; }
+  50% { transform: translateY(-25px); opacity: 0.05; }
+}
+
+.fc-vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(255, 255, 255, 0.015) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 100%, rgba(255, 255, 255, 0.02) 0%, transparent 40%);
+}
+
+.fc-spark {
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+  color: rgba(255, 255, 255, 0.04);
+  font-size: 1.2rem;
+  animation: fcSpark 8s ease-in-out infinite;
+}
+
+@keyframes fcSpark {
+  0%, 100% { opacity: 0.03; transform: scale(0.4) rotate(0deg); }
+  50% { opacity: 0.08; transform: scale(1.5) rotate(180deg); }
+}
+
+.glow-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 0;
+}
+.glow-orb-1 {
+  top: 10%; left: -10%;
+  width: 600px; height: 600px;
+  background: rgba(255, 255, 255, 0.03);
+}
+.glow-orb-2 {
+  top: 50%; right: -8%;
+  width: 500px; height: 500px;
+  background: rgba(255, 255, 255, 0.02);
+}

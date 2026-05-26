@@ -2,8 +2,10 @@
 if (typeof window.API_BASE === 'undefined') {
   window.API_BASE = (function() {
     const loc = window.location;
-    if (loc.protocol === 'file:') return 'http://127.0.0.1:8000/api';
-    return `${loc.protocol}//${loc.hostname}:${loc.port || (loc.protocol === 'https:' ? '443' : '80')}/api`;
+    if (loc.hostname === 'localhost' || loc.hostname === '127.0.0.1' || loc.protocol === 'file:') {
+      return 'http://127.0.0.1:8000/api/v1';
+    }
+    return 'https://promptx-hkfx.onrender.com/api/v1';
   })();
 }
 const API_BASE = window.API_BASE;
@@ -248,7 +250,7 @@ function addAssistantMessage(content) {
   const messageDiv = document.createElement('div');
   messageDiv.className = 'message assistant';
   messageDiv.innerHTML = `
-    <div class="message-avatar"><img src="Public/bot-img.png" alt="AI" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+    <div class="message-avatar"><img src="Public/PROMPTX.png" alt="Promptrix" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
     <div class="message-content">${content}</div>
   `;
   messagesContainer.appendChild(messageDiv);
@@ -274,7 +276,7 @@ async function handleEnhance(prompt) {
     const headers = { 'Content-Type': 'application/json' };
     if (apiKey) headers['X-API-Key'] = apiKey;
     
-    const response = await fetch(`${API_BASE}/enhance`, {
+    const response = await fetch(`${API_BASE}/enhance/`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(requestBody)
@@ -292,7 +294,7 @@ async function handleEnhance(prompt) {
           </div>
           <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 1rem; flex-wrap: wrap;">
             <span style="font-size: 0.78rem; color: var(--text-secondary); background: var(--primary-light); padding: 0.25rem 0.75rem; border-radius: 100px; border: 1px solid var(--border); font-family: var(--font-mono);">
-              MODEL: ${result.model.toUpperCase()}
+              MODEL: ${(result.model || result.model_used || "?").toUpperCase()}
             </span>
             <span style="font-size: 0.78rem; color: var(--primary); background: var(--primary-light); padding: 0.25rem 0.75rem; border-radius: 100px; border: 1px solid var(--border); font-family: var(--font-mono);">
               +${result.improvement} quality pts
@@ -330,7 +332,7 @@ async function handleAnalyze(prompt) {
     const headers = { 'Content-Type': 'application/json' };
     if (apiKey) headers['X-API-Key'] = apiKey;
     
-    const response = await fetch(`${API_BASE}/quality-heatmap`, {
+    const response = await fetch(`${API_BASE}/quality-heatmap/`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(requestBody)
@@ -349,11 +351,11 @@ async function handleAnalyze(prompt) {
           
           <div style="display: flex; gap: 2rem; justify-content: center; margin-bottom: 2rem; padding: 1.5rem; background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid var(--border);">
             <div style="text-align: center;">
-              <div style="font-size: 2.5rem; font-weight: 800; color: var(--primary); font-family: var(--font-display); text-shadow: 0 0 20px rgba(255,102,0,0.3);">${analysis.overall}</div>
+              <div style="font-size: 2.5rem; font-weight: 800; color: var(--primary); font-family: var(--font-display); text-shadow: 0 0 20px rgba(255,255,255,0.3);">${analysis.overall}</div>
               <div style="color: var(--text-secondary); font-size: 0.8rem; font-family: var(--font-mono);">SCORE</div>
             </div>
             <div style="text-align: center;">
-              <div style="font-size: 2.5rem; font-weight: 800; color: var(--primary); font-family: var(--font-display); text-shadow: 0 0 20px rgba(255,102,0,0.3);">${analysis.grade}</div>
+              <div style="font-size: 2.5rem; font-weight: 800; color: var(--primary); font-family: var(--font-display); text-shadow: 0 0 20px rgba(255,255,255,0.3);">${analysis.grade}</div>
               <div style="color: var(--text-secondary); font-size: 0.8rem; font-family: var(--font-mono);">GRADE</div>
             </div>
           </div>
@@ -365,9 +367,9 @@ async function handleAnalyze(prompt) {
                   ${key.replace('_', ' ')}
                 </div>
                 <div style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; margin-bottom: 0.4rem;">
-                  <div style="height: 100%; width: ${(value.score / 10) * 100}%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 3px; box-shadow: 0 0 8px rgba(255,102,0,0.3);"></div>
+                  <div style="height: 100%; width: ${(value.score * 100)}%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 3px; box-shadow: 0 0 8px rgba(255,255,255,0.3);"></div>
                 </div>
-                <div style="font-size: 1rem; font-weight: 700; color: var(--primary); font-family: var(--font-mono);">${value.score}/10</div>
+                <div style="font-size: 1rem; font-weight: 700; color: var(--primary); font-family: var(--font-mono);">${(value.score * 10).toFixed(1)}/10</div>
               </div>
             `).join('')}
           </div>
@@ -408,7 +410,7 @@ async function handleCompare(prompt) {
     const headers = { 'Content-Type': 'application/json' };
     if (apiKey) headers['X-API-Key'] = apiKey;
     
-    const response = await fetch(`${API_BASE}/ab-test`, {
+    const response = await fetch(`${API_BASE}/ab-test/`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(requestBody)

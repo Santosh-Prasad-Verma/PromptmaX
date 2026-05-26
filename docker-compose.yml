@@ -1,0 +1,38 @@
+services:
+  web:
+    build: .
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app:Z
+    environment:
+      - DEBUG=True
+      - DJANGO_SETTINGS_MODULE=promptx_project.settings
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+    command: >
+      sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+
+  worker:
+    build: .
+    restart: always
+    volumes:
+      - .:/app:Z
+    environment:
+      - DEBUG=True
+      - DJANGO_SETTINGS_MODULE=promptx_project.settings
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+    command: >
+      celery -A promptx_project worker --loglevel=info --concurrency=4
+
+  redis:
+    image: redis:7-alpine
+    restart: always

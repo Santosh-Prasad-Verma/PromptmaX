@@ -4,8 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Documentation - PromptX</title>
-  <link rel="icon" type="image/svg+xml" href="Public/star.svg">
-  <link rel="stylesheet" href="styles/page.css">
+  <link rel="icon" type="image/svg+xml" href="/Public/star.svg">
+  <link rel="stylesheet" href="/styles/page.css">
+  <link rel="stylesheet" href="/styles/effects.css">
   <style>
     .docs-layout { display: flex; max-width: 1400px; margin: 0 auto; min-height: calc(100vh - 60px); }
     .docs-sidebar { width: 260px; padding: 24px; border-right: 1px solid var(--border-color); position: sticky; top: 60px; height: calc(100vh - 60px); overflow-y: auto; }
@@ -39,23 +40,36 @@
   </style>
 </head>
 <body>
+  <!-- Background Effects -->
+  <canvas id="fc-canvas-particles" aria-hidden="true"></canvas>
+  <div class="fc-float-label" style="top:9%;left:5%;animation-delay:0s;">[ DOCS ]</div>
+  <div class="fc-float-label" style="top:20%;right:8%;animation-delay:2s;">[ API ]</div>
+  <div class="fc-float-label" style="top:55%;left:3%;animation-delay:4s;">[ v2.0 ]</div>
+  <div class="fc-float-label" style="top:78%;right:6%;animation-delay:1s;">[ REST ]</div>
+  <div class="fc-float-label" style="top:92%;left:8%;animation-delay:3s;">[ SDK ]</div>
+  <div class="fc-vignette" aria-hidden="true"></div>
+  <span class="fc-spark" style="top:18%;left:25%;">✦</span>
+  <span class="fc-spark" style="top:50%;right:20%;animation-delay:2s;">✦</span>
+  <span class="fc-spark" style="top:75%;left:35%;animation-delay:4s;">✦</span>
+  <div class="glow-orb glow-orb-1"></div>
+  <div class="glow-orb glow-orb-2"></div>
   <!-- Navigation -->
   <nav class="nav">
     <div class="nav-left">
-      <a href="index.html" class="nav-logo">
-        <img src="Public/bot-img.png" alt="PromptX">
+      <a href="/" class="nav-logo">
+        <img src="/Public/bot-img.png" alt="PromptX">
         <span>PromptX</span>
       </a>
       <div class="nav-links">
-        <a href="build.html">Build</a>
-        <a href="integrations.html">Integrations</a>
-        <a href="pricing.html">Pricing</a>
-        <a href="docs.html" class="active">Docs</a>
+        <a href="/build">Build</a>
+        <a href="/integrations">Integrations</a>
+        <a href="/pricing">Pricing</a>
+        <a href="/docs" class="active">Docs</a>
       </div>
     </div>
     <div class="nav-right">
       <a href="https://github.com/Santosh-Prasad-Verma/PromptX" target="_blank" class="nav-link">GitHub</a>
-      <a href="chat.html" class="btn-primary">Launch Terminal</a>
+      <a href="/chat" class="btn-primary">Launch Terminal</a>
     </div>
   </nav>
 
@@ -100,12 +114,28 @@
       <p>PromptX is an AI-powered prompt engineering platform that helps you enhance, analyze, and optimize your prompts for better AI outputs. Our API supports multiple AI models with automatic fallback for maximum reliability.</p>
 
       <h2 id="quickstart">Quick Start</h2>
-      <p>Get started with PromptX in just a few minutes:</p>
-      <ol>
-        <li>Sign up for an account and get your API key</li>
-        <li>Install the SDK or use our REST API directly</li>
-        <li>Make your first enhancement call</li>
-      </ol>
+      <p>Get started with PromptX in under 5 minutes:</p>
+      <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 24px; margin: 16px 0;">
+        <h3 style="margin-bottom: 12px; font-size: 1.05rem;">Step 1: Sign Up</h3>
+        <p>Create a free account at <a href="/login" style="color: var(--accent);">promptx.dev/login</a>. No credit card required. You'll get an API key immediately.</p>
+      </div>
+      <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 24px; margin: 16px 0;">
+        <h3 style="margin-bottom: 12px; font-size: 1.05rem;">Step 2: Install the SDK</h3>
+        <pre><code>pip install promptx-py</code></pre>
+      </div>
+      <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 24px; margin: 16px 0;">
+        <h3 style="margin-bottom: 12px; font-size: 1.05rem;">Step 3: Make Your First Enhancement</h3>
+        <pre><code>from promptx import PromptX
+
+app = PromptX(api_key="your-api-key")
+result = app.enhance("Write a product description for a new AI tool")
+print(result.enhanced)
+print(f"Quality Score: {result.score.overall}/10")</code></pre>
+      </div>
+      <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 24px; margin: 16px 0;">
+        <h3 style="margin-bottom: 12px; font-size: 1.05rem;">Step 4: Explore the Dashboard</h3>
+        <p>Visit <a href="/chat" style="color: var(--accent);">the playground</a> to enhance prompts, run A/B tests, analyze quality, and manage your history — all through the browser interface.</p>
+      </div>
 
       <h3>Using REST API</h3>
       <pre><code>curl -X POST https://api.promptx.dev/api/enhance \
@@ -271,7 +301,28 @@ console.log(result.enhanced);</code></pre>
     </main>
   </div>
 
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <img src="/Public/bot-img.png" alt="PromptX">
+        <span>PromptX</span>
+      </div>
+      <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/build">Build</a>
+        <a href="/pricing">Pricing</a>
+        <a href="/docs">Docs</a>
+        <a href="https://github.com/Santosh-Prasad-Verma/PromptX" target="_blank">GitHub</a>
+      </div>
+      <p>&copy; 2026 PromptX. All rights reserved.</p>
+    </div>
+  </footer>
+
   <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="/scripts/effects.js"></script>
   <script>
     lucide.createIcons();
   </script>

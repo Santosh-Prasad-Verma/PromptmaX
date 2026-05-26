@@ -37,7 +37,7 @@ class EnhancementRule(models.Model):
     ]
 
     name = models.CharField(max_length=200)
-    rule_type = models.CharField(max_length=50, choices=RULE_TYPES)
+    rule_type = models.CharField(max_length=50, choices=RULE_TYPES, db_index=True)
     trigger_pattern = models.TextField(
         help_text="Regex pattern that triggers this rule"
     )
@@ -148,6 +148,69 @@ class PromptTemplate(models.Model):
     class Meta:
         ordering = ['-avg_quality_improvement']
         unique_together = ['intent', 'domain', 'name']
+
+
+class PromptProject(models.Model):
+    """A collection of prompts managed by a user/team."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='projects')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-updated_at']
+
+    def __str__(self):
+        return self.name
+
+
+class PromptAsset(models.Model):
+    """Equivalent to a repository for a single prompt idea."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    project = models.ForeignKey(PromptProject, on_delete=models.CASCADE, related_name='assets', null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='prompt_assets')
+    name = models.CharField(max_length=150)
+    description = models.TextField(blank=True)
+    is_public = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-updated_at']
+        unique_together = ['user', 'name']
+
+    def __str__(self):
+        return f"{self.name} ({self.user.username})"
+
+
+class PromptVersion(models.Model):
+    """A specific version of a prompt, similar to a Git commit."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    asset = models.ForeignKey(PromptAsset, on_delete=models.CASCADE, related_name='versions')
+    version_number = models.PositiveIntegerField(help_text="Incremental version number")
+    
+    # Core content
+    content = models.TextField(help_text="The prompt content for this version")
+    commit_message = models.CharField(max_length=255, default="Initial version")
+    
+    # Metadata mapped from enhancement runs
+    quality_score = models.FloatField(default=0.0)
+    history_reference = models.ForeignKey(
+        PromptHistory, on_delete=models.SET_NULL, null=True, blank=True,
+        help_text="Link to the enhancement run that generated this version"
+    )
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-version_number']
+        unique_together = ['asset', 'version_number']
+
+    def __str__(self):
+        return f"{self.asset.name} - v{self.version_number}"
+
 
     def __str__(self):
         return f"{self.name} ({self.intent}/{self.domain})"

@@ -1,5 +1,17 @@
 // Build Page JavaScript
 
+// API URL - dynamically determined for production compatibility
+if (typeof window.API_BASE === 'undefined') {
+  window.API_BASE = (() => {
+    const loc = window.location;
+    if (loc.hostname === 'localhost' || loc.hostname === '127.0.0.1' || loc.protocol === 'file:') {
+      return 'http://127.0.0.1:8000/api/v1';
+    }
+    return 'https://promptx-hkfx.onrender.com/api/v1';
+  })();
+}
+const API_BASE = window.API_BASE;
+
 // State
 let currentTool = 'enhance';
 let currentModel = 'auto';
@@ -153,13 +165,13 @@ async function sendMessage() {
 }
 
 async function callAPI(prompt) {
-  let endpoint = '/api/enhance';
+  let endpoint = '/api/v1/enhance/';
   let payload = { prompt, model: currentModel };
 
   if (currentTool === 'analyze') {
-    endpoint = '/api/quality-heatmap';
+    endpoint = '/api/v1/analyze/';
   } else if (currentTool === 'abtest') {
-    endpoint = '/api/ab-test';
+    endpoint = '/api/v1/ab-test/';
   }
 
   const response = await fetch(endpoint, {

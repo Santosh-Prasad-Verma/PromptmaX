@@ -1,0 +1,330 @@
+"""Celery tasks for async AI operations."""
+
+import logging
+import concurrent.futures
+
+import g4f
+from g4f.Provider import PollinationsAI, GeminiPro, IterListProvider
+
+from celery import shared_task
+from django.core.cache import cache
+
+from .core.ai_client import generate_with_fallback
+from .core.pipeline import PromptXPipeline
+from .core.scraper import scrape_website_deep, web_search
+from .core.ab_testing import generate_ab_variations, compare_variations
+from .utils.prompts import MASTER_PROMPT, build_website_analysis_prompt
+
+logger = logging.getLogger("enhancer")
+
+
+def _store_task_result(task_id: str, result: dict, ttl: int = 3600):
+    cache.set(f"task:{task_id}", result, timeout=ttl)
+
+
+def _get_task_status(task_id: str):
+    return cache.get(f"task:{task_id}")
+
+
+@shared_task(bind=True, max_retries=2, default_retry_delay=5)
+def run_enhance(self, prompt: str, level: str = "intermediate",
+                mode: str = "enhance", preferred_model: str = "auto"):
+    task_id = self.request.id
+    _store_task_result(task_id, {"status": "started", "progress": 0})
+
+    try:
+        pipeline = PromptXPipeline()
+        result = pipeline.execute(
+            prompt=prompt, enhancement_level=level,
+        )
+        data = result.to_dict()
+        _store_task_result(task_id, {"status": "completed", "data": data})
+        return data
+    except Exception as exc:
+        logger.error(f"Enhance task {task_id} failed: {exc}")
+        _store_task_result(task_id, {"status": "failed", "error": str(exc)})
+        self.retry(exc=exc)
+
+
+@shared_task(bind=True, max_retries=2, default_retry_delay=5)
+def run_generate(self, prompt: str, preferred_model: str = "auto"):
+    task_id = self.request.id
+    _store_task_result(task_id, {"status": "started", "progress": 0})
+
+    try:
+        system_prompt = (
+            f"{MASTER_PROMPT}\n\n---\n"
+            f"**CURRENT MODE: Auto-detected**\n\n"
+            f"User prompt: {prompt}"
+        )
+        result = generate_with_fallback(
+            system_prompt, max_tokens=2000,
+            preferred_model=preferred_model,
+        )
+        data = {
+            "success": True,
+            "type": "enhance",
+            "mode": "generate",
+            "enhanced": result["text"],
+            "text": result["text"],
+            "model": result["model"],
+        }
+        _store_task_result(task_id, {"status": "completed", "data": data})
+        return data
+    except Exception as exc:
+        logger.error(f"Generate task {task_id} failed: {exc}")
+        _store_task_result(task_id, {"status": "failed", "error": str(exc)})
+        self.retry(exc=exc)
+
+
+@shared_task(bind=True, max_retries=2, default_retry_delay=5)
+def run_deep_research(self, prompt: str, preferred_model: str = "auto"):
+    task_id = self.request.id
+    _store_task_result(task_id, {"status": "started", "progress": 0})
+
+    try:
+        system_prompt = (
+            f"{MASTER_PROMPT}\n\n---\n"
+            f"**CURRENT MODE: MODE 4 — TECH KNOWLEDGE EXPLORER**\n\n"
+            f"User request: {prompt}"
+        )
+        result = generate_with_fallback(
+            system_prompt, max_tokens=4000,
+            preferred_model=preferred_model,
+        )
+        data = {
+            "success": True, "type": "deep_research",
+            "enhanced": result["text"], "model": result["model"],
+            "classification": {"category": "general", "domain": "general"},
+        }
+        _store_task_result(task_id, {"status": "completed", "data": data})
+        return data
+    except Exception as exc:
+        logger.error(f"Deep research task {task_id} failed: {exc}")
+        _store_task_result(task_id, {"status": "failed", "error": str(exc)})
+        self.retry(exc=exc)
+
+
+@shared_task(bind=True, max_retries=2, default_retry_delay=5)
+def run_greeting(self, prompt: str, preferred_model: str = "auto"):
+    task_id = self.request.id
+    _store_task_result(task_id, {"status": "started", "progress": 0})
+
+    try:
+        system_prompt = (
+            f"{MASTER_PROMPT}\n\n---\n"
+            f"**CURRENT MODE: MODE 5 — DEEP CONVERSATION**\n\n"
+            f"User: {prompt}"
+        )
+        result = generate_with_fallback(
+            system_prompt, max_tokens=300,
+            preferred_model=preferred_model,
+        )
+        data = {
+            "success": True, "type": "welcome",
+            "enhanced": result["text"], "model": result["model"],
+        }
+        _store_task_result(task_id, {"status": "completed", "data": data})
+        return data
+    except Exception:
+        data = {
+            "success": True, "type": "welcome",
+            "enhanced": "Hello! I'm Promptrix AI. How can I help you today?",
+            "model": "fallback",
+        }
+        _store_task_result(task_id, {"status": "completed", "data": data})
+        return data
+
+
+@shared_task(bind=True, max_retries=1, default_retry_delay=10)
+def run_url_analysis(
+    self, prompt: str, url: str, preferred_model: str = "auto"
+):
+    task_id = self.request.id
+    _store_task_result(task_id, {"status": "started", "progress": 0})
+
+    try:
+        scraped = scrape_website_deep(url)
+        if not scraped["success"]:
+            _store_task_result(task_id, {
+                "status": "failed",
+                "error": f"Failed to scrape: {scraped['error']}",
+            })
+            return None
+
+        _store_task_result(task_id, {"status": "started", "progress": 30})
+
+        search_context = web_search(prompt)
+        pages_summary = "\n".join(
+            f"- {p['title']}: {p['url']} ({len(p['text'])} chars)"
+            for p in scraped["pages"]
+        )
+        analysis_prompt = build_website_analysis_prompt(
+            prompt, scraped["site_title"], url,
+            scraped["pages_scraped"], scraped["total_chars"],
+            pages_summary, scraped["combined_text"],
+            "\n".join(
+                f"[{s['title']}] {s['snippet']}"
+                for s in search_context
+            ),
+        )
+        response_data = generate_with_fallback(
+            analysis_prompt, max_tokens=4000,
+            preferred_model=preferred_model,
+        )
+        data = {
+            "success": True, "type": "url_analysis",
+            "mode": "url_analysis",
+            "enhanced": response_data["text"],
+            "text": response_data["text"],
+            "model": response_data["model"],
+            "url": url,
+            "site_title": scraped["site_title"],
+            "pages_scraped": scraped["pages_scraped"],
+            "total_chars": scraped["total_chars"],
+            "pages": [
+                {"url": p["url"], "title": p["title"]}
+                for p in scraped["pages"]
+            ],
+        }
+        _store_task_result(task_id, {"status": "completed", "data": data})
+        return data
+    except Exception as exc:
+        logger.error(f"URL analysis task {task_id} failed: {exc}")
+        _store_task_result(task_id, {"status": "failed", "error": str(exc)})
+        self.retry(exc=exc)
+
+
+@shared_task(bind=True, max_retries=1, default_retry_delay=5)
+def run_ab_test(self, prompt: str, preferred_model: str = "auto"):
+    task_id = self.request.id
+    _store_task_result(task_id, {"status": "started", "progress": 0})
+
+    try:
+        variations = generate_ab_variations(
+            prompt, preferred_model=preferred_model,
+        )
+        comparison = compare_variations(prompt, variations)
+        data = {
+            "success": True,
+            "original": prompt,
+            "variations": comparison["variations"],
+            "recommendation": comparison["recommendation"],
+        }
+        _store_task_result(task_id, {"status": "completed", "data": data})
+        return data
+    except Exception as exc:
+        logger.error(f"AB test task {task_id} failed: {exc}")
+        _store_task_result(task_id, {"status": "failed", "error": str(exc)})
+        self.retry(exc=exc)
+
+
+@shared_task(bind=True, max_retries=2, default_retry_delay=5)
+def run_execute(
+    self, prompt_text: str, model: str = "auto", max_tokens: int = 1000,
+):
+    task_id = self.request.id
+    _store_task_result(task_id, {"status": "started", "progress": 0})
+
+    try:
+        import time
+        start = time.time()
+        result = generate_with_fallback(
+            prompt=prompt_text, max_tokens=max_tokens,
+            preferred_model=model,
+        )
+        elapsed = time.time() - start
+        data = {
+            "success": True,
+            "result_text": result["text"],
+            "model_used": result["model"],
+            "execution_time_seconds": round(elapsed, 2),
+        }
+        _store_task_result(task_id, {"status": "completed", "data": data})
+        return data
+    except Exception as exc:
+        logger.error(f"Execute task {task_id} failed: {exc}")
+        _store_task_result(task_id, {"status": "failed", "error": str(exc)})
+        self.retry(exc=exc)
+
+
+@shared_task(bind=True, max_retries=1, default_retry_delay=10)
+def run_multi_model(self, prompt: str):
+    task_id = self.request.id
+    _store_task_result(task_id, {"status": "started", "progress": 0})
+
+    models = [
+        {"name": "gpt-4.1-nano", "label": "GPT-4o", "provider": "pollinations"},
+        {"name": "mistral-small-3.1-24b", "label": "Mistral Small", "provider": "pollinations"},
+        {"name": "deepseek-r1", "label": "DeepSeek R1", "provider": "pollinations"},
+        {"name": "gpt-4.1-nano", "label": "GPT-4.1 Nano", "provider": "pollinations"},
+    ]
+
+    results = []
+    errors = []
+
+    def _call_one(model_info):
+        import time
+        start = time.time()
+        try:
+            kwargs = {
+                "model": model_info["name"],
+                "messages": [{"role": "user", "content": prompt}],
+                "stream": False,
+            }
+            if model_info["provider"] == "pollinations":
+                kwargs["provider"] = PollinationsAI
+            elif model_info["provider"] == "gemini":
+                kwargs["provider"] = IterListProvider([GeminiPro])
+            response = g4f.ChatCompletion.create(**kwargs)
+            elapsed = time.time() - start
+            return {
+                "model": model_info["label"],
+                "model_key": model_info["name"],
+                "text": str(response).strip() if response else "",
+                "time": round(elapsed, 2),
+                "chars": len(str(response)) if response else 0,
+                "success": True,
+            }
+        except Exception as e:
+            elapsed = time.time() - start
+            return {
+                "model": model_info["label"],
+                "model_key": model_info["name"],
+                "text": "",
+                "time": round(elapsed, 2),
+                "chars": 0,
+                "success": False,
+                "error": str(e),
+            }
+
+    try:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+            futures = {pool.submit(_call_one, m): m for m in models}
+            for future in concurrent.futures.as_completed(futures, timeout=120):
+                result = future.result()
+                results.append(result)
+    except Exception as e:
+        logger.error(f"Multi-model parallel call failed: {e}")
+
+    results.sort(key=lambda r: models.index(
+        next((m for m in models if m["label"] == r["model"]), models[0]),
+    ))
+
+    winner = None
+    successful = [r for r in results if r["success"]]
+    if successful:
+        winner = max(successful, key=lambda r: r["chars"])
+
+    data = {
+        "success": True,
+        "type": "multi_model",
+        "prompt": prompt,
+        "results": results,
+        "winner": winner["model"] if winner else None,
+        "total_time": round(
+            max((r["time"] for r in results if r["time"]), default=0), 2,
+        ),
+    }
+    _store_task_result(task_id, {"status": "completed", "data": data})
+    return data
