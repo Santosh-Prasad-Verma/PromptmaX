@@ -72,3 +72,4 @@ backend/db.sqlite3
 .cache/
 .pytest_cache/
 
+*.sqlite3
