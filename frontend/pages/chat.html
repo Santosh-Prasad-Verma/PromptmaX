@@ -1,251 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html class="chat-doc" lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Promptrix — AI Prompt Workspace</title>
-  <meta name="description"
-    content="PromptX prompt workspace for enhancing, analyzing, and comparing prompts in a cleaner guided UI.">
-  <meta name="theme-color" content="#000000">
-  <link rel="icon" type="image/svg+xml" href="/Public/star.svg">
-  <link rel="stylesheet" href="/styles/index.css">
-  <link rel="stylesheet" href="/styles/chat.css">
+  <title>Prompt Playground - PromptmaX</title>
+  <meta name="description" content="Use PromptmaX to turn rough prompts into structured, production-ready instructions.">
+  <meta name="theme-color" content="#f7f6e5">
+  <link rel="icon" type="image/png" href="/Public/promptmax-logo-cropped.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600;700&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/page.css">
+  <script src="https://unpkg.com/lucide@latest" defer></script>
 </head>
+<body class="chat-page-body">
+  <nav class="nav-shell chat-nav" aria-label="Chat navigation">
+    <a href="/" class="brand" aria-label="PromptmaX home">
+      <img class="brand-logo" src="/Public/promptmax-logo-cropped.png" alt="PromptmaX">
+      <span class="sr-only">PromptmaX</span>
+    </a>
 
-<body>
-
-  <!-- Identical Background to Landing Page -->
-  <canvas id="fc-canvas-particles" aria-hidden="true"></canvas>
-  <div class="fc-bg-blobs"></div>
-  <div class="fc-grid-overlay"></div>
-  <div class="fc-dots" aria-hidden="true">
-    <span class="fc-dot" style="top:12%;left:8%"></span>
-    <span class="fc-dot" style="top:8%;left:25%"></span>
-    <span class="fc-dot" style="top:18%;left:42%"></span>
-    <span class="fc-dot" style="top:6%;left:58%"></span>
-    <span class="fc-dot" style="top:14%;left:75%"></span>
-    <span class="fc-dot" style="top:10%;left:92%"></span>
-    <span class="fc-dot" style="top:28%;left:16%"></span>
-    <span class="fc-dot" style="top:32%;left:33%"></span>
-    <span class="fc-dot" style="top:24%;left:50%"></span>
-    <span class="fc-dot" style="top:35%;left:66%"></span>
-    <span class="fc-dot" style="top:30%;left:83%"></span>
-    <span class="fc-dot" style="top:45%;left:10%"></span>
-    <span class="fc-dot" style="top:50%;left:25%"></span>
-    <span class="fc-dot" style="top:42%;left:42%"></span>
-    <span class="fc-dot" style="top:55%;left:58%"></span>
-    <span class="fc-dot" style="top:48%;left:75%"></span>
-    <span class="fc-dot" style="top:52%;left:90%"></span>
-    <span class="fc-dot" style="top:65%;left:18%"></span>
-    <span class="fc-dot" style="top:70%;left:35%"></span>
-    <span class="fc-dot" style="top:60%;left:50%"></span>
-    <span class="fc-dot" style="top:72%;left:66%"></span>
-    <span class="fc-dot" style="top:68%;left:82%"></span>
-    <span class="fc-dot" style="top:80%;left:8%"></span>
-    <span class="fc-dot" style="top:85%;left:25%"></span>
-    <span class="fc-dot" style="top:78%;left:42%"></span>
-    <span class="fc-dot" style="top:88%;left:58%"></span>
-    <span class="fc-dot" style="top:82%;left:75%"></span>
-    <span class="fc-dot" style="top:90%;left:92%"></span>
-  </div>
-  <div class="fc-float-labels" aria-hidden="true">
-    <span class="fc-label" style="top:9%;left:5%">[ ENHANCE ]</span>
-    <span class="fc-label" style="top:15%;right:8%">[ 9.2/10 ]</span>
-    <span class="fc-label" style="top:35%;left:3%">[ PIPELINE ]</span>
-    <span class="fc-label" style="top:28%;right:4%">[ .JSON ]</span>
-    <span class="fc-label" style="top:55%;left:6%">[ GEMINI ]</span>
-    <span class="fc-label" style="top:60%;right:6%">[ 200 OK ]</span>
-    <span class="fc-label" style="top:75%;left:4%">[ SCRAPE ]</span>
-    <span class="fc-label" style="top:80%;right:5%">[ MASTER ]</span>
-    <span class="fc-label" style="top:45%;right:2%">[ v2.0 ]</span>
-    <span class="fc-label" style="top:92%;left:8%">[ SCORE ]</span>
-  </div>
-  <div class="fc-ghost-code" aria-hidden="true">
-    <pre>{
-  "model": "gemini-2.0",
-  "status": "200 OK"
-  }</pre>
-  </div>
-  <div class="fc-vignette"></div>
-  <div class="fc-sparks" aria-hidden="true">
-    <span class="fc-spark" style="top:20%;left:22%">✦</span>
-    <span class="fc-spark" style="top:40%;right:18%">✦</span>
-    <span class="fc-spark" style="top:65%;left:30%">✦</span>
-    <span class="fc-spark" style="top:85%;right:25%">✦</span>
-    <span class="fc-spark" style="top:50%;left:60%">✦</span>
-  </div>
-
-  <!-- Sidebar -->
-  <aside class="chat-sidebar" id="chat-sidebar">
-    <div class="sidebar-header">
-      <a href="/" class="sidebar-brand">
-        <img src="/Public/PROMPTX.png" alt="Promptrix"
-          style="height: 36px; width: auto;">
-      </a>
-      <button class="sidebar-close-btn" id="sidebar-close" title="Close sidebar">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M18 6L6 18M6 6l12 12" />
-        </svg>
-      </button>
+    <div class="chat-nav-actions">
+      <a class="button secondary" href="/pricing">Plan</a>
+      <a class="button primary" href="/"><i data-lucide="home" aria-hidden="true"></i>Home</a>
     </div>
+  </nav>
 
-    <button class="new-chat-btn" id="new-chat-btn">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M12 5v14M5 12h14" />
-      </svg>
-      New Chat
-    </button>
+  <main class="chat-page">
+    <section class="chat-workspace" aria-label="PromptmaX chat workspace">
+      <section id="chat-thread" class="chat-thread" aria-live="polite"></section>
 
-    <!-- Mode Selection -->
-    <div class="sidebar-section">
-      <div class="sidebar-label">Mode</div>
-      <div class="mode-list" id="mode-list">
-        <button class="mode-item active" data-mode="enhance">
-          <span class="mode-icon">✦</span> Enhance
-        </button>
-        <button class="mode-item" data-mode="analyze">
-          <span class="mode-icon">◈</span> Analyze
-        </button>
-        <button class="mode-item" data-mode="compare">
-          <span class="mode-icon">⇄</span> Compare
-        </button>
-        <button class="mode-item" data-mode="multi">
-          <span class="mode-icon">⚡</span> Multi-Run
-        </button>
-      </div>
-    </div>
-
-    <!-- Chat History -->
-    <div class="sidebar-section sidebar-history-section">
-      <div class="sidebar-section-header">
-        <div class="sidebar-label">History</div>
-        <button class="history-clear-btn" id="clear-history-btn" type="button">Clear</button>
-      </div>
-      <div class="history-list" id="history-list">
-        <!-- Populated by JS -->
-        <div class="history-empty" id="history-empty">
-          <span style="opacity: 0.4;">No chats yet</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="sidebar-footer">
-      <div class="sidebar-label">API Key</div>
-      <input type="password" id="api-key-input" placeholder="Optional — leave blank to use default"
-        class="sidebar-api-input">
-    </div>
-  </aside>
-
-  <!-- Main Chat Area -->
-  <main class="chat-main" id="chat-main">
-    <!-- Top Bar -->
-    <div class="chat-topbar">
-      <div class="topbar-left">
-        <button class="sidebar-toggle-btn" id="sidebar-toggle" title="Toggle sidebar">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <line x1="3" y1="12" x2="21" y2="12" />
-            <line x1="3" y1="18" x2="21" y2="18" />
-          </svg>
-        </button>
-        <div class="topbar-title">
-          <span class="topbar-mode" id="topbar-mode">Enhance Mode</span>
-        </div>
-      </div>
-      <div class="topbar-right">
-      </div>
-    </div>
-
-    <!-- Chat Messages -->
-    <div class="chat-messages-area" id="chat-messages">
-      <div class="welcome-screen" id="welcome-screen">
-        <div class="welcome-badge">PROMPT WORKSPACE</div>
-        <h1 class="welcome-title">Promptrix<span> Workspace</span></h1>
-        <p class="welcome-subtitle">Enhance rough prompts, analyze quality, compare rewrites, and turn raw ideas into
-          clearer AI-ready instructions.</p>
-
-        <div class="welcome-cards">
-          <button class="welcome-card" data-action="enhance">
-            <div class="wc-icon">✦</div>
-            <div class="wc-text">
-              <strong>Enhance Prompt</strong>
-              <span>Turn rough text into a clearer, stronger prompt</span>
-            </div>
-          </button>
-          <button class="welcome-card" data-action="analyze">
-            <div class="wc-icon">◈</div>
-            <div class="wc-text">
-              <strong>Analyze Quality</strong>
-              <span>See what is weak and how to improve it</span>
-            </div>
-          </button>
-          <button class="welcome-card" data-action="compare">
-            <div class="wc-icon">⇄</div>
-            <div class="wc-text">
-              <strong>Compare Versions</strong>
-              <span>Review multiple prompt versions side by side</span>
-            </div>
-          </button>
-        </div>
-
-        <div class="welcome-examples">
-          <div class="examples-header">
-            <span class="ex-line"></span>
-            <span class="examples-label">TRY A QUICK START</span>
-            <span class="ex-line"></span>
-          </div>
-          <div class="examples-grid">
-            <button class="example-chip" onclick="fillPrompt('Write a blog post about artificial intelligence')">Write a
-              blog about AI</button>
-            <button class="example-chip"
-              onclick="fillPrompt('Create a Python function to sort a list of dictionaries by key')">Sort list of dicts
-              in Python</button>
-            <button class="example-chip"
-              onclick="fillPrompt('Design a marketing strategy for a SaaS product launch')">SaaS marketing
-              strategy</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Chat Input -->
-    <div class="chat-input-bottom">
-      <div class="chat-input-wrapper">
-        <div class="input-actions-left">
-          <select id="model-dropdown" class="model-dropdown">
-            <option value="auto">Auto</option>
-            <option value="g4f_gpt4o">GPT-4o</option>
-            <option value="g4f_gemini_flash">DeepSeek R1</option>
-            <option value="g4f_llama3_70b">Llama 3.3 70B</option>
-            <option value="g4f_gpt5_nano">GPT-5 Nano</option>
+      <form id="chat-form" class="chat-composer">
+        <div class="chat-input-row">
+          <select id="chat-mode" class="chat-mode-select" aria-label="Mode">
+            <option value="generate" selected>Generate</option>
+            <option value="enhance">Enhance</option>
+            <option value="analyze">Analyze</option>
+            <option value="abtest">A/B Test</option>
           </select>
+          <textarea id="chat-prompt" class="chat-input" placeholder="Message PromptmaX..." rows="1" required></textarea>
+          <button id="chat-submit" class="chat-send" type="submit" aria-label="Send prompt">
+            <i data-lucide="arrow-up" aria-hidden="true"></i>
+          </button>
         </div>
-        <textarea id="chat-input" placeholder="Type here..." rows="1"></textarea>
-        <button class="send-btn" id="send-btn" disabled>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
-            stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="18 15 12 9 6 15"></polyline>
-          </svg>
-        </button>
-      </div>
-      <div class="input-footer">
-        <span class="mode-indicator" id="mode-indicator">Enhance Mode</span>
-        <span class="char-count" id="char-count">0 chars</span>
-      </div>
-    </div>
+
+        <div id="chat-status" class="chat-status" role="status" aria-live="polite"></div>
+      </form>
+    </section>
   </main>
 
-  <!-- Toast -->
-  <div id="toast-container" class="toast-container"></div>
-
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
-  <!-- D2 Cloud Engine handled via chat.js -->
+  <script src="/scripts/page.js"></script>
   <script src="/scripts/chat.js"></script>
-  <script src="/scripts/index.js"></script>
 </body>
-
 </html>

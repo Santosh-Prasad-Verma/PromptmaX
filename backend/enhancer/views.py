@@ -7,6 +7,7 @@ from django.core.cache import cache
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, viewsets
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
@@ -141,6 +142,7 @@ class TaskStatusView(APIView):
 
 
 class EnhancePromptView(APIView):
+    authentication_classes = [TokenAuthentication]
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -172,19 +174,6 @@ class EnhancePromptView(APIView):
 
         urls = _extract_urls(prompt)
 
-<<<<<<< HEAD
-        # Route: Greeting (handle in any mode for short inputs)
-        if _is_greeting(prompt):
-            try:
-                result = generate_with_fallback(
-                    f"{WELCOME_SYSTEM_PROMPT}\n\nUser: {prompt}",
-                    max_tokens=300, preferred_model=preferred_model,
-                )
-                return Response({'success': True, 'type': 'welcome', 'text': result['text'], 'model': result['model']}, status=status.HTTP_200_OK)
-            except Exception as e:
-                logger.warning(f"Greeting response failed, falling back to enhancement: {e}")
-                # Fall through to normal enhancement
-=======
         if _is_greeting(prompt):
             if async_mode:
                 return _dispatch_task(run_greeting, prompt, preferred_model)
@@ -194,16 +183,28 @@ class EnhancePromptView(APIView):
                     max_tokens=300, preferred_model=preferred_model,
                 )
                 return Response(
-                    {"success": True, "type": "welcome", "enhanced": result["text"], "model": result["model"]},
+                    {
+                        "success": True,
+                        "type": "welcome",
+                        "enhanced": result["text"],
+                        "text": result["text"],
+                        "model": result["model"],
+                    },
                     status=status.HTTP_200_OK,
                 )
             except Exception as e:
                 logger.warning(f"Greeting failed: {e}")
+                fallback = "Hello! I'm Promptrix AI. How can I help you today?"
                 return Response(
-                    {"success": True, "type": "welcome", "enhanced": "Hello! I'm Promptrix AI. How can I help you today?", "model": "fallback"},
+                    {
+                        "success": True,
+                        "type": "welcome",
+                        "enhanced": fallback,
+                        "text": fallback,
+                        "model": "fallback",
+                    },
                     status=status.HTTP_200_OK,
                 )
->>>>>>> 099bf4d (feat: full production rewrite — Celery, glass UI, 4-model runner, Promptrix rebrand)
 
         if urls and mode == "generate":
             if async_mode:
@@ -241,33 +242,27 @@ class EnhancePromptView(APIView):
                 logger.error(f"URL analysis failed: {e}")
                 return Response({"success": False, "error": f"Analysis failed: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-<<<<<<< HEAD
-        # Route: Deep Research (auto-detect for enhance mode too)
-        if _needs_deep_research(prompt):
-=======
         if _needs_deep_research(prompt):
             if async_mode:
                 return _dispatch_task(run_deep_research, prompt, preferred_model)
->>>>>>> 099bf4d (feat: full production rewrite — Celery, glass UI, 4-model runner, Promptrix rebrand)
             try:
                 response_data = generate_with_fallback(
                     f"{MASTER_PROMPT}\n\n---\n**CURRENT MODE: MODE 4 — TECH KNOWLEDGE EXPLORER**\n\nUser request: {prompt}",
                     max_tokens=4000, preferred_model=preferred_model,
                 )
-<<<<<<< HEAD
-                return Response({'success': True, 'type': 'deep_research', 'text': response_data['text'], 'model': response_data['model']}, status=status.HTTP_200_OK)
-            except Exception as e:
-                logger.warning(f"Deep research failed, falling back to enhancement: {e}")
-                # Fall through to normal enhancement
-=======
                 return Response(
-                    {"success": True, "type": "deep_research", "enhanced": response_data["text"], "model": response_data["model"],
-                     "classification": _classify_prompt(prompt)},
+                    {
+                        "success": True,
+                        "type": "deep_research",
+                        "enhanced": response_data["text"],
+                        "text": response_data["text"],
+                        "model": response_data["model"],
+                        "classification": _classify_prompt(prompt),
+                    },
                     status=status.HTTP_200_OK,
                 )
             except Exception as e:
                 logger.warning(f"Deep research failed, falling back to enhancement: {e}")
->>>>>>> 099bf4d (feat: full production rewrite — Celery, glass UI, 4-model runner, Promptrix rebrand)
 
         if _needs_ideas(prompt) and mode == "generate":
             try:
@@ -336,6 +331,7 @@ class EnhancePromptView(APIView):
 
 
 class AnalyzePromptView(APIView):
+    authentication_classes = [TokenAuthentication]
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -468,6 +464,7 @@ class ComparePromptsView(APIView):
 
 
 class ABTestView(APIView):
+    authentication_classes = [TokenAuthentication]
     permission_classes = [AllowAny]
 
     def post(self, request):

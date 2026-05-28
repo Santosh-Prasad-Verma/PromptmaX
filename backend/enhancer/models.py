@@ -150,6 +150,61 @@ class PromptTemplate(models.Model):
         unique_together = ['intent', 'domain', 'name']
 
 
+class UserPlan(models.Model):
+    """Selected account plan for a PromptmaX user."""
+    PLAN_FREE = 'free'
+    PLAN_PRO = 'pro'
+    PLAN_PRO_PLUS = 'pro_plus'
+    PLAN_CHOICES = [
+        (PLAN_FREE, 'Free'),
+        (PLAN_PRO, 'Pro'),
+        (PLAN_PRO_PLUS, 'Pro+'),
+    ]
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='promptmax_plan')
+    plan = models.CharField(max_length=20, choices=PLAN_CHOICES)
+    price_rs = models.PositiveIntegerField(default=0)
+    selected_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-selected_at']
+
+    def __str__(self):
+        return f"{self.user.email} - {self.get_plan_display()}"
+
+
+class PaymentOrder(models.Model):
+    """Razorpay order lifecycle for paid PromptmaX plan activation."""
+    STATUS_CREATED = 'created'
+    STATUS_PAID = 'paid'
+    STATUS_FAILED = 'failed'
+    STATUS_CHOICES = [
+        (STATUS_CREATED, 'Created'),
+        (STATUS_PAID, 'Paid'),
+        (STATUS_FAILED, 'Failed'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='promptmax_payments')
+    plan = models.CharField(max_length=20, choices=UserPlan.PLAN_CHOICES)
+    amount_rs = models.PositiveIntegerField()
+    amount_paise = models.PositiveIntegerField()
+    currency = models.CharField(max_length=8, default='INR')
+    razorpay_order_id = models.CharField(max_length=120, unique=True)
+    razorpay_payment_id = models.CharField(max_length=120, blank=True)
+    razorpay_signature = models.CharField(max_length=255, blank=True)
+    status = models.CharField(max_length=16, choices=STATUS_CHOICES, default=STATUS_CREATED)
+    raw_response = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.user.email} - {self.razorpay_order_id} - {self.status}"
+
+
 class PromptProject(models.Model):
     """A collection of prompts managed by a user/team."""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

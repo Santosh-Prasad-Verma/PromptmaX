@@ -6,6 +6,7 @@ spacy
 textblob
 tiktoken
 openai
+g4f>=0.4.0
 celery
 redis
 django-redis
@@ -19,6 +20,5 @@ python-dotenv
 gunicorn
 social-auth-app-django
 razorpay
-resend
 psycopg2-binary
 whitenoise

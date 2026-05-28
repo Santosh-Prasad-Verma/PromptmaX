@@ -3,328 +3,278 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Documentation - PromptX</title>
-  <link rel="icon" type="image/svg+xml" href="/Public/star.svg">
+  <title>Documentation - PromptmaX</title>
+  <meta name="description" content="PromptmaX documentation for setup, prompt enhancement, quality analysis, comparison, batch runs, and API usage.">
+  <meta name="theme-color" content="#f7f6e5">
+  <link rel="icon" type="image/png" href="/Public/promptmax-logo-cropped.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600;700&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles/page.css">
-  <link rel="stylesheet" href="/styles/effects.css">
-  <style>
-    .docs-layout { display: flex; max-width: 1400px; margin: 0 auto; min-height: calc(100vh - 60px); }
-    .docs-sidebar { width: 260px; padding: 24px; border-right: 1px solid var(--border-color); position: sticky; top: 60px; height: calc(100vh - 60px); overflow-y: auto; }
-    .docs-content { flex: 1; padding: 40px; max-width: 900px; }
-    .docs-sidebar h3 { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
-    .docs-sidebar ul { list-style: none; margin-bottom: 24px; }
-    .docs-sidebar li { margin-bottom: 4px; }
-    .docs-sidebar a { display: block; padding: 8px 12px; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; border-radius: var(--radius-sm); transition: var(--transition); }
-    .docs-sidebar a:hover { color: var(--text-primary); background: var(--bg-tertiary); }
-    .docs-sidebar a.active { color: var(--accent); background: var(--accent-dim); }
-    .docs-content h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 16px; }
-    .docs-content h2 { font-size: 1.5rem; font-weight: 600; margin: 40px 0 16px; padding-top: 20px; border-top: 1px solid var(--border-color); }
-    .docs-content h3 { font-size: 1.15rem; font-weight: 600; margin: 24px 0 12px; }
-    .docs-content p { color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px; }
-    .docs-content code { background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
-    .docs-content pre { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; overflow-x: auto; margin: 16px 0; }
-    .docs-content pre code { background: none; padding: 0; }
-    .docs-content ul { margin: 16px 0; padding-left: 24px; }
-    .docs-content li { color: var(--text-secondary); margin-bottom: 8px; }
-    .endpoint { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; margin: 16px 0; }
-    .endpoint-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-    .method { padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 600; }
-    .method.post { background: var(--accent-dim); color: var(--accent); }
-    .method.get { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
-    .param-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
-    .param-table th, .param-table td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border-color); }
-    .param-table th { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
-    .param-table td { font-size: 0.9rem; color: var(--text-secondary); }
-    .param-name { font-family: 'JetBrains Mono', monospace; color: var(--text-primary); }
-    .param-required { color: var(--danger); font-size: 0.75rem; }
-  </style>
+  <script src="https://unpkg.com/lucide@latest" defer></script>
 </head>
 <body>
-  <!-- Background Effects -->
-  <canvas id="fc-canvas-particles" aria-hidden="true"></canvas>
-  <div class="fc-float-label" style="top:9%;left:5%;animation-delay:0s;">[ DOCS ]</div>
-  <div class="fc-float-label" style="top:20%;right:8%;animation-delay:2s;">[ API ]</div>
-  <div class="fc-float-label" style="top:55%;left:3%;animation-delay:4s;">[ v2.0 ]</div>
-  <div class="fc-float-label" style="top:78%;right:6%;animation-delay:1s;">[ REST ]</div>
-  <div class="fc-float-label" style="top:92%;left:8%;animation-delay:3s;">[ SDK ]</div>
-  <div class="fc-vignette" aria-hidden="true"></div>
-  <span class="fc-spark" style="top:18%;left:25%;">✦</span>
-  <span class="fc-spark" style="top:50%;right:20%;animation-delay:2s;">✦</span>
-  <span class="fc-spark" style="top:75%;left:35%;animation-delay:4s;">✦</span>
-  <div class="glow-orb glow-orb-1"></div>
-  <div class="glow-orb glow-orb-2"></div>
-  <!-- Navigation -->
-  <nav class="nav">
-    <div class="nav-left">
-      <a href="/" class="nav-logo">
-        <img src="/Public/bot-img.png" alt="PromptX">
-        <span>PromptX</span>
-      </a>
-      <div class="nav-links">
-        <a href="/build">Build</a>
-        <a href="/integrations">Integrations</a>
-        <a href="/pricing">Pricing</a>
-        <a href="/docs" class="active">Docs</a>
+  <div class="top-banner">
+    <strong>PromptmaX documentation for real prompt workflows.</strong>
+    <a href="/chat">Open playground <i data-lucide="chevron-right" aria-hidden="true"></i></a>
+  </div>
+
+  <nav class="nav-shell" aria-label="Primary navigation">
+    <a href="/" class="brand" aria-label="PromptmaX home">
+      <img class="brand-logo" src="/Public/promptmax-logo-cropped.png" alt="PromptmaX">
+      <span class="sr-only">PromptmaX</span>
+    </a>
+
+    <div class="nav-links" id="nav-links">
+      <div class="nav-item">
+        <a class="nav-link" href="/product">Product <i data-lucide="chevron-down" aria-hidden="true"></i></a>
+        <div class="dropdown">
+          <a href="/chat">Prompt Playground <span>Enhance and analyze prompts live.</span></a>
+          <a href="/builder">AI Builder <span>Turn prompts into working app plans.</span></a>
+          <a href="/integrations">Integrations <span>Connect PromptmaX to your workflow.</span></a>
+        </div>
       </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/use-cases">Use cases <i data-lucide="chevron-down" aria-hidden="true"></i></a>
+        <div class="dropdown">
+          <a href="/developers">Developers <span>Architecture, code, tests, and docs.</span></a>
+          <a href="/creators">Creators <span>Content briefs and reusable templates.</span></a>
+          <a href="/operators">Operators <span>SOPs, analysis, support, and research.</span></a>
+        </div>
+      </div>
+      <a class="nav-link" href="/workflow">Workflow</a>
+      <a class="nav-link" href="/resources">Resources</a>
+      <a class="nav-link" href="/about">Company</a>
     </div>
-    <div class="nav-right">
-      <a href="https://github.com/Santosh-Prasad-Verma/PromptX" target="_blank" class="nav-link">GitHub</a>
-      <a href="/chat" class="btn-primary">Launch Terminal</a>
+
+    <div class="nav-actions">
+      <a class="button secondary" href="/login">Sign in</a>
+      <a class="button primary" href="/chat"><i data-lucide="sparkles" aria-hidden="true"></i>Launch PromptmaX</a>
+      <button class="menu-button" id="menu-button" type="button" aria-label="Open menu" aria-controls="nav-links" aria-expanded="false">
+        <i data-lucide="menu" aria-hidden="true"></i>
+      </button>
     </div>
   </nav>
 
-  <div class="docs-layout">
-    <!-- Sidebar -->
-    <aside class="docs-sidebar">
-      <h3>Getting Started</h3>
+  <main class="docs-layout">
+    <aside class="docs-sidebar" aria-label="Documentation navigation">
+      <h3>Getting started</h3>
       <ul>
         <li><a href="#introduction">Introduction</a></li>
-        <li><a href="#quickstart">Quick Start</a></li>
-        <li><a href="#authentication">Authentication</a></li>
+        <li><a href="#quickstart">Quick start</a></li>
+        <li><a href="#environment">Environment</a></li>
       </ul>
-      
-      <h3>API Reference</h3>
+
+      <h3>API reference</h3>
       <ul>
-        <li><a href="#enhance">Enhance Prompt</a></li>
-        <li><a href="#analyze">Analyze Quality</a></li>
-        <li><a href="#abtest">A/B Test</a></li>
-        <li><a href="#detect-intent">Detect Intent</a></li>
+        <li><a href="#enhance">Enhance prompt</a></li>
+        <li><a href="#analyze">Analyze quality</a></li>
+        <li><a href="#compare">Compare prompts</a></li>
+        <li><a href="#batch">Batch enhance</a></li>
+        <li><a href="#research">URL research</a></li>
       </ul>
-      
-      <h3>SDKs</h3>
+
+      <h3>Data</h3>
       <ul>
-        <li><a href="#python-sdk">Python</a></li>
-        <li><a href="#js-sdk">JavaScript</a></li>
-      </ul>
-      
-      <h3>Resources</h3>
-      <ul>
-        <li><a href="#errors">Error Codes</a></li>
-        <li><a href="#rate-limits">Rate Limits</a></li>
-        <li><a href="#support">Support</a></li>
+        <li><a href="#projects">Projects and assets</a></li>
+        <li><a href="#history">Prompt history</a></li>
+        <li><a href="#errors">Errors</a></li>
       </ul>
     </aside>
 
-    <!-- Content -->
-    <main class="docs-content">
-      <h1>Documentation</h1>
-      <p>Everything you need to integrate PromptX into your applications.</p>
+    <article class="docs-content">
+      <p class="eyebrow">Documentation</p>
+      <h1>PromptmaX docs</h1>
+      <p class="lead">
+        Use PromptmaX to turn rough prompts into structured, scored, reusable instructions. These docs cover the local Django API, frontend playground, prompt quality checks, and saved prompt workflows.
+      </p>
 
       <h2 id="introduction">Introduction</h2>
-      <p>PromptX is an AI-powered prompt engineering platform that helps you enhance, analyze, and optimize your prompts for better AI outputs. Our API supports multiple AI models with automatic fallback for maximum reliability.</p>
-
-      <h2 id="quickstart">Quick Start</h2>
-      <p>Get started with PromptX in under 5 minutes:</p>
-      <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 24px; margin: 16px 0;">
-        <h3 style="margin-bottom: 12px; font-size: 1.05rem;">Step 1: Sign Up</h3>
-        <p>Create a free account at <a href="/login" style="color: var(--accent);">promptx.dev/login</a>. No credit card required. You'll get an API key immediately.</p>
-      </div>
-      <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 24px; margin: 16px 0;">
-        <h3 style="margin-bottom: 12px; font-size: 1.05rem;">Step 2: Install the SDK</h3>
-        <pre><code>pip install promptx-py</code></pre>
-      </div>
-      <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 24px; margin: 16px 0;">
-        <h3 style="margin-bottom: 12px; font-size: 1.05rem;">Step 3: Make Your First Enhancement</h3>
-        <pre><code>from promptx import PromptX
-
-app = PromptX(api_key="your-api-key")
-result = app.enhance("Write a product description for a new AI tool")
-print(result.enhanced)
-print(f"Quality Score: {result.score.overall}/10")</code></pre>
-      </div>
-      <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 24px; margin: 16px 0;">
-        <h3 style="margin-bottom: 12px; font-size: 1.05rem;">Step 4: Explore the Dashboard</h3>
-        <p>Visit <a href="/chat" style="color: var(--accent);">the playground</a> to enhance prompts, run A/B tests, analyze quality, and manage your history — all through the browser interface.</p>
+      <p>
+        PromptmaX is a prompt engineering OS. It validates raw input, detects intent, builds context, applies structure, scores quality, compares versions, and returns a better instruction for AI work.
+      </p>
+      <div class="doc-callout">
+        <strong>Base API path:</strong> <code>/api/v1/</code>
+        <p>All API examples below use the Django routes exposed by this project. If you run locally with `start-server.bat`, the default host is <code>http://127.0.0.1:8000</code>.</p>
       </div>
 
-      <h3>Using REST API</h3>
-      <pre><code>curl -X POST https://api.promptx.dev/api/enhance \
+      <h2 id="quickstart">Quick start</h2>
+      <h3>Run the server</h3>
+      <pre><code>cd backend
+python manage.py migrate
+python manage.py runserver 127.0.0.1:8000</code></pre>
+      <p>Then open <a href="/chat">the playground</a> to enhance prompts in the browser.</p>
+
+      <h3>First enhancement request</h3>
+      <pre><code>curl -X POST http://127.0.0.1:8000/api/v1/enhance/ \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -d '{"prompt": "Write a blog post about AI"}'</code></pre>
+  -d "{\"prompt\":\"make a SaaS dashboard idea better\",\"enhancement_level\":\"advanced\"}"</code></pre>
 
-      <h2 id="authentication">Authentication</h2>
-      <p>PromptX uses API keys for authentication. Include your API key in the request header:</p>
-      <pre><code>Authorization: Bearer YOUR_API_KEY</code></pre>
-      <p>You can also pass the API key in the request body for client-side applications.</p>
+      <h2 id="environment">Environment</h2>
+      <p>Required local environment values should live in <code>backend/.env</code>. At minimum, the Django app needs a secret key.</p>
+      <pre><code>DJANGO_SECRET_KEY=replace-with-a-long-random-secret
+DEBUG=True
+ALLOWED_HOSTS=127.0.0.1,localhost</code></pre>
+      <p>Model provider keys are optional depending on which AI routes you use. Keep secrets out of public commits.</p>
 
-      <h2 id="enhance">Enhance Prompt API</h2>
+      <h2 id="enhance">Enhance prompt</h2>
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method post">POST</span>
-          <code>/api/enhance</code>
+          <code>/api/v1/enhance/</code>
         </div>
-        <p>Enhance a prompt with AI-powered improvements.</p>
+        <p>Transforms a weak prompt into a structured prompt with role, task, context, constraints, output format, and checks.</p>
       </div>
-
-      <h3>Request Body</h3>
       <table class="param-table">
-        <tr>
-          <th>Parameter</th>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-        <tr>
-          <td class="param-name">prompt <span class="param-required">required</span></td>
-          <td>string</td>
-          <td>The prompt to enhance (max 100,000 chars)</td>
-        </tr>
-        <tr>
-          <td class="param-name">model</td>
-          <td>string</td>
-          <td>AI model to use: <code>gemini</code>, <code>groq</code></td>
-        </tr>
+        <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+        <tr><td class="param-name">prompt <span class="param-required">required</span></td><td>string</td><td>Raw prompt to improve.</td></tr>
+        <tr><td class="param-name">enhancement_level</td><td>string</td><td><code>basic</code>, <code>intermediate</code>, <code>advanced</code>, or <code>expert</code>.</td></tr>
+        <tr><td class="param-name">mode</td><td>string</td><td><code>enhance</code> returns a better prompt. <code>generate</code> can ask the selected model to answer.</td></tr>
       </table>
-
-      <h3>Response</h3>
       <pre><code>{
-  "success": true,
-  "original": "Write a blog post about AI",
-  "enhanced": "Write a comprehensive, SEO-optimized blog post about artificial intelligence...",
-  "original_score": 4.5,
-  "enhanced_score": 9.2,
-  "improvement": 4.7,
-  "model": "gemini-2.0-flash",
-  "classification": {
-    "category": "blog",
-    "confidence": 0.85
-  }
+  "prompt": "make app idea better",
+  "enhancement_level": "advanced",
+  "mode": "enhance"
 }</code></pre>
 
-      <h2 id="analyze">Analyze Quality API</h2>
+      <h2 id="analyze">Analyze quality</h2>
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method post">POST</span>
-          <code>/api/quality-heatmap</code>
+          <code>/api/v1/analyze/</code>
         </div>
-        <p>Analyze prompt quality with detailed metrics.</p>
+        <p>Scores prompt quality and returns intent, domain, and improvement signals.</p>
       </div>
-
-      <h3>Response</h3>
       <pre><code>{
-  "success": true,
-  "data": {
-    "overall": 8.5,
-    "grade": "B",
-    "metrics": {
-      "clarity": { "score": 9.0 },
-      "specificity": { "score": 8.5 },
-      "structure": { "score": 8.0 },
-      "context": { "score": 8.0 },
-      "constraints": { "score": 7.5 },
-      "output_format": { "score": 9.0 }
-    },
-    "suggestions": [
-      { "category": "Constraints", "issue": "Lacks specific requirements", "fix": "Add length and tone constraints" }
-    ]
-  }
+  "prompt": "write landing page"
+}</code></pre>
+      <p>PromptmaX checks clarity, specificity, completeness, structure, actionability, grammar, and production constraints.</p>
+
+      <h2 id="compare">Compare prompts</h2>
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method post">POST</span>
+          <code>/api/v1/compare/</code>
+        </div>
+        <p>Compares prompt versions so you can see which instruction is stronger before saving or shipping it.</p>
+      </div>
+      <pre><code>{
+  "prompt_a": "make dashboard",
+  "prompt_b": "Design a SaaS dashboard with KPIs, charts, auth states, API assumptions, and QA checks"
 }</code></pre>
 
-      <h2 id="abtest">A/B Test API</h2>
+      <h2 id="batch">Batch enhance</h2>
       <div class="endpoint">
         <div class="endpoint-header">
           <span class="method post">POST</span>
-          <code>/api/ab-test</code>
+          <code>/api/v1/batch-enhance/</code>
         </div>
-        <p>Generate and compare A/B variations of a prompt.</p>
+        <p>Processes multiple prompts in one workflow for bulk cleanup, template migration, or content operations.</p>
+      </div>
+      <pre><code>{
+  "prompts": [
+    "write product brief",
+    "make support answer better",
+    "create research summary prompt"
+  ],
+  "enhancement_level": "intermediate"
+}</code></pre>
+
+      <h2 id="research">URL research</h2>
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method post">POST</span>
+          <code>/api/v1/analyze-url/</code>
+        </div>
+        <p>Extracts page context and turns it into useful prompt material for summaries, research briefs, and product analysis.</p>
+      </div>
+      <pre><code>{
+  "url": "https://example.com",
+  "prompt": "Create a product positioning brief from this page"
+}</code></pre>
+
+      <h2 id="projects">Projects and assets</h2>
+      <p>PromptmaX includes project, asset, and version models for reusable prompt work.</p>
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method get">GET</span>
+          <code>/api/v1/api/projects/</code>
+        </div>
+        <p>List prompt projects for authenticated users.</p>
+      </div>
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method get">GET</span>
+          <code>/api/v1/api/assets/</code>
+        </div>
+        <p>List saved prompt assets and their latest versions.</p>
       </div>
 
-      <h2 id="python-sdk">Python SDK</h2>
-      <pre><code># Install
-pip install promptx-py
+      <h2 id="history">Prompt history</h2>
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method get">GET</span>
+          <code>/api/v1/history/</code>
+        </div>
+        <p>Use history to inspect previous prompt runs, quality movement, and enhancement metadata.</p>
+      </div>
 
-# Usage
-from promptx import PromptX
-
-app = PromptX(api_key="your-api-key")
-result = app.enhance("Write a blog post")
-print(result.enhanced)
-print(f"Quality: {result.score}/10")</code></pre>
-
-      <h2 id="js-sdk">JavaScript SDK</h2>
-      <pre><code>// Install
-npm install promptx-js
-
-// Usage
-import { PromptX } from 'promptx-js';
-
-const app = new PromptX({ apiKey: 'your-api-key' });
-const result = await app.enhance('Write a blog post');
-console.log(result.enhanced);</code></pre>
-
-      <h2 id="errors">Error Codes</h2>
+      <h2 id="errors">Errors</h2>
       <table class="param-table">
-        <tr>
-          <th>Code</th>
-          <th>Description</th>
-        </tr>
-        <tr>
-          <td class="param-name">400</td>
-          <td>Invalid request (missing prompt, invalid JSON)</td>
-        </tr>
-        <tr>
-          <td class="param-name">401</td>
-          <td>Invalid or missing API key</td>
-        </tr>
-        <tr>
-          <td class="param-name">429</td>
-          <td>Rate limit exceeded</td>
-        </tr>
-        <tr>
-          <td class="param-name">500</td>
-          <td>Internal server error</td>
-        </tr>
+        <tr><th>Code</th><th>Meaning</th><th>Fix</th></tr>
+        <tr><td class="param-name">400</td><td>Invalid request body or missing prompt.</td><td>Send valid JSON and required fields.</td></tr>
+        <tr><td class="param-name">401</td><td>Authentication required for protected project/history routes.</td><td>Sign in or send a valid token.</td></tr>
+        <tr><td class="param-name">429</td><td>Provider or application limit reached.</td><td>Retry later or use another configured provider.</td></tr>
+        <tr><td class="param-name">500</td><td>Unexpected server error.</td><td>Check logs and environment configuration.</td></tr>
       </table>
+    </article>
+  </main>
 
-      <h2 id="rate-limits">Rate Limits</h2>
-      <table class="param-table">
-        <tr>
-          <th>Plan</th>
-          <th>Requests</th>
-        </tr>
-        <tr>
-          <td>Free</td>
-          <td>100/day</td>
-        </tr>
-        <tr>
-          <td>Pro</td>
-          <td>10,000/month</td>
-        </tr>
-        <tr>
-          <td>Enterprise</td>
-          <td>Unlimited</td>
-        </tr>
-      </table>
-
-      <h2 id="support">Support</h2>
-      <p>Need help? Contact us at <a href="mailto:support@promptx.dev" style="color: var(--accent);">support@promptx.dev</a></p>
-    </main>
-  </div>
-
-  <!-- Footer -->
   <footer class="footer">
-    <div class="footer-content">
-      <div class="footer-brand">
-        <img src="/Public/bot-img.png" alt="PromptX">
-        <span>PromptX</span>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a href="/" class="brand">
+            <img class="brand-logo" src="/Public/promptmax-logo-cropped.png" alt="PromptmaX">
+            <span class="sr-only">PromptmaX</span>
+          </a>
+          <p>Prompt engineering OS for enhancement, scoring, comparison, and reusable AI workflows.</p>
+        </div>
+        <div>
+          <h4>Product</h4>
+          <nav>
+            <a href="/product">Product</a>
+            <a href="/chat">Prompt Playground</a>
+            <a href="/builder">AI Builder</a>
+            <a href="/integrations">Integrations</a>
+          </nav>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <nav>
+            <a href="/resources">Resources</a>
+            <a href="/blog">Blog</a>
+            <a href="/docs">Docs</a>
+            <a href="https://github.com/Santosh-Prasad-Verma/PromptX" target="_blank" rel="noreferrer">GitHub</a>
+          </nav>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <nav>
+            <a href="/about">About</a>
+            <a href="/careers">Contribute</a>
+            <a href="/developers">Developers</a>
+            <a href="/operators">Operators</a>
+          </nav>
+        </div>
       </div>
-      <div class="footer-links">
-        <a href="/">Home</a>
-        <a href="/build">Build</a>
-        <a href="/pricing">Pricing</a>
-        <a href="/docs">Docs</a>
-        <a href="https://github.com/Santosh-Prasad-Verma/PromptX" target="_blank">GitHub</a>
+      <div class="footer-bottom">
+        <span>&copy; <span id="year">2026</span> PromptmaX</span>
+        <span>Built for real prompt workflows.</span>
       </div>
-      <p>&copy; 2026 PromptX. All rights reserved.</p>
     </div>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="/scripts/effects.js"></script>
-  <script>
-    lucide.createIcons();
-  </script>
+  <script src="/scripts/page.js"></script>
 </body>
 </html>

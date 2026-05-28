@@ -3,363 +3,289 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Careers — PromptX</title>
-  <meta name="description" content="Join the PromptX team and help build the future of AI prompt engineering.">
-  <meta name="theme-color" content="#000000">
-  <link rel="icon" type="image/svg+xml" href="/Public/star.svg">
+  <title>Contribute - PromptmaX</title>
+  <meta name="description" content="Contribute to PromptmaX and help build open-source prompt engineering workflows.">
+  <meta name="theme-color" content="#f7f6e5">
+  <link rel="icon" type="image/png" href="/Public/promptmax-logo-cropped.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600;700&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles/page.css">
-  <link rel="stylesheet" href="/styles/effects.css">
-  <style>
-    .careers-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-      gap: 24px;
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 60px 24px;
-    }
-    .job-card {
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 28px;
-      transition: var(--transition);
-      cursor: pointer;
-    }
-    .job-card:hover {
-      border-color: var(--accent);
-      background: var(--bg-tertiary);
-    }
-    .job-card-tag {
-      display: inline-block;
-      padding: 4px 10px;
-      background: var(--accent-dim);
-      color: var(--accent);
-      border-radius: var(--radius-sm);
-      font-size: 0.8rem;
-      font-weight: 600;
-      margin-bottom: 16px;
-    }
-    .job-card h3 {
-      font-size: 1.15rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-    .job-card .job-location {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-bottom: 12px;
-    }
-    .job-card p {
-      color: var(--text-secondary);
-      font-size: 0.95rem;
-      line-height: 1.6;
-    }
-    .job-card .job-meta {
-      display: flex;
-      gap: 16px;
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border-color);
-    }
-    .job-meta-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-    }
-    .perks-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 20px;
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 60px 24px;
-    }
-    .perk-card {
-      text-align: center;
-      padding: 28px 20px;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-    }
-    .perk-icon {
-      width: 48px;
-      height: 48px;
-      background: var(--accent-dim);
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 16px;
-      color: var(--accent);
-    }
-    .perk-card h3 {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-    .perk-card p {
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      line-height: 1.5;
-    }
-    .values-list {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 0 24px 60px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-    }
-    .value-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-    }
-    .value-item svg {
-      flex-shrink: 0;
-      margin-top: 2px;
-      color: var(--accent);
-    }
-    .value-item h4 {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-    .value-item p {
-      color: var(--text-secondary);
-      font-size: 0.88rem;
-      line-height: 1.5;
-    }
-    @media (max-width: 768px) {
-      .careers-grid, .perks-grid {
-        grid-template-columns: 1fr;
-        padding: 40px 16px;
-      }
-    }
-  </style>
+  <script src="https://unpkg.com/lucide@latest" defer></script>
 </head>
 <body>
-  <!-- Background Effects -->
-  <canvas id="fc-canvas-particles" aria-hidden="true"></canvas>
-  <div class="fc-float-label" style="top:9%;left:5%;animation-delay:0s;">[ HIRING ]</div>
-  <div class="fc-float-label" style="top:20%;right:8%;animation-delay:2s;">[ BUILD ]</div>
-  <div class="fc-float-label" style="top:50%;left:3%;animation-delay:4s;">[ REMOTE ]</div>
-  <div class="fc-float-label" style="top:72%;right:6%;animation-delay:1s;">[ ENGINEER ]</div>
-  <div class="fc-float-label" style="top:88%;left:8%;animation-delay:3s;">[ OPEN SOURCE ]</div>
-  <div class="fc-vignette" aria-hidden="true"></div>
-  <span class="fc-spark" style="top:18%;left:25%;">✦</span>
-  <span class="fc-spark" style="top:45%;right:20%;animation-delay:2s;">✦</span>
-  <span class="fc-spark" style="top:70%;left:35%;animation-delay:4s;">✦</span>
-  <div class="glow-orb glow-orb-1"></div>
-  <div class="glow-orb glow-orb-2"></div>
-  <!-- Navigation -->
-  <nav class="nav">
-    <div class="nav-left">
-      <a href="/" class="nav-logo">
-        <img src="/Public/bot-img.png" alt="PromptX">
-        <span>PromptX</span>
-      </a>
-      <div class="nav-links">
-        <a href="/build">Build</a>
-        <a href="/integrations">Integrations</a>
-        <a href="/pricing">Pricing</a>
-        <a href="/docs">Docs</a>
+  <div class="top-banner">
+    <strong>Build the prompt engineering OS with PromptmaX.</strong>
+    <a href="/about">About the company <i data-lucide="chevron-right" aria-hidden="true"></i></a>
+  </div>
+
+  <nav class="nav-shell" aria-label="Primary navigation">
+    <a href="/" class="brand" aria-label="PromptmaX home">
+      <img class="brand-logo" src="/Public/promptmax-logo-cropped.png" alt="PromptmaX">
+      <span class="sr-only">PromptmaX</span>
+    </a>
+
+    <div class="nav-links" id="nav-links">
+      <div class="nav-item">
+        <a class="nav-link" href="/product">Product <i data-lucide="chevron-down" aria-hidden="true"></i></a>
+        <div class="dropdown">
+          <a href="/chat">Prompt Playground <span>Enhance and analyze prompts live.</span></a>
+          <a href="/builder">AI Builder <span>Turn prompts into working app plans.</span></a>
+          <a href="/integrations">Integrations <span>Connect PromptmaX to your workflow.</span></a>
+        </div>
       </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/use-cases">Use cases <i data-lucide="chevron-down" aria-hidden="true"></i></a>
+        <div class="dropdown">
+          <a href="/developers">Developers <span>Architecture, code, tests, and docs.</span></a>
+          <a href="/creators">Creators <span>Content briefs and reusable templates.</span></a>
+          <a href="/operators">Operators <span>SOPs, analysis, support, and research.</span></a>
+        </div>
+      </div>
+      <a class="nav-link" href="/workflow">Workflow</a>
+      <a class="nav-link" href="/resources">Resources</a>
+      <a class="nav-link" href="/about">Company</a>
     </div>
-    <div class="nav-right">
-      <a href="https://github.com/Santosh-Prasad-Verma/PromptX" target="_blank" class="nav-link">GitHub</a>
-      <a href="/chat" class="btn-primary">Launch Terminal</a>
+
+    <div class="nav-actions">
+      <a class="button secondary" href="/login">Sign in</a>
+      <a class="button primary" href="/chat"><i data-lucide="sparkles" aria-hidden="true"></i>Launch PromptmaX</a>
+      <button class="menu-button" id="menu-button" type="button" aria-label="Open menu" aria-controls="nav-links" aria-expanded="false">
+        <i data-lucide="menu" aria-hidden="true"></i>
+      </button>
     </div>
   </nav>
 
-  <!-- Hero -->
-  <section class="page-hero">
-    <div class="hero-content reveal">
-      <h1>Build the <span class="text-gradient">future of AI</span> with us</h1>
-      <p>We're a small, fast-moving team building the open-source standard for prompt engineering. Join us.</p>
-    </div>
-  </section>
+  <main>
+    <section class="page-hero about-hero">
+      <div class="container hero-grid">
+        <div class="reveal">
+          <p class="eyebrow">Open source contributions</p>
+          <h1>Help build PromptmaX in public</h1>
+          <p class="lead">
+            PromptmaX is an open-source prompt engineering system. Contribute UI pages, prompt workflows, Django APIs, quality scoring, docs, tests, and examples.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#contribute"><i data-lucide="git-pull-request" aria-hidden="true"></i>Contribution paths</a>
+            <a class="button secondary" href="https://github.com/Santosh-Prasad-Verma/PromptX" target="_blank" rel="noreferrer"><i data-lucide="github" aria-hidden="true"></i>GitHub</a>
+          </div>
+        </div>
 
-  <!-- Values -->
-  <section class="page-section">
-    <div class="section-header reveal">
-      <h2>How we work</h2>
-    </div>
-    <div class="values-list">
-      <div class="value-item">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-        <div>
-          <h4>Ship fast, iterate faster</h4>
-          <p>We value shipping over perfection. Get it working, get it in front of users, improve from there.</p>
-        </div>
+        <aside class="visual-panel clean reveal" aria-label="PromptmaX contribution summary">
+          <div class="visual-top"><span>Public roadmap</span><span>Open source</span></div>
+          <div class="prompt-stack">
+            <div class="prompt-line highlight"><strong>Mission</strong><span>Make high-quality AI instruction design accessible, measurable, and reusable.</span></div>
+            <div class="prompt-line"><strong>Contributors</strong><span>Frontend builders, backend engineers, AI researchers, writers, designers, testers, and documentation contributors.</span></div>
+            <div class="prompt-line"><strong>Work</strong><span>Improve real product surfaces, backend workflows, quality systems, and open-source examples.</span></div>
+          </div>
+          <div class="metrics-strip">
+            <div class="metric-tile"><strong>Issues</strong><span>good first tasks</span></div>
+            <div class="metric-tile"><strong>PRs</strong><span>reviewed in public</span></div>
+            <div class="metric-tile"><strong>Docs</strong><span>examples welcome</span></div>
+          </div>
+        </aside>
       </div>
-      <div class="value-item">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        <div>
-          <h4>Radical transparency</h4>
-          <p>Open source by default. Code, decisions, and roadmap are public. No black boxes.</p>
-        </div>
-      </div>
-      <div class="value-item">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        <div>
-          <h4>Async by default</h4>
-          <p>Remote-first team with flexible hours. We care about output, not face time.</p>
-        </div>
-      </div>
-      <div class="value-item">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-        <div>
-          <h4>Own your craft</h4>
-          <p>High autonomy, high ownership. You decide how to solve problems — we trust you.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Open Positions -->
-  <section class="page-section" style="background: linear-gradient(180deg, transparent, rgba(255,255,255,0.01), transparent);">
-    <div class="section-header reveal">
-      <h2>Open positions</h2>
-    </div>
-    <div class="careers-grid">
-      <div class="job-card">
-        <span class="job-card-tag">Engineering</span>
-        <h3>Full-Stack Engineer</h3>
-        <p class="job-location">Remote — Worldwide</p>
-        <p>Build and scale the PromptX platform. Work across Django backend and vanilla JS frontend, design APIs, and ship features that users love.</p>
-        <div class="job-meta">
-          <span class="job-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> Full-time</span>
-          <span class="job-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Apply now</span>
+    <section class="section light">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <p class="section-kicker">How contribution works</p>
+            <h2>Small changes are welcome.</h2>
+          </div>
+          <p>You do not need to rewrite the product. Pick one useful improvement, keep it focused, and make the project better.</p>
         </div>
-      </div>
 
-      <div class="job-card">
-        <span class="job-card-tag">AI/ML</span>
-        <h3>Prompt Engineering Researcher</h3>
-        <p class="job-location">Remote — Worldwide</p>
-        <p>Research and implement prompt optimization techniques. Design experiments, benchmark LLM outputs, and contribute to our open-source pipeline.</p>
-        <div class="job-meta">
-          <span class="job-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> Full-time</span>
-          <span class="job-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Apply now</span>
+        <div class="grid-4">
+          <article class="value-item reveal">
+            <i data-lucide="check-circle-2" aria-hidden="true"></i>
+            <div><h4>Start focused</h4><p>One page fix, one API cleanup, one prompt template, one docs improvement, or one test case.</p></div>
+          </article>
+          <article class="value-item reveal">
+            <i data-lucide="eye" aria-hidden="true"></i>
+            <div><h4>Explain the change</h4><p>Clear PR notes matter: what changed, why it helps, and what you checked.</p></div>
+          </article>
+          <article class="value-item reveal">
+            <i data-lucide="users" aria-hidden="true"></i>
+            <div><h4>Respect the UI</h4><p>Match the existing PromptmaX visual system, logo usage, spacing, and responsive behavior.</p></div>
+          </article>
+          <article class="value-item reveal">
+            <i data-lucide="trending-up" aria-hidden="true"></i>
+            <div><h4>Leave it cleaner</h4><p>Fix the actual issue without unrelated rewrites, broken routes, or dead assets.</p></div>
+          </article>
         </div>
       </div>
+    </section>
 
-      <div class="job-card">
-        <span class="job-card-tag">Design</span>
-        <h3>Product Designer</h3>
-        <p class="job-location">Remote — Worldwide</p>
-        <p>Design intuitive interfaces for prompt engineering workflows. Own the design system, craft beautiful UIs, and make complex AI tools feel simple.</p>
-        <div class="job-meta">
-          <span class="job-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> Full-time</span>
-          <span class="job-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Apply now</span>
+    <section class="section" id="contribute">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <p class="section-kicker">Contribution paths</p>
+            <h2>Choose the area you can improve.</h2>
+          </div>
+          <p>Every contribution path maps to a real PromptmaX surface: homepage, pages, prompt enhancement, quality checks, APIs, docs, examples, and tests.</p>
         </div>
-      </div>
 
-      <div class="job-card">
-        <span class="job-card-tag">Developer Relations</span>
-        <h3>Developer Advocate</h3>
-        <p class="job-location">Remote — Worldwide</p>
-        <p>Grow the PromptX developer community. Write tutorials, create demos, speak at events, and help developers build better AI workflows.</p>
-        <div class="job-meta">
-          <span class="job-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> Full-time</span>
-          <span class="job-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Apply now</span>
-        </div>
-      </div>
+        <div class="grid-3">
+          <article class="resource-card reveal">
+            <div>
+              <div class="resource-card-top"><i data-lucide="layout-template" aria-hidden="true"></i></div>
+              <span class="resource-tag">Frontend</span>
+              <h3>Improve static pages and UI polish</h3>
+              <p>Fix page spacing, responsive layout, nav/footer consistency, broken links, copy, accessibility, and visual states.</p>
+            </div>
+            <div class="resource-meta"><span><i data-lucide="sparkles" aria-hidden="true"></i>Good first issue</span><span><i data-lucide="monitor" aria-hidden="true"></i>HTML/CSS</span></div>
+          </article>
 
-      <div class="job-card">
-        <span class="job-card-tag">Engineering</span>
-        <h3>Backend Engineer (Django)</h3>
-        <p class="job-location">Remote — Worldwide</p>
-        <p>Build and maintain the PromptX REST API. Scale Django services, optimize database queries, and integrate with multiple LLM providers.</p>
-        <div class="job-meta">
-          <span class="job-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> Full-time</span>
-          <span class="job-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Apply now</span>
-        </div>
-      </div>
+          <article class="resource-card reveal">
+            <div>
+              <div class="resource-card-top dark"><i data-lucide="server-cog" aria-hidden="true"></i></div>
+              <span class="resource-tag">Backend</span>
+              <h3>Strengthen Django APIs</h3>
+              <p>Improve validation, request handling, prompt history, project assets, batch flows, errors, and health checks.</p>
+            </div>
+            <div class="resource-meta"><span><i data-lucide="database" aria-hidden="true"></i>Django</span><span><i data-lucide="shield-check" aria-hidden="true"></i>Validation</span></div>
+          </article>
 
-      <div class="job-card">
-        <span class="job-card-tag">Internship</span>
-        <h3>Open Source Contributor Intern</h3>
-        <p class="job-location">Remote — Worldwide</p>
-        <p>Contribute to an active open-source project. Fix bugs, add features, write tests, and learn from experienced engineers in the AI tooling space.</p>
-        <div class="job-meta">
-          <span class="job-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> 3-month internship</span>
-          <span class="job-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Apply now</span>
-        </div>
-      </div>
-    </div>
-  </section>
+          <article class="resource-card reveal">
+            <div>
+              <div class="resource-card-top"><i data-lucide="brain-circuit" aria-hidden="true"></i></div>
+              <span class="resource-tag">Prompt research</span>
+              <h3>Add better prompt templates</h3>
+              <p>Contribute stronger templates for SaaS planning, coding, research, support, content, QA, and product workflows.</p>
+            </div>
+            <div class="resource-meta"><span><i data-lucide="file-text" aria-hidden="true"></i>Templates</span><span><i data-lucide="gauge" aria-hidden="true"></i>Scoring</span></div>
+          </article>
 
-  <!-- Perks -->
-  <section class="page-section">
-    <div class="section-header reveal">
-      <h2>What we offer</h2>
-    </div>
-    <div class="perks-grid">
-      <div class="perk-card">
-        <div class="perk-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        </div>
-        <h3>Remote-First</h3>
-        <p>Work from anywhere. We hire globally and build asynchronously across time zones.</p>
-      </div>
-      <div class="perk-card">
-        <div class="perk-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        </div>
-        <h3>Competitive Compensation</h3>
-        <p>Fair salary, meaningful equity, and performance bonuses tied to real impact.</p>
-      </div>
-      <div class="perk-card">
-        <div class="perk-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        </div>
-        <h3>Equipment Budget</h3>
-        <p>Get the hardware and tools you need to do your best work. MacBook or Linux — your choice.</p>
-      </div>
-      <div class="perk-card">
-        <div class="perk-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-        </div>
-        <h3>Unlimited PTO</h3>
-        <p>Take the time you need. We trust you to manage your own schedule and deliver results.</p>
-      </div>
-    </div>
-  </section>
+          <article class="resource-card reveal">
+            <div>
+              <div class="resource-card-top dark"><i data-lucide="book-open" aria-hidden="true"></i></div>
+              <span class="resource-tag">Docs</span>
+              <h3>Write guides and examples</h3>
+              <p>Document setup, env variables, enhancement modes, API examples, common workflows, and contribution steps.</p>
+            </div>
+            <div class="resource-meta"><span><i data-lucide="book-marked" aria-hidden="true"></i>Guides</span><span><i data-lucide="copy-check" aria-hidden="true"></i>Examples</span></div>
+          </article>
 
-  <!-- CTA -->
-  <section class="page-cta">
-    <h2>Don't see the right role?</h2>
-    <p>We're always looking for talented people. Reach out and tell us why you'd be a great fit.</p>
-    <a href="/enterprise" class="btn-primary">Contact Us</a>
-  </section>
+          <article class="resource-card reveal">
+            <div>
+              <div class="resource-card-top"><i data-lucide="test-tube-2" aria-hidden="true"></i></div>
+              <span class="resource-tag">Testing</span>
+              <h3>Add regression coverage</h3>
+              <p>Write focused tests for prompt scoring, validation, API views, route behavior, frontend scripts, and edge cases.</p>
+            </div>
+            <div class="resource-meta"><span><i data-lucide="bug" aria-hidden="true"></i>Bugs</span><span><i data-lucide="check-check" aria-hidden="true"></i>Regression</span></div>
+          </article>
 
-  <!-- Footer -->
+          <article class="resource-card reveal">
+            <div>
+              <div class="resource-card-top dark"><i data-lucide="paintbrush" aria-hidden="true"></i></div>
+              <span class="resource-tag">Design system</span>
+              <h3>Improve consistency</h3>
+              <p>Refine logo usage, cards, buttons, empty states, forms, mobile layouts, contrast, and shared page components.</p>
+            </div>
+            <div class="resource-meta"><span><i data-lucide="palette" aria-hidden="true"></i>UI</span><span><i data-lucide="smartphone" aria-hidden="true"></i>Responsive</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dark">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <p class="section-kicker">Contribution flow</p>
+            <h2>Simple path from idea to merged change.</h2>
+          </div>
+          <p>Keep changes reviewable. The best contributions are specific, tested where useful, and aligned with the existing product feel.</p>
+        </div>
+
+        <div class="grid-4">
+          <article class="feature-card reveal">
+            <span class="icon-box"><i data-lucide="search" aria-hidden="true"></i></span>
+            <div><h3>Pick a task</h3><p>Choose a focused bug, missing page, docs gap, prompt template, or quality check improvement.</p></div>
+          </article>
+          <article class="feature-card reveal">
+            <span class="icon-box"><i data-lucide="git-branch" aria-hidden="true"></i></span>
+            <div><h3>Fork and branch</h3><p>Work in a small branch, keep unrelated edits out, and follow existing file patterns.</p></div>
+          </article>
+          <article class="feature-card reveal">
+            <span class="icon-box"><i data-lucide="check-square" aria-hidden="true"></i></span>
+            <div><h3>Check the result</h3><p>Verify the page, route, API, or prompt behavior you changed. Mention anything not tested.</p></div>
+          </article>
+          <article class="feature-card reveal">
+            <span class="icon-box"><i data-lucide="git-pull-request" aria-hidden="true"></i></span>
+            <div><h3>Open a PR</h3><p>Explain the problem, the fix, files touched, and how reviewers can confirm it works.</p></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section light">
+      <div class="container">
+        <div class="featured-resource reveal">
+          <div class="featured-icon"><i data-lucide="mail" aria-hidden="true"></i></div>
+          <div>
+            <span class="resource-tag">Start contributing</span>
+            <h2 style="font-size:clamp(2.2rem,4vw,4.4rem);">Start with one useful improvement.</h2>
+            <p class="lead">Improve a page, write a guide, add a prompt template, fix a backend edge case, or document a workflow that helps the next user.</p>
+            <div class="inline-actions">
+              <a class="button primary" href="https://github.com/Santosh-Prasad-Verma/PromptX" target="_blank" rel="noreferrer"><i data-lucide="github" aria-hidden="true"></i>Open GitHub</a>
+              <a class="button secondary" href="/resources"><i data-lucide="book-open" aria-hidden="true"></i>Learn the product</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
   <footer class="footer">
-    <div class="footer-content">
-      <div class="footer-brand">
-        <img src="/Public/bot-img.png" alt="PromptX">
-        <span>PromptX</span>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a href="/" class="brand">
+            <img class="brand-logo" src="/Public/promptmax-logo-cropped.png" alt="PromptmaX">
+            <span class="sr-only">PromptmaX</span>
+          </a>
+          <p>Prompt engineering OS for enhancement, scoring, comparison, and reusable AI workflows.</p>
+        </div>
+        <div>
+          <h4>Product</h4>
+          <nav>
+            <a href="/product">Product</a>
+            <a href="/chat">Prompt Playground</a>
+            <a href="/builder">AI Builder</a>
+            <a href="/integrations">Integrations</a>
+          </nav>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <nav>
+            <a href="/resources">Resources</a>
+            <a href="/blog">Blog</a>
+            <a href="/docs">Docs</a>
+            <a href="https://github.com/Santosh-Prasad-Verma/PromptX" target="_blank" rel="noreferrer">GitHub</a>
+          </nav>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <nav>
+            <a href="/about">About</a>
+            <a href="/careers">Contribute</a>
+            <a href="/developers">Developers</a>
+            <a href="/operators">Operators</a>
+          </nav>
+        </div>
       </div>
-      <div class="footer-links">
-        <a href="/">Home</a>
-        <a href="/build">Build</a>
-        <a href="/pricing">Pricing</a>
-        <a href="/docs">Docs</a>
-        <a href="https://github.com/Santosh-Prasad-Verma/PromptX" target="_blank">GitHub</a>
+      <div class="footer-bottom">
+        <span>&copy; <span id="year">2026</span> PromptmaX</span>
+        <span>Built for real prompt workflows.</span>
       </div>
-      <p>&copy; 2026 PromptX. All rights reserved.</p>
     </div>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="/scripts/effects.js"></script>
-  <script>lucide.createIcons();</script>
+  <script src="/scripts/page.js"></script>
 </body>
 </html>

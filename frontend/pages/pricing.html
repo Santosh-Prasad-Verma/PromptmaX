@@ -3,288 +3,159 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pricing - PromptX</title>
-  <link rel="icon" type="image/svg+xml" href="/Public/star.svg">
+  <title>Pricing - PromptmaX</title>
+  <meta name="description" content="Choose a PromptmaX plan before opening the prompt playground.">
+  <meta name="theme-color" content="#f7f6e5">
+  <link rel="icon" type="image/png" href="/Public/promptmax-logo-cropped.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600;700&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles/page.css">
-  <link rel="stylesheet" href="/styles/effects.css">
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script src="https://unpkg.com/lucide@latest" defer></script>
 </head>
 <body>
-  <!-- Background Effects -->
-  <canvas id="fc-canvas-particles" aria-hidden="true"></canvas>
-  <div class="fc-float-label" style="top:9%;left:5%;animation-delay:0s;">[ ENHANCE ]</div>
-  <div class="fc-float-label" style="top:20%;right:8%;animation-delay:2s;">[ PIPELINE ]</div>
-  <div class="fc-float-label" style="top:50%;left:3%;animation-delay:4s;">[ v2.0 ]</div>
-  <div class="fc-float-label" style="top:72%;right:6%;animation-delay:1s;">[ SCORE ]</div>
-  <div class="fc-float-label" style="top:88%;left:8%;animation-delay:3s;">[ API ]</div>
-  <div class="fc-vignette" aria-hidden="true"></div>
-  <span class="fc-spark" style="top:18%;left:25%;">✦</span>
-  <span class="fc-spark" style="top:45%;right:20%;animation-delay:2s;">✦</span>
-  <span class="fc-spark" style="top:70%;left:35%;animation-delay:4s;">✦</span>
-  <div class="glow-orb glow-orb-1"></div>
-  <div class="glow-orb glow-orb-2"></div>
-  <!-- Navigation -->
-  <nav class="nav">
-    <div class="nav-left">
-      <a href="/" class="nav-logo">
-        <img src="/Public/bot-img.png" alt="PromptX">
-        <span>PromptX</span>
-      </a>
-      <div class="nav-links">
-        <a href="/build">Build</a>
-        <a href="/integrations">Integrations</a>
-        <a href="/pricing" class="active">Pricing</a>
-        <a href="/docs">Docs</a>
-      </div>
+  <div class="top-banner">
+    <strong>Choose a plan to continue into PromptmaX.</strong>
+    <a href="/chat">Open playground <i data-lucide="chevron-right" aria-hidden="true"></i></a>
+  </div>
+
+  <nav class="nav-shell" aria-label="Primary navigation">
+    <a href="/" class="brand" aria-label="PromptmaX home">
+      <img class="brand-logo" src="/Public/promptmax-logo-cropped.png" alt="PromptmaX">
+      <span class="sr-only">PromptmaX</span>
+    </a>
+
+    <div class="nav-links" id="nav-links">
+      <a class="nav-link" href="/workflow">Workflow</a>
+      <a class="nav-link" href="/resources">Resources</a>
+      <a class="nav-link" href="/docs">Docs</a>
+      <a class="nav-link" href="/about">Company</a>
     </div>
-    <div class="nav-right">
-      <a href="https://github.com/Santosh-Prasad-Verma/PromptX" target="_blank" class="nav-link">GitHub</a>
-      <a href="/chat" class="btn-primary">Launch Terminal</a>
+
+    <div class="nav-actions">
+      <a class="button secondary" href="/login">Sign in</a>
+      <a class="button primary" href="/chat"><i data-lucide="sparkles" aria-hidden="true"></i>Launch PromptmaX</a>
+      <button class="menu-button" id="menu-button" type="button" aria-label="Open menu" aria-controls="nav-links" aria-expanded="false">
+        <i data-lucide="menu" aria-hidden="true"></i>
+      </button>
     </div>
   </nav>
 
-  <!-- Hero -->
-  <section class="page-hero">
-    <div class="hero-content reveal">
-      <h1>Simple, transparent <span class="text-gradient">pricing</span></h1>
-      <p>Start free, scale as you grow. No hidden fees, cancel anytime.</p>
-    </div>
-  </section>
+  <main>
+    <section class="pricing-hero">
+      <div class="container">
+        <p class="eyebrow">Pricing</p>
+        <h1>Select your PromptmaX plan</h1>
+        <p class="lead" style="max-width:720px;margin:0 auto;">Start free now, or unlock paid PromptmaX workflows with Razorpay checkout.</p>
+      </div>
+    </section>
 
-  <!-- Pricing -->
-  <section class="page-section">
-    <div class="pricing-grid">
-      <!-- Free -->
-      <div class="pricing-card reveal">
-        <h3>Free</h3>
-        <div class="price">$0<span>/month</span></div>
-        <p class="description">Perfect for trying out PromptX</p>
-        <ul class="pricing-features">
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-            100 prompts/day
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-            Basic quality analysis
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-            Auto model selection
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-            Community support
-          </li>
-        </ul>
-        <a href="/chat" class="btn-secondary">Get Started</a>
-      </div>
+    <section class="section" style="padding-top:0;">
+      <div class="container">
+        <div class="pricing-grid">
+          <article class="price-card reveal">
+            <div class="price-head">
+              <span>Start</span>
+              <h2 style="font-size:3.4rem;">Free</h2>
+              <p>For trying the prompt playground and saving your first workflow.</p>
+              <div class="price-value"><strong>Rs 0</strong><small>/ month</small></div>
+            </div>
+            <ul class="detail-list">
+              <li>Prompt enhancement playground</li>
+              <li>Quality-focused output structure</li>
+              <li>Basic saved account session</li>
+              <li>Best for testing the flow</li>
+            </ul>
+            <button class="button primary" type="button" data-plan="free"><i data-lucide="check-circle-2" aria-hidden="true"></i>Choose Free</button>
+          </article>
 
-      <!-- Pro -->
-      <div class="pricing-card featured reveal">
-        <div class="pricing-badge">Most Popular</div>
-        <h3>Pro</h3>
-        <div class="price">$29<span>/month</span></div>
-        <p class="description">For developers and small teams</p>
-        <ul class="pricing-features">
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-            10,000 prompts/month
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-            Advanced quality analysis
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-            All AI models
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-            A/B testing
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-            API access
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-            Email support
-          </li>
-        </ul>
-        <button class="btn-primary" onclick="initiatePayment('pro')">Start Free Trial</button>
-      </div>
+          <article class="price-card featured reveal">
+            <div class="price-head">
+              <span>Popular</span>
+              <h2 style="font-size:3.4rem;">Pro</h2>
+              <p>For solo builders who want more prompt runs and reusable planning workflows.</p>
+              <div class="price-value"><strong>Rs 20</strong><small>/ month</small></div>
+            </div>
+            <ul class="detail-list">
+              <li>Higher prompt workflow limits</li>
+              <li>Prompt comparison workspace</li>
+              <li>Reusable prompt templates</li>
+              <li>Priority product workflow features</li>
+            </ul>
+            <button class="button secondary" type="button" data-plan="pro"><i data-lucide="credit-card" aria-hidden="true"></i>Choose Pro</button>
+          </article>
 
-      <!-- Enterprise -->
-      <div class="pricing-card reveal">
-        <h3>Enterprise</h3>
-        <div class="price">Custom</div>
-        <p class="description">For large organizations</p>
-        <ul class="pricing-features">
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-            Unlimited prompts
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-            Custom models
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-            SSO & SAML
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-            Dedicated support
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-            SLA guarantee
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-            On-premise option
-          </li>
-        </ul>
-        <a href="/enterprise" class="btn-secondary">Contact Sales</a>
-      </div>
-    </div>
-  </section>
+          <article class="price-card reveal">
+            <div class="price-head">
+              <span>Teams</span>
+              <h2 style="font-size:3.4rem;">Pro+</h2>
+              <p>For power users who need deeper prompt systems and team-ready workflows.</p>
+              <div class="price-value"><strong>Rs 50</strong><small>/ month</small></div>
+            </div>
+            <ul class="detail-list">
+              <li>Advanced workflow planning</li>
+              <li>Batch prompt operations</li>
+              <li>Team prompt library direction</li>
+              <li>Best for repeat production work</li>
+            </ul>
+            <button class="button primary" type="button" data-plan="pro_plus"><i data-lucide="zap" aria-hidden="true"></i>Choose Pro+</button>
+          </article>
+        </div>
 
-  <!-- FAQ -->
-  <section class="page-section">
-    <div class="section-header reveal">
-      <h2>Frequently Asked Questions</h2>
-    </div>
-    
-    <div style="max-width: 800px; margin: 0 auto;">
-      <div class="api-card">
-        <h3 style="margin-bottom: 12px;">Can I cancel anytime?</h3>
-        <p style="color: var(--text-secondary);">Yes! You can cancel your subscription at any time. You'll continue to have access until the end of your billing period.</p>
+        <div id="pricing-status" class="pricing-status" role="status" aria-live="polite">
+          Select Free to continue now. Paid plans open secure Razorpay checkout.
+        </div>
       </div>
-      
-      <div class="api-card">
-        <h3 style="margin-bottom: 12px;">What counts as a prompt?</h3>
-        <p style="color: var(--text-secondary);">Each API call to enhance, analyze, or generate variations counts as one prompt. Batch requests count individually.</p>
-      </div>
-      
-      <div class="api-card">
-        <h3 style="margin-bottom: 12px;">Do unused prompts roll over?</h3>
-        <p style="color: var(--text-secondary);">No, unused prompts don't roll over to the next month. We recommend choosing a plan that matches your typical usage.</p>
-      </div>
-      
-      <div class="api-card">
-        <h3 style="margin-bottom: 12px;">Can I upgrade or downgrade?</h3>
-        <p style="color: var(--text-secondary);">Absolutely! You can change your plan at any time. Changes take effect immediately, and we'll prorate the difference.</p>
-      </div>
-    </div>
-  </section>
+    </section>
+  </main>
 
-  <!-- CTA -->
-  <section class="page-cta">
-    <h2>Ready to get started?</h2>
-    <p>Start enhancing your prompts today. No credit card required for free tier.</p>
-    <a href="/chat" class="btn-primary">Launch Terminal</a>
-  </section>
-
-  <!-- Footer -->
   <footer class="footer">
-    <div class="footer-content">
-      <div class="footer-brand">
-        <img src="/Public/bot-img.png" alt="PromptX">
-        <span>PromptX</span>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a href="/" class="brand">
+            <img class="brand-logo" src="/Public/promptmax-logo-cropped.png" alt="PromptmaX">
+            <span class="sr-only">PromptmaX</span>
+          </a>
+          <p>Prompt engineering OS for enhancement, scoring, comparison, and reusable AI workflows.</p>
+        </div>
+        <div>
+          <h4>Product</h4>
+          <nav>
+            <a href="/pricing">Pricing</a>
+            <a href="/chat">Prompt Playground</a>
+            <a href="/builder">AI Builder</a>
+            <a href="/integrations">Integrations</a>
+          </nav>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <nav>
+            <a href="/resources">Resources</a>
+            <a href="/blog">Blog</a>
+            <a href="/docs">Docs</a>
+            <a href="https://github.com/Santosh-Prasad-Verma/PromptX" target="_blank" rel="noreferrer">GitHub</a>
+          </nav>
+        </div>
+        <div>
+          <h4>Account</h4>
+          <nav>
+            <a href="/login">Sign in</a>
+            <a href="/register">Register</a>
+            <a href="/forgot-password">Forgot password</a>
+            <a href="/about">About</a>
+          </nav>
+        </div>
       </div>
-      <div class="footer-links">
-        <a href="/">Home</a>
-        <a href="/build">Build</a>
-        <a href="/pricing">Pricing</a>
-        <a href="/docs">Docs</a>
-        <a href="https://github.com/Santosh-Prasad-Verma/PromptX" target="_blank">GitHub</a>
+      <div class="footer-bottom">
+        <span>&copy; <span id="year">2026</span> PromptmaX</span>
+        <span>Built for real prompt workflows.</span>
       </div>
-      <p>&copy; 2026 PromptX. All rights reserved.</p>
     </div>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="/scripts/effects.js"></script>
-  <script>
-    // API URL
-    const API_BASE = (() => {
-      const l = window.location;
-      if (l.hostname === 'localhost' || l.hostname === '127.0.0.1' || l.protocol === 'file:') return 'http://127.0.0.1:8000/api/v1';
-      return 'https://promptx-hkfx.onrender.com/api/v1';
-    })();
-    lucide.createIcons();
-    
-    // Razorpay Payment
-    const RAZORPAY_KEY_ID = 'YOUR_RAZORPAY_KEY_ID'; // Replace with your key
-    
-    const plans = {
-      pro: {
-        name: 'Pro Plan',
-        amount: 2900, // Rs 29 in paise
-        description: '10,000 prompts/month'
-      },
-      enterprise: {
-        name: 'Enterprise Plan',
-        amount: 0,
-        description: 'Custom pricing'
-      }
-    };
-    
-    async function initiatePayment(planKey) {
-      const plan = plans[planKey];
-      
-      if (planKey === 'enterprise') {
-        window.location.href = 'enterprise.html';
-        return;
-      }
-      
-      // For demo, redirect to build page (in production, integrate with backend)
-      if (!RAZORPAY_KEY_ID || RAZORPAY_KEY_ID === 'YOUR_RAZORPAY_KEY_ID') {
-        alert('Payment integration not configured. Redirecting to build page...');
-        window.location.href = 'build.html';
-        return;
-      }
-      
-      // Create order via backend API
-      try {
-        const response = await fetch(`${API_BASE}/create-order/`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ plan: planKey })
-        });
-        const order = await response.json();
-        
-        const options = {
-          key: RAZORPAY_KEY_ID,
-          amount: order.amount,
-          currency: 'INR',
-          name: 'PromptX',
-          description: plan.description,
-          order_id: order.id,
-          handler: function(response) {
-            // Payment successful - redirect to build
-            window.location.href = 'build.html?payment=success';
-          },
-          prefill: {
-            name: 'User',
-            email: 'user@example.com'
-          },
-          theme: {
-            color: '#ffffff'
-          }
-        };
-        
-        const rzp = new Razorpay(options);
-        rzp.open();
-      } catch (error) {
-        console.error('Payment error:', error);
-        window.location.href = 'build.html';
-      }
-    }
-  </script>
+  <script src="/scripts/page.js"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script src="/scripts/pricing.js"></script>
 </body>
 </html>

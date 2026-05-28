@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PromptmaX | Prompt Engineering OS</title>
+  <meta name="description" content="PromptmaX turns rough ideas into production-ready prompts with enhancement, scoring, comparison, saved workflows, and reusable prompt templates.">
+  <meta name="theme-color" content="#f7f6e5">
+  <link rel="icon" type="image/png" href="/Public/promptmax-logo-cropped.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600;700&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest" defer></script>
+  <style>
+    :root {
+      --cream: #f7f6e5;
+      --cream-2: #efeed8;
+      --ink: #171717;
+      --muted: #77776a;
+      --soft: #dbdac5;
+      --green: #005346;
+      --lavender: #ead7ff;
+      --lavender-2: #f3e7ff;
+      --panel: #181818;
+      --panel-2: #222222;
+      --line: rgba(23, 23, 23, 0.15);
+      --radius: 16px;
+      --max: 1056px;
+      --font-serif: "EB Garamond", Georgia, serif;
+      --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      letter-spacing: 0;
+    }
+
+    html {
+      background: var(--cream);
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 15% 22%, rgba(255, 255, 255, 0.75), transparent 18rem),
+        radial-gradient(circle at 86% 14%, rgba(234, 215, 255, 0.32), transparent 22rem),
+        linear-gradient(180deg, var(--cream), var(--cream-2));
+      color: var(--ink);
+      font-family: var(--font-sans);
+      overflow-x: hidden;
+      text-rendering: geometricPrecision;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .top-banner {
+      min-height: 66px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      padding: 12px 24px;
+      background: var(--green);
+      color: #fffbe7;
+      font-size: 0.98rem;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .top-banner a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .top-banner i {
+      width: 16px;
+      height: 16px;
+    }
+
+    .nav-shell {
+      width: min(1180px, calc(100% - 40px));
+      height: 86px;
+      margin: 22px auto 0;
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr) max-content;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 10px 10px 14px;
+      border: 2px solid rgba(23, 23, 23, 0.12);
+      border-radius: 10px;
+      background: rgba(250, 249, 229, 0.82);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(18px);
+      position: sticky;
+      top: 14px;
+      z-index: 50;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      text-decoration: none;
+    }
+
+    .nav-shell > .brand {
+      width: 220px;
+      min-width: 220px;
+      flex: 0 0 auto;
+      overflow: hidden;
+    }
+
+    .brand-logo {
+      width: 220px;
+      height: 56px;
+      display: block;
+      flex: 0 0 auto;
+      object-fit: contain;
+      object-position: left center;
+      border-radius: 0;
+      filter: brightness(1.7) contrast(2.2);
+    }
+
+    .footer .brand-logo {
+      width: 272px;
+      height: 70px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .brand-badge {
+      width: 38px;
+      height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 38px;
+      border: 2px solid var(--ink);
+      border-radius: 9px;
+      background: var(--ink);
+      color: var(--cream);
+      font-size: 0.78rem;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      box-shadow: 0 3px 0 rgba(23, 23, 23, 0.14);
+    }
+
+    .brand strong {
+      display: block;
+      color: var(--ink);
+      font-size: 1.34rem;
+      line-height: 1;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .nav-links {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 2px;
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .nav-item {
+      position: relative;
+    }
+
+    .nav-link {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 9px;
+      border-radius: 9px;
+      color: #282820;
+      font-size: 0.94rem;
+      font-weight: 760;
+      transition: background 180ms ease;
+    }
+
+    .nav-link:hover,
+    .nav-link:focus-visible {
+      background: rgba(23, 23, 23, 0.06);
+      outline: none;
+    }
+
+    .nav-link i {
+      width: 14px;
+      height: 14px;
+    }
+
+    .dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      width: 266px;
+      display: grid;
+      gap: 4px;
+      padding: 10px;
+      border: 2px solid rgba(23, 23, 23, 0.12);
+      border-radius: 12px;
+      background: #fffde8;
+      box-shadow: 0 22px 55px rgba(48, 45, 24, 0.18);
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .nav-item:hover .dropdown,
+    .nav-item:focus-within .dropdown {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .dropdown a {
+      display: grid;
+      gap: 2px;
+      padding: 10px;
+      border-radius: 8px;
+      color: var(--ink);
+    }
+
+    .dropdown a:hover {
+      background: rgba(0, 83, 70, 0.08);
+    }
+
+    .dropdown span {
+      color: var(--muted);
+      font-size: 0.8rem;
+      line-height: 1.35;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-left: 22px;
+      border-left: 1px solid rgba(23, 23, 23, 0.12);
+    }
+
+    .button {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 20px;
+      border: 2px solid var(--ink);
+      border-radius: 10px;
+      background: var(--lavender);
+      color: var(--ink);
+      font-size: 0.98rem;
+      font-weight: 820;
+      white-space: nowrap;
+      box-shadow: 0 2px 0 var(--ink);
+      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 0 var(--ink);
+      background: var(--lavender-2);
+    }
+
+    .button.secondary {
+      background: #fffde8;
+    }
+
+    .button.dark {
+      background: var(--ink);
+      color: #fffbe7;
+      box-shadow: none;
+    }
+
+    .button i {
+      width: 18px;
+      height: 18px;
+    }
+
+    .menu-button {
+      display: none;
+      width: 46px;
+      height: 46px;
+      border: 2px solid var(--ink);
+      border-radius: 10px;
+      background: #fffde8;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .menu-button i {
+      width: 20px;
+      height: 20px;
+    }
+
+    .hero {
+      position: relative;
+      min-height: calc(100svh - 162px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 86px 22px 220px;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .hero > :not(.prompt-demo) {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero h1 {
+      margin: 0;
+      max-width: 930px;
+      font-family: var(--font-serif);
+      font-size: clamp(4.5rem, 10.2vw, 7.4rem);
+      line-height: 0.86;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: -0.03em;
+    }
+
+    .hero h1 .muted {
+      color: #8f8f81;
+    }
+
+    .hero-copy {
+      max-width: 520px;
+      margin: 36px auto 0;
+      color: var(--ink);
+      font-size: clamp(1.08rem, 2vw, 1.36rem);
+      line-height: 1.35;
+      font-weight: 650;
+    }
+
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .availability {
+      margin-top: 18px;
+      color: #747466;
+      font-size: 0.88rem;
+      font-weight: 600;
+      max-width: 520px;
+    }
+
+    .prompt-demo {
+      position: relative;
+      z-index: 2;
+      width: min(840px, 100%);
+      margin-top: 34px;
+      display: grid;
+      gap: 12px;
+      text-align: left;
+      animation: demoCycle 11s ease-in-out infinite;
+    }
+
+    .prompt-output-box {
+      border: 3px solid var(--ink);
+      border-radius: 18px;
+      box-shadow: 0 7px 0 rgba(23, 23, 23, 0.14);
+    }
+
+    .prompt-input-box {
+      padding: 14px 16px;
+      border: 3px solid var(--ink);
+      border-radius: 16px;
+      background: #fffde8;
+      box-shadow: 0 6px 0 rgba(23, 23, 23, 0.12);
+      color: var(--ink);
+    }
+
+    .prompt-input-head,
+    .prompt-output-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.78rem;
+      line-height: 1;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .prompt-input-head {
+      color: #68685e;
+    }
+
+    .prompt-input-line {
+      min-height: 36px;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow: hidden;
+      color: var(--ink);
+      font-size: 1.02rem;
+      line-height: 1.35;
+      font-weight: 760;
+    }
+
+    .mic-dot {
+      width: 12px;
+      height: 12px;
+      flex: 0 0 12px;
+      border-radius: 999px;
+      background: #6d35ff;
+      box-shadow: 0 0 0 0 rgba(109, 53, 255, 0.34);
+      animation: micPulse 1.5s ease-out infinite;
+    }
+
+    .typed-prompt {
+      width: 0;
+      max-width: max-content;
+      overflow: hidden;
+      white-space: nowrap;
+      animation: typePromptLoop 11s steps(39, end) infinite;
+    }
+
+    .typing-caret {
+      width: 2px;
+      height: 23px;
+      background: var(--ink);
+      animation: caretBlink 760ms steps(1, end) infinite;
+    }
+
+    .prompt-output-box {
+      padding: 18px 20px 20px;
+      background: var(--ink);
+      color: #fffbe7;
+      min-height: 252px;
+    }
+
+    .prompt-output-head {
+      color: rgba(255, 251, 231, 0.62);
+    }
+
+    .thinking-dots {
+      display: inline-flex;
+      gap: 4px;
+    }
+
+    .thinking-dots span {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #d8b8ff;
+      animation: dotLift 900ms ease-in-out infinite;
+    }
+
+    .thinking-dots span:nth-child(2) { animation-delay: 120ms; }
+    .thinking-dots span:nth-child(3) { animation-delay: 240ms; }
+
+    .output-lines {
+      margin-top: 16px;
+      display: grid;
+      gap: 8px;
+      font: 650 0.91rem/1.45 Consolas, "SFMono-Regular", monospace;
+    }
+
+    .output-lines span {
+      display: block;
+      opacity: 0;
+      transform: translateY(8px);
+      padding: 0;
+      border: 0;
+      background: transparent;
+      animation: outputLineLoop 11s ease infinite;
+    }
+
+    .output-lines span:nth-child(1) { animation-delay: 2.55s; }
+    .output-lines span:nth-child(2) { animation-delay: 2.95s; }
+    .output-lines span:nth-child(3) { animation-delay: 3.35s; }
+    .output-lines span:nth-child(4) { animation-delay: 3.75s; }
+    .output-lines span:nth-child(5) { animation-delay: 4.15s; }
+    .output-lines span:nth-child(6) { animation-delay: 4.55s; }
+    .output-lines span:nth-child(7) { animation-delay: 4.95s; }
+    .output-lines span:nth-child(8) { animation-delay: 5.35s; }
+
+    .output-lines b {
+      color: #d8b8ff;
+      font-weight: 850;
+    }
+
+    @keyframes demoCycle {
+      0%, 91% { transform: translateY(0); opacity: 1; }
+      96% { transform: translateY(6px); opacity: 0.55; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes typePromptLoop {
+      0%, 7% { width: 0; }
+      32%, 86% { width: 39ch; }
+      94%, 100% { width: 0; }
+    }
+
+    @keyframes caretBlink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    @keyframes micPulse {
+      0% { box-shadow: 0 0 0 0 rgba(109, 53, 255, 0.34); }
+      100% { box-shadow: 0 0 0 16px rgba(109, 53, 255, 0); }
+    }
+
+    @keyframes dotLift {
+      0%, 100% { transform: translateY(0); opacity: 0.45; }
+      50% { transform: translateY(-4px); opacity: 1; }
+    }
+
+    @keyframes outputLineLoop {
+      0%, 18% {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      26%, 82% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      92%, 100% {
+        opacity: 0;
+        transform: translateY(-4px);
+      }
+    }
+
+    .dark-section {
+      position: relative;
+      margin-top: -124px;
+      padding: 92px 0 108px;
+      border-radius: 80px 80px 0 0;
+      background: var(--panel);
+      color: #fff8dd;
+      z-index: 3;
+      overflow: hidden;
+    }
+
+    .dark-section::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 16% 10%, rgba(234, 215, 255, 0.16), transparent 22rem),
+        radial-gradient(circle at 82% 8%, rgba(0, 83, 70, 0.34), transparent 20rem),
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+      background-size: auto, auto, 54px 54px, 54px 54px;
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 44px;
+      align-items: end;
+      margin-bottom: 34px;
+    }
+
+    .section-kicker {
+      margin: 0 0 10px;
+      color: #cbb6ff;
+      font-size: 0.88rem;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: clamp(3.2rem, 6vw, 5.4rem);
+      line-height: 0.9;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: rgba(255, 248, 221, 0.72);
+      font-size: 1.05rem;
+      line-height: 1.7;
+      font-weight: 600;
+    }
+
+    .workflow-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .flow-card {
+      min-height: 310px;
+      padding: 24px;
+      border: 1px solid rgba(255, 248, 221, 0.12);
+      border-radius: 24px;
+      background: rgba(255, 248, 221, 0.055);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .flow-card.large {
+      grid-row: span 2;
+      min-height: 640px;
+      background: linear-gradient(180deg, rgba(234, 215, 255, 0.12), rgba(255, 248, 221, 0.045));
+    }
+
+    .flow-card h3 {
+      margin: 0;
+      font-size: 1.35rem;
+      line-height: 1.15;
+    }
+
+    .flow-card p {
+      margin: 12px 0 0;
+      color: rgba(255, 248, 221, 0.67);
+      line-height: 1.65;
+      font-weight: 600;
+    }
+
+    .terminal-box {
+      margin-top: 28px;
+      border: 1px solid rgba(255, 248, 221, 0.14);
+      border-radius: 20px;
+      background: #0d0d0d;
+      overflow: hidden;
+    }
+
+    .terminal-top {
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      border-bottom: 1px solid rgba(255, 248, 221, 0.1);
+      color: rgba(255, 248, 221, 0.55);
+      font-size: 0.8rem;
+      font-weight: 760;
+    }
+
+    .terminal-body {
+      margin: 0;
+      padding: 18px;
+      white-space: pre-wrap;
+      color: #ece2c5;
+      font: 600 0.9rem/1.7 Consolas, "SFMono-Regular", monospace;
+    }
+
+    .terminal-body .green {
+      color: #8ff0c0;
+    }
+
+    .terminal-body .purple {
+      color: #d8b8ff;
+    }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .metric {
+      min-height: 98px;
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 248, 221, 0.1);
+      background: rgba(255, 248, 221, 0.06);
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 8px;
+      color: rgba(255, 248, 221, 0.58);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .light-section {
+      padding: 96px 0;
+      background: var(--cream);
+      color: var(--ink);
+    }
+
+    .light-section .section-kicker {
+      color: var(--green);
+    }
+
+    .light-section .section-head p {
+      color: #68685e;
+    }
+
+    .box-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .capability-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 34px 0 18px;
+    }
+
+    .capability-card {
+      min-height: 310px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 2px solid rgba(23, 23, 23, 0.11);
+      border-radius: 28px;
+      background: #fffde8;
+    }
+
+    .capability-card.dark {
+      background: var(--ink);
+      color: #fffbe7;
+    }
+
+    .capability-card i {
+      width: 30px;
+      height: 30px;
+      color: var(--green);
+    }
+
+    .capability-card.dark i {
+      color: var(--lavender);
+    }
+
+    .capability-card h3 {
+      margin: 22px 0 10px;
+      font-size: 1.35rem;
+      line-height: 1.1;
+    }
+
+    .capability-card p {
+      margin: 0;
+      color: #69695f;
+      line-height: 1.58;
+      font-weight: 650;
+    }
+
+    .capability-card.dark p {
+      color: rgba(255, 251, 231, 0.68);
+    }
+
+    .detail-list {
+      display: grid;
+      gap: 8px;
+      margin: 22px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .detail-list li {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: #4f4f46;
+      font-size: 0.9rem;
+      font-weight: 750;
+    }
+
+    .capability-card.dark .detail-list li {
+      color: rgba(255, 251, 231, 0.78);
+    }
+
+    .detail-list li::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: var(--green);
+    }
+
+    .capability-card.dark .detail-list li::before {
+      background: var(--lavender);
+    }
+
+    .project-box {
+      min-height: 260px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 2px solid rgba(23, 23, 23, 0.11);
+      border-radius: 28px;
+      background: #fffde8;
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .project-box:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 38px rgba(48, 45, 24, 0.12);
+    }
+
+    .project-box i {
+      width: 28px;
+      height: 28px;
+      color: var(--green);
+    }
+
+    .project-box h3 {
+      margin: 22px 0 8px;
+      font-size: 1.18rem;
+    }
+
+    .project-box p {
+      margin: 0;
+      color: #6d6d62;
+      line-height: 1.55;
+      font-weight: 600;
+      font-size: 0.94rem;
+    }
+
+    .cta-section {
+      position: relative;
+      min-height: 520px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 90px 20px;
+      overflow: hidden;
+      background: var(--cream);
+    }
+
+    .cta-card {
+      position: relative;
+      z-index: 1;
+      width: min(920px, 100%);
+      min-height: 360px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      padding: 42px;
+      border: 2px solid rgba(23, 23, 23, 0.13);
+      border-radius: 34px;
+      background: #fffde8;
+      text-align: center;
+      box-shadow: 0 22px 60px rgba(48, 45, 24, 0.12);
+    }
+
+    .cta-card h2 {
+      margin: 0;
+      max-width: 720px;
+      font-family: var(--font-serif);
+      font-size: clamp(3.3rem, 7vw, 6rem);
+      line-height: 0.88;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+
+    .cta-card p {
+      margin: 0;
+      max-width: 600px;
+      color: #606058;
+      font-size: 1.08rem;
+      line-height: 1.55;
+      font-weight: 650;
+    }
+
+    .footer {
+      padding: 56px 0 34px;
+      background: #fffde8;
+      border-top: 2px solid rgba(23, 23, 23, 0.09);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.4fr repeat(3, 1fr);
+      gap: 32px;
+    }
+
+    .footer p,
+    .footer a {
+      color: #68685e;
+      font-weight: 650;
+      font-size: 0.92rem;
+    }
+
+    .footer h4 {
+      margin: 0 0 14px;
+      color: var(--ink);
+      font-size: 0.92rem;
+    }
+
+    .footer nav {
+      display: grid;
+      gap: 9px;
+    }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-top: 42px;
+      padding-top: 22px;
+      border-top: 1px solid rgba(23, 23, 23, 0.1);
+      color: #77776a;
+      font-weight: 650;
+      font-size: 0.88rem;
+      flex-wrap: wrap;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 560ms ease, transform 560ms ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 1ms !important;
+      }
+    }
+
+    @media (max-width: 1240px) {
+      .nav-shell {
+        grid-template-columns: max-content max-content;
+        justify-content: space-between;
+      }
+
+      .nav-links {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: calc(100% + 10px);
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        padding: 10px;
+        border: 2px solid rgba(23, 23, 23, 0.12);
+        border-radius: 12px;
+        background: #fffde8;
+      }
+
+      .nav-links.open {
+        display: flex;
+      }
+
+      .nav-item,
+      .nav-link {
+        width: 100%;
+      }
+
+      .dropdown {
+        position: static;
+        width: 100%;
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
+        display: none;
+        margin: 0 0 8px;
+        box-shadow: none;
+      }
+
+      .nav-item:hover .dropdown,
+      .nav-item:focus-within .dropdown {
+        display: grid;
+      }
+
+      .nav-actions {
+        justify-self: end;
+        border-left: 0;
+        padding-left: 0;
+      }
+
+      .nav-actions .button.secondary {
+        display: none;
+      }
+
+      .menu-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 980px) {
+
+      .section-head,
+      .workflow-grid,
+      .capability-grid,
+      .box-grid,
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-card.large {
+        min-height: 520px;
+      }
+
+      .box-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 680px) {
+      .top-banner {
+        min-height: 54px;
+        gap: 12px;
+        font-size: 0.78rem;
+      }
+
+      .top-banner a {
+        display: none;
+      }
+
+      .nav-shell {
+        width: calc(100% - 24px);
+        height: 64px;
+        margin-top: 12px;
+        padding: 8px 8px 8px 12px;
+      }
+
+      .brand {
+        min-width: 0;
+        gap: 9px;
+      }
+
+      .nav-shell > .brand {
+        width: 168px;
+        min-width: 168px;
+      }
+
+      .brand-logo {
+        width: 168px;
+        height: 44px;
+      }
+
+      .brand-badge {
+        width: 32px;
+        height: 32px;
+        flex-basis: 32px;
+        font-size: 0.68rem;
+        border-radius: 8px;
+      }
+
+      .brand strong {
+        font-size: 1.16rem;
+      }
+
+      .nav-actions .button.primary {
+        display: none;
+      }
+
+      .hero {
+        min-height: 760px;
+        padding: 54px 16px 190px;
+      }
+
+      .hero h1 {
+        font-size: clamp(3.4rem, 18vw, 5rem);
+      }
+
+      .hero-copy {
+        margin-top: 26px;
+        font-size: 1rem;
+      }
+
+      .hero-actions {
+        width: 100%;
+      }
+
+      .hero-actions .button {
+        width: 100%;
+      }
+
+      .prompt-demo {
+        margin-top: 26px;
+      }
+
+      .prompt-input-box,
+      .prompt-output-box {
+        border-radius: 14px;
+        padding: 14px;
+      }
+
+      .prompt-input-box {
+        padding: 12px;
+      }
+
+      .prompt-input-line {
+        font-size: 0.92rem;
+      }
+
+      .typed-prompt {
+        max-width: calc(100vw - 118px);
+        white-space: nowrap;
+      }
+
+      .prompt-output-box {
+        min-height: 0;
+      }
+
+      .output-lines {
+        font-size: 0.8rem;
+        gap: 6px;
+      }
+
+      .dark-section {
+        margin-top: -84px;
+        border-radius: 46px 46px 0 0;
+        padding: 64px 0 74px;
+      }
+
+      .container {
+        width: calc(100% - 28px);
+      }
+
+      .section-head h2,
+      .cta-card h2 {
+        font-size: clamp(3rem, 14vw, 4.5rem);
+      }
+
+      .metric-row,
+      .capability-grid,
+      .box-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .light-section,
+      .cta-section {
+        padding: 64px 0;
+      }
+
+      .cta-card {
+        padding: 30px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-banner">
+    <strong>PromptmaX turns rough ideas into production-ready AI prompts.</strong>
+    <a href="/resources">Explore resources <i data-lucide="chevron-right" aria-hidden="true"></i></a>
+  </div>
+
+  <nav class="nav-shell" aria-label="Primary navigation">
+    <a href="/" class="brand" aria-label="PromptmaX home">
+      <img class="brand-logo" src="/Public/promptmax-logo-cropped.png" alt="PromptmaX">
+      <span class="sr-only">PromptmaX</span>
+    </a>
+
+    <div class="nav-links" id="nav-links">
+      <div class="nav-item">
+        <a class="nav-link" href="#product">Product <i data-lucide="chevron-down" aria-hidden="true"></i></a>
+        <div class="dropdown">
+          <a href="/chat">Prompt Playground <span>Enhance and analyze prompts live.</span></a>
+          <a href="/builder">AI Builder <span>Turn prompts into working app plans.</span></a>
+          <a href="/integrations">Integrations <span>Connect PromptmaX to your workflow.</span></a>
+        </div>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="#details">Use cases <i data-lucide="chevron-down" aria-hidden="true"></i></a>
+        <div class="dropdown">
+          <a href="#details">Developers <span>Architecture, code, tests, and docs.</span></a>
+          <a href="#details">Creators <span>Content briefs and reusable templates.</span></a>
+          <a href="#details">Operators <span>SOPs, analysis, support, and research.</span></a>
+        </div>
+      </div>
+      <a class="nav-link" href="#workflow">Workflow</a>
+      <a class="nav-link" href="/resources">Resources <i data-lucide="chevron-down" aria-hidden="true"></i></a>
+      <a class="nav-link" href="/about">Company <i data-lucide="chevron-down" aria-hidden="true"></i></a>
+    </div>
+
+    <div class="nav-actions">
+      <a class="button secondary" href="/login">Sign in</a>
+      <a class="button primary" href="/chat"><i data-lucide="sparkles" aria-hidden="true"></i>Launch PromptmaX</a>
+      <button class="menu-button" id="menu-button" type="button" aria-label="Open menu" aria-controls="nav-links" aria-expanded="false">
+        <i data-lucide="menu" aria-hidden="true"></i>
+      </button>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero" id="product">
+      <h1 class="reveal"><span class="muted">Don’t guess,</span> engineer prompts</h1>
+      <p class="hero-copy reveal">
+        PromptmaX turns messy requests into clear, scored, production-ready prompts for ChatGPT, Claude, Gemini, local models, and your own AI workflows.
+      </p>
+      <div class="hero-actions reveal">
+        <a class="button primary" href="/chat"><i data-lucide="message-square-text" aria-hidden="true"></i>Launch PromptmaX</a>
+        <a class="button secondary" href="/builder"><i data-lucide="blocks" aria-hidden="true"></i>Try Builder</a>
+      </div>
+      <div class="availability reveal">Enhance, analyze, compare, save, and reuse prompts.</div>
+
+      <div class="prompt-demo reveal" aria-label="PromptmaX prompt enhancement animation">
+        <div class="prompt-input-box">
+          <div class="prompt-input-head">
+            <span>User prompt</span>
+            <span>typing</span>
+          </div>
+          <div class="prompt-input-line">
+            <span class="mic-dot" aria-hidden="true"></span>
+            <span class="typed-prompt">make SaaS dashboard AI with deep detail</span>
+            <span class="typing-caret" aria-hidden="true"></span>
+          </div>
+        </div>
+
+        <div class="prompt-output-box">
+          <div class="prompt-output-head">
+            <span>PromptmaX output</span>
+            <span class="thinking-dots" aria-hidden="true"><span></span><span></span><span></span></span>
+          </div>
+          <div class="output-lines">
+            <span><b>Role:</b> Act as a senior SaaS product architect.</span>
+            <span><b>Goal:</b> Build a modern AI dashboard for founders and ops teams.</span>
+            <span><b>Layout:</b> Sidebar, top KPI row, chart grid, activity feed, command bar.</span>
+            <span><b>Pages:</b> Overview, analytics, customers, billing, automations, settings.</span>
+            <span><b>Data:</b> Revenue, churn, active users, tasks, model spend, alerts.</span>
+            <span><b>Delivery:</b> Define screens, actions, exports, and saved prompt templates.</span>
+            <span><b>UX:</b> Loading, empty, error, success, mobile, and dark-mode states.</span>
+            <span><b>Checks:</b> Security, permissions, rate limits, audit logs, QA checklist.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="dark-section" id="workflow">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <p class="section-kicker">How PromptmaX works</p>
+            <h2>Same smooth flow. Your prompt engine inside.</h2>
+          </div>
+          <p>
+            PromptmaX takes a rough idea, understands the intent, adds missing context, formats the answer, checks quality, and gives you a clean prompt ready to use.
+          </p>
+        </div>
+
+        <div class="workflow-grid">
+          <article class="flow-card large reveal">
+            <h3>From rough idea to ready prompt</h3>
+            <p>PromptmaX turns a short request into a complete instruction with role, context, constraints, output format, examples, and quality checks.</p>
+            <div class="terminal-box">
+              <div class="terminal-top"><span>PromptmaX workflow</span><span>Ready</span></div>
+              <pre class="terminal-body"><span class="purple">User idea</span>: "make app idea better"
+
+<span class="green">PromptmaX</span>:
+1. Find the real goal and audience
+2. Add role, context, and constraints
+3. Choose the best output format
+4. Add edge cases and quality checks
+5. Return a clear prompt users can save
+
+Before: vague request
+After: structured expert instruction</pre>
+            </div>
+          </article>
+
+          <article class="flow-card reveal">
+            <h3>Choose the right workflow</h3>
+            <p>Enhance weak prompts, analyze quality, compare versions, research a page, or process a batch without changing tools.</p>
+          </article>
+
+          <article class="flow-card reveal">
+            <h3>Compare better answers</h3>
+            <p>Run prompt variants side by side, see which one is clearer, and keep the best version for repeated work.</p>
+          </article>
+
+          <article class="flow-card reveal">
+            <h3>Quality scoring</h3>
+            <p>Score clarity, specificity, completeness, structure, actionability, grammar, and constraints before using the prompt.</p>
+            <div class="metric-row">
+              <div class="metric"><strong>5</strong><span>workflow steps</span></div>
+              <div class="metric"><strong>8</strong><span>quality checks</span></div>
+              <div class="metric"><strong>Save</strong><span>reuse prompts</span></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="light-section" id="details">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <p class="section-kicker">What PromptmaX does</p>
+            <h2>More than a prompt box.</h2>
+          </div>
+          <p>
+            PromptmaX helps users write better instructions, test variations, organize reusable prompts, and turn rough ideas into execution-ready AI workflows.
+          </p>
+        </div>
+
+        <div class="capability-grid">
+          <article class="capability-card reveal">
+            <div>
+              <i data-lucide="scan-text" aria-hidden="true"></i>
+              <h3>Understands weak input</h3>
+              <p>Reads short, messy, or incomplete requests and identifies the missing role, audience, goal, context, and success criteria.</p>
+            </div>
+            <ul class="detail-list">
+              <li>Intent detection</li>
+              <li>Missing context prompts</li>
+              <li>Audience and tone mapping</li>
+            </ul>
+          </article>
+
+          <article class="capability-card dark reveal">
+            <div>
+              <i data-lucide="braces" aria-hidden="true"></i>
+              <h3>Builds expert instructions</h3>
+              <p>Transforms the request into a structured prompt with role, task, constraints, output format, examples, and checks.</p>
+            </div>
+            <ul class="detail-list">
+              <li>Role and task framing</li>
+              <li>Output structure</li>
+              <li>Failure-mode checks</li>
+            </ul>
+          </article>
+
+          <article class="capability-card reveal">
+            <div>
+              <i data-lucide="library" aria-hidden="true"></i>
+              <h3>Keeps the best work reusable</h3>
+              <p>Turns one good result into a saved workflow so users can reuse it for dashboards, content, research, support, and product planning.</p>
+            </div>
+            <ul class="detail-list">
+              <li>Saved prompt templates</li>
+              <li>Version comparison</li>
+              <li>Team-ready handoff</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="box-grid">
+          <a class="project-box reveal" href="/chat">
+            <div>
+              <i data-lucide="wand-sparkles" aria-hidden="true"></i>
+              <h3>Prompt improver</h3>
+              <p>Paste a rough prompt and get a clearer version with stronger context, tighter constraints, and a cleaner output shape.</p>
+            </div>
+            <strong>Open chat</strong>
+          </a>
+          <a class="project-box reveal" href="/builder">
+            <div>
+              <i data-lucide="blocks" aria-hidden="true"></i>
+              <h3>AI app planner</h3>
+              <p>Turn product ideas into page plans, feature maps, user flows, states, and build-ready implementation prompts.</p>
+            </div>
+            <strong>Open builder</strong>
+          </a>
+          <a class="project-box reveal" href="/integrations">
+            <div>
+              <i data-lucide="search-check" aria-hidden="true"></i>
+              <h3>Research brief</h3>
+              <p>Convert URLs, notes, or scattered context into a precise prompt that asks the model for the right evidence and output.</p>
+            </div>
+            <strong>Plan research</strong>
+          </a>
+          <a class="project-box reveal" href="/resources">
+            <div>
+              <i data-lucide="clipboard-check" aria-hidden="true"></i>
+              <h3>Quality reviewer</h3>
+              <p>Check whether a prompt is specific, complete, actionable, well-structured, and safe enough to reuse.</p>
+            </div>
+            <strong>See checks</strong>
+          </a>
+          <a class="project-box reveal" href="/integrations">
+            <div>
+              <i data-lucide="send" aria-hidden="true"></i>
+              <h3>Workflow handoff</h3>
+              <p>Package the final prompt with assumptions, edge cases, expected output, and next steps for a team or automation.</p>
+            </div>
+            <strong>View workflow</strong>
+          </a>
+          <a class="project-box reveal" href="/blog">
+            <div>
+              <i data-lucide="book-marked" aria-hidden="true"></i>
+              <h3>Prompt library</h3>
+              <p>Build reusable templates for product specs, dashboards, support replies, research summaries, and content plans.</p>
+            </div>
+            <strong>Explore ideas</strong>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <div class="cta-card reveal">
+        <h2>Start engineering prompts</h2>
+        <p>Open PromptmaX, paste a rough instruction, and get a scored, structured prompt with constraints, output format, and failure checks.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="/chat"><i data-lucide="sparkles" aria-hidden="true"></i>Launch PromptmaX</a>
+          <a class="button secondary" href="/resources"><i data-lucide="book-open" aria-hidden="true"></i>View resources</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a href="/" class="brand">
+            <img class="brand-logo" src="/Public/promptmax-logo-cropped.png" alt="PromptmaX">
+            <span class="sr-only">PromptmaX</span>
+          </a>
+          <p>Prompt engineering OS for enhancement, scoring, comparison, and reusable AI workflows.</p>
+        </div>
+        <div>
+          <h4>Product</h4>
+          <nav>
+            <a href="/chat">Playground</a>
+            <a href="/builder">Builder</a>
+            <a href="/integrations">Integrations</a>
+            <a href="#workflow">Workflow</a>
+          </nav>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <nav>
+            <a href="/resources">Resources</a>
+            <a href="/blog">Blog</a>
+            <a href="/docs">Docs</a>
+            <a href="https://github.com/Santosh-Prasad-Verma/PromptX" target="_blank" rel="noreferrer">GitHub</a>
+          </nav>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <nav>
+            <a href="/about">About</a>
+            <a href="/careers">Contribute</a>
+            <a href="/login">Sign in</a>
+            <a href="/register">Register</a>
+          </nav>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span id="year">2026</span> PromptmaX</span>
+        <span>Built for real prompt workflows.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var year = document.getElementById("year");
+      if (year) year.textContent = new Date().getFullYear();
+
+      var menuButton = document.getElementById("menu-button");
+      var navLinks = document.getElementById("nav-links");
+      if (menuButton && navLinks) {
+        menuButton.addEventListener("click", function () {
+          var open = navLinks.classList.toggle("open");
+          menuButton.setAttribute("aria-expanded", String(open));
+        });
+      }
+
+      var revealItems = document.querySelectorAll(".reveal");
+      if ("IntersectionObserver" in window) {
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("visible");
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.12 });
+
+        revealItems.forEach(function (item) { observer.observe(item); });
+      } else {
+        revealItems.forEach(function (item) { item.classList.add("visible"); });
+      }
+
+      if (window.lucide) {
+        window.lucide.createIcons();
+      } else {
+        window.addEventListener("load", function () {
+          if (window.lucide) window.lucide.createIcons();
+        });
+      }
+    });
+  </script>
+</body>
+</html>

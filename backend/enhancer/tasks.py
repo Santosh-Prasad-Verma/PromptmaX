@@ -3,9 +3,6 @@
 import logging
 import concurrent.futures
 
-import g4f
-from g4f.Provider import PollinationsAI, GeminiPro, IterListProvider
-
 from celery import shared_task
 from django.core.cache import cache
 
@@ -16,6 +13,18 @@ from .core.ab_testing import generate_ab_variations, compare_variations
 from .utils.prompts import MASTER_PROMPT, build_website_analysis_prompt
 
 logger = logging.getLogger("enhancer")
+
+G4F_AVAILABLE = False
+try:
+    import g4f
+    from g4f.Provider import PollinationsAI, GeminiPro, IterListProvider
+    G4F_AVAILABLE = True
+except ImportError:
+    g4f = None
+    PollinationsAI = None
+    GeminiPro = None
+    IterListProvider = None
+    logger.warning("g4f package not installed - multi-model tasks unavailable")
 
 
 def _store_task_result(task_id: str, result: dict, ttl: int = 3600):
@@ -252,6 +261,14 @@ def run_execute(
 def run_multi_model(self, prompt: str):
     task_id = self.request.id
     _store_task_result(task_id, {"status": "started", "progress": 0})
+
+    if not G4F_AVAILABLE:
+        data = {
+            "success": False,
+            "error": "g4f package is not installed. Install backend requirements to use multi-model.",
+        }
+        _store_task_result(task_id, {"status": "failed", "error": data["error"]})
+        return data
 
     models = [
         {"name": "gpt-4.1-nano", "label": "GPT-4o", "provider": "pollinations"},

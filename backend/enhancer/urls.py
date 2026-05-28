@@ -25,6 +25,12 @@ from .views_auth import (
     VerifyOTPView,
     ResendOTPView,
     LoginView,
+    PasswordResetConfirmView,
+    PasswordResetRequestView,
+    RazorpayCreateOrderView,
+    RazorpayVerifyPaymentView,
+    CurrentUserView,
+    SelectPlanView,
     TokenObtainView,
 )
 
@@ -67,5 +73,11 @@ urlpatterns = [
     path('auth/verify-otp/', VerifyOTPView.as_view(), name='auth-verify-otp'),
     path('auth/resend-otp/', ResendOTPView.as_view(), name='auth-resend-otp'),
     path('auth/login/', LoginView.as_view(), name='auth-login'),
+    path('auth/me/', CurrentUserView.as_view(), name='auth-me'),
+    path('auth/select-plan/', SelectPlanView.as_view(), name='auth-select-plan'),
+    path('auth/razorpay/order/', RazorpayCreateOrderView.as_view(), name='auth-razorpay-order'),
+    path('auth/razorpay/verify/', RazorpayVerifyPaymentView.as_view(), name='auth-razorpay-verify'),
     path('auth/token/', TokenObtainView.as_view(), name='auth-token'),
+    path('auth/forgot-password/', PasswordResetRequestView.as_view(), name='auth-forgot-password'),
+    path('auth/reset-password/', PasswordResetConfirmView.as_view(), name='auth-reset-password'),
 ]

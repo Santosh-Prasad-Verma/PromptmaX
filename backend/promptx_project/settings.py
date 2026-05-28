@@ -2,9 +2,19 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+BASE_DIR = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = BASE_DIR.parent
 
-BASE_DIR = Path(__file__).resolve().parent.parent  
+load_dotenv(PROJECT_ROOT / '.env')
+load_dotenv(BASE_DIR / '.env', override=True)
+
+
+def env_bool(name, default=False):
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.lower() in ('true', '1', 'yes', 'on')
+
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '')
 if not SECRET_KEY:
@@ -17,6 +27,30 @@ if not SECRET_KEY:
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+
+# Email - SMTP sender for verification and password reset emails.
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.getenv('EMAIL_HOST', '')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT') or 587)
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+if EMAIL_HOST.endswith('gmail.com') and EMAIL_HOST_PASSWORD:
+    EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD.replace(' ', '')
+EMAIL_USE_TLS = env_bool('EMAIL_USE_TLS', True)
+EMAIL_USE_SSL = env_bool('EMAIL_USE_SSL', False)
+EMAIL_TIMEOUT = int(os.getenv('EMAIL_TIMEOUT') or 15)
+configured_from_email = os.getenv('DEFAULT_FROM_EMAIL', '').strip()
+if configured_from_email and configured_from_email != 'PromptmaX <auth@janhelps.in>':
+    DEFAULT_FROM_EMAIL = configured_from_email
+elif EMAIL_HOST_USER:
+    DEFAULT_FROM_EMAIL = f'PromptmaX <{EMAIL_HOST_USER}>'
+else:
+    DEFAULT_FROM_EMAIL = 'PromptmaX <auth@janhelps.in>'
+SERVER_EMAIL = os.getenv('SERVER_EMAIL', '').strip() or DEFAULT_FROM_EMAIL
+
+RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID', '').strip()
+RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET', '').strip()
+RAZORPAY_CURRENCY = os.getenv('RAZORPAY_CURRENCY', 'INR').strip().upper() or 'INR'
 
 INSTALLED_APPS = [
     'django.contrib.contenttypes',

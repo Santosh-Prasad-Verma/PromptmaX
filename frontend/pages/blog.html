@@ -3,314 +3,286 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blog — PromptX</title>
-  <meta name="description" content="Prompt engineering insights, AI tips, and product updates from the PromptX team.">
-  <meta name="theme-color" content="#000000">
-  <link rel="icon" type="image/svg+xml" href="/Public/star.svg">
+  <title>Blog - PromptmaX</title>
+  <meta name="description" content="Prompt engineering insights, AI workflow guides, and product updates from PromptmaX.">
+  <meta name="theme-color" content="#f7f6e5">
+  <link rel="icon" type="image/png" href="/Public/promptmax-logo-cropped.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600;700&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles/page.css">
-  <link rel="stylesheet" href="/styles/effects.css">
-  <style>
-    .blog-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-      gap: 28px;
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 60px 24px;
-    }
-    .blog-card {
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      transition: var(--transition);
-    }
-    .blog-card:hover {
-      border-color: var(--border-hover);
-      transform: translateY(-2px);
-    }
-    .blog-card-image {
-      height: 200px;
-      background: linear-gradient(135deg, var(--accent-dim), var(--bg-tertiary));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--accent);
-      font-size: 3rem;
-    }
-    .blog-card-body {
-      padding: 24px;
-    }
-    .blog-card-tag {
-      display: inline-block;
-      padding: 4px 10px;
-      background: var(--accent-dim);
-      color: var(--accent);
-      border-radius: var(--radius-sm);
-      font-size: 0.8rem;
-      font-weight: 600;
-      margin-bottom: 12px;
-    }
-    .blog-card-body h3 {
-      font-size: 1.15rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-      line-height: 1.4;
-    }
-    .blog-card-body p {
-      color: var(--text-secondary);
-      font-size: 0.95rem;
-      line-height: 1.6;
-      margin-bottom: 16px;
-    }
-    .blog-card-meta {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-    }
-    .blog-card-meta span {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .newsletter-section {
-      padding: 80px 24px;
-      background: linear-gradient(180deg, transparent, var(--accent-dim), transparent);
-      text-align: center;
-    }
-    .newsletter-form {
-      max-width: 420px;
-      margin: 24px auto 0;
-      display: flex;
-      gap: 8px;
-    }
-    .newsletter-form input {
-      flex: 1;
-      padding: 12px 16px;
-      background: var(--bg-primary);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      color: var(--text-primary);
-      font-size: 0.95rem;
-      font-family: inherit;
-    }
-    .newsletter-form input:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
-    @media (max-width: 768px) {
-      .blog-grid {
-        grid-template-columns: 1fr;
-        padding: 40px 16px;
-      }
-      .newsletter-form {
-        flex-direction: column;
-      }
-    }
-  </style>
+  <script src="https://unpkg.com/lucide@latest" defer></script>
 </head>
 <body>
-  <!-- Background Effects -->
-  <canvas id="fc-canvas-particles" aria-hidden="true"></canvas>
-  <div class="fc-float-label" style="top:9%;left:5%;animation-delay:0s;">[ BLOG ]</div>
-  <div class="fc-float-label" style="top:20%;right:8%;animation-delay:2s;">[ INSIGHTS ]</div>
-  <div class="fc-float-label" style="top:50%;left:3%;animation-delay:4s;">[ TUTORIALS ]</div>
-  <div class="fc-float-label" style="top:72%;right:6%;animation-delay:1s;">[ PROMPT ]</div>
-  <div class="fc-float-label" style="top:88%;left:8%;animation-delay:3s;">[ AI ]</div>
-  <div class="fc-vignette" aria-hidden="true"></div>
-  <span class="fc-spark" style="top:18%;left:25%;">✦</span>
-  <span class="fc-spark" style="top:45%;right:20%;animation-delay:2s;">✦</span>
-  <span class="fc-spark" style="top:70%;left:35%;animation-delay:4s;">✦</span>
-  <div class="glow-orb glow-orb-1"></div>
-  <div class="glow-orb glow-orb-2"></div>
-  <!-- Navigation -->
-  <nav class="nav">
-    <div class="nav-left">
-      <a href="/" class="nav-logo">
-        <img src="/Public/bot-img.png" alt="PromptX">
-        <span>PromptX</span>
-      </a>
-      <div class="nav-links">
-        <a href="/build">Build</a>
-        <a href="/integrations">Integrations</a>
-        <a href="/pricing">Pricing</a>
-        <a href="/docs">Docs</a>
+  <div class="top-banner">
+    <strong>PromptmaX turns rough ideas into production-ready AI prompts.</strong>
+    <a href="/resources">Explore resources <i data-lucide="chevron-right" aria-hidden="true"></i></a>
+  </div>
+
+  <nav class="nav-shell" aria-label="Primary navigation">
+    <a href="/" class="brand" aria-label="PromptmaX home">
+      <img class="brand-logo" src="/Public/promptmax-logo-cropped.png" alt="PromptmaX">
+      <span class="sr-only">PromptmaX</span>
+    </a>
+
+    <div class="nav-links" id="nav-links">
+      <div class="nav-item">
+        <a class="nav-link" href="/product">Product <i data-lucide="chevron-down" aria-hidden="true"></i></a>
+        <div class="dropdown">
+          <a href="/chat">Prompt Playground <span>Enhance and analyze prompts live.</span></a>
+          <a href="/builder">AI Builder <span>Turn prompts into working app plans.</span></a>
+          <a href="/integrations">Integrations <span>Connect PromptmaX to your workflow.</span></a>
+        </div>
       </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/use-cases">Use cases <i data-lucide="chevron-down" aria-hidden="true"></i></a>
+        <div class="dropdown">
+          <a href="/developers">Developers <span>Architecture, code, tests, and docs.</span></a>
+          <a href="/creators">Creators <span>Content briefs and reusable templates.</span></a>
+          <a href="/operators">Operators <span>SOPs, analysis, support, and research.</span></a>
+        </div>
+      </div>
+      <a class="nav-link" href="/workflow">Workflow</a>
+      <a class="nav-link" href="/resources">Resources</a>
+      <a class="nav-link" href="/about">Company</a>
     </div>
-    <div class="nav-right">
-      <a href="https://github.com/Santosh-Prasad-Verma/PromptX" target="_blank" class="nav-link">GitHub</a>
-      <a href="/chat" class="btn-primary">Launch Terminal</a>
+
+    <div class="nav-actions">
+      <a class="button secondary" href="/login">Sign in</a>
+      <a class="button primary" href="/chat"><i data-lucide="sparkles" aria-hidden="true"></i>Launch PromptmaX</a>
+      <button class="menu-button" id="menu-button" type="button" aria-label="Open menu" aria-controls="nav-links" aria-expanded="false">
+        <i data-lucide="menu" aria-hidden="true"></i>
+      </button>
     </div>
   </nav>
 
-  <!-- Hero -->
-  <section class="page-hero">
-    <div class="hero-content reveal">
-      <h1>The <span class="text-gradient">PromptX</span> Blog</h1>
-      <p>Insights on prompt engineering, AI model behavior, and building better human-AI interactions.</p>
-    </div>
-  </section>
+  <main>
+    <section class="page-hero about-hero">
+      <div class="container hero-grid">
+        <div class="reveal">
+          <p class="eyebrow">PromptmaX blog</p>
+          <h1>Ideas for better AI work</h1>
+          <p class="lead">
+            Practical writing on prompt engineering, model behavior, quality scoring, multi-model fallback, URL research, and reusable AI workflows.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="/chat"><i data-lucide="message-square-text" aria-hidden="true"></i>Try the playground</a>
+            <a class="button secondary" href="/resources"><i data-lucide="library" aria-hidden="true"></i>Open resources</a>
+          </div>
+        </div>
 
-  <!-- Blog Posts -->
-  <section class="page-section" style="padding-bottom: 0;">
-    <div style="max-width: 1100px; margin: 0 auto; padding: 0 24px 48px;">
-      <div style="background: linear-gradient(135deg, rgba(255,255,255,0.03), var(--bg-secondary)); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 40px; display: flex; gap: 32px; align-items: center; flex-wrap: wrap;">
-        <div style="flex: 0 0 120px; height: 120px; background: linear-gradient(135deg, var(--accent), var(--bg-secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem;">✦</div>
-        <div style="flex: 1; min-width: 280px;">
-          <span class="blog-card-tag" style="margin: 0 0 12px;">Featured</span>
-          <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 8px;">The Complete Guide to Prompt Engineering in 2026</h3>
-          <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">Everything you need to know about crafting production-grade prompts — from the CREATE framework to multi-model strategies, quality scoring, and A/B testing at scale.</p>
-          <div class="blog-card-meta">
-            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> May 20, 2026</span>
-            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 12 min read</span>
+        <aside class="resource-hero-card reveal" aria-label="PromptmaX blog summary">
+          <div class="resource-hero-art">
+            <i data-lucide="newspaper" aria-hidden="true"></i>
+          </div>
+          <div>
+            <span class="resource-tag">Latest focus</span>
+            <h3>The Complete Guide to Prompt Engineering in 2026</h3>
+            <p>CREATE framework, prompt quality checks, A/B prompt testing, model fallback, and reusable prompt libraries for real teams.</p>
+          </div>
+          <div class="resource-meta">
+            <span><i data-lucide="calendar" aria-hidden="true"></i>May 20, 2026</span>
+            <span><i data-lucide="clock" aria-hidden="true"></i>12 min read</span>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section light">
+      <div class="container">
+        <article class="featured-resource reveal">
+          <div class="featured-icon">
+            <i data-lucide="sparkles" aria-hidden="true"></i>
+          </div>
+          <div>
+            <span class="resource-tag">Featured</span>
+            <h2 style="font-size:clamp(2.2rem,4vw,4.4rem);">The Complete Guide to Prompt Engineering in 2026</h2>
+            <p class="lead">
+              Everything you need to know about crafting production-grade prompts - from structured roles and output formats to multi-model strategies, quality scoring, and prompt A/B testing.
+            </p>
+            <div class="resource-meta">
+              <span><i data-lucide="calendar" aria-hidden="true"></i>May 20, 2026</span>
+              <span><i data-lucide="clock" aria-hidden="true"></i>12 min read</span>
+              <span><i data-lucide="layers" aria-hidden="true"></i>Guide</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <p class="section-kicker">Latest articles</p>
+            <h2>Read, apply, improve.</h2>
+          </div>
+          <p>
+            Focused articles for people building useful AI workflows: better prompts, better scoring, better fallback, and better context.
+          </p>
+        </div>
+
+        <div class="grid-3">
+          <article class="resource-card reveal">
+            <div class="resource-card-top"><i data-lucide="layers-3" aria-hidden="true"></i></div>
+            <span class="resource-tag">Guide</span>
+            <h3>The 9-stage pipeline: how PromptmaX transforms raw prompts into usable instructions</h3>
+            <p>A deep dive into validation, intent detection, context building, refinement, checks, and final scoring.</p>
+            <div class="resource-meta"><span><i data-lucide="calendar" aria-hidden="true"></i>May 15, 2026</span><span><i data-lucide="clock" aria-hidden="true"></i>8 min</span></div>
+          </article>
+
+          <article class="resource-card reveal">
+            <div class="resource-card-top dark"><i data-lucide="activity" aria-hidden="true"></i></div>
+            <span class="resource-tag">Engineering</span>
+            <h3>Multi-model fallback: why relying on one LLM is a mistake</h3>
+            <p>How provider routing and fallback behavior keep prompt workflows moving when a model slows down or fails.</p>
+            <div class="resource-meta"><span><i data-lucide="calendar" aria-hidden="true"></i>May 8, 2026</span><span><i data-lucide="clock" aria-hidden="true"></i>6 min</span></div>
+          </article>
+
+          <article class="resource-card reveal">
+            <div class="resource-card-top"><i data-lucide="check-check" aria-hidden="true"></i></div>
+            <span class="resource-tag">Tutorial</span>
+            <h3>A/B testing prompts: how to measure what actually works</h3>
+            <p>Generate prompt variations, score them across quality dimensions, compare outputs, and keep the winning version.</p>
+            <div class="resource-meta"><span><i data-lucide="calendar" aria-hidden="true"></i>Apr 22, 2026</span><span><i data-lucide="clock" aria-hidden="true"></i>5 min</span></div>
+          </article>
+
+          <article class="resource-card reveal">
+            <div class="resource-card-top dark"><i data-lucide="globe-2" aria-hidden="true"></i></div>
+            <span class="resource-tag">Use case</span>
+            <h3>Website extraction: turning URLs into AI-ready context</h3>
+            <p>How to convert pages, docs, and product sites into structured prompts with source context and usable summaries.</p>
+            <div class="resource-meta"><span><i data-lucide="calendar" aria-hidden="true"></i>Apr 10, 2026</span><span><i data-lucide="clock" aria-hidden="true"></i>7 min</span></div>
+          </article>
+
+          <article class="resource-card reveal">
+            <div class="resource-card-top"><i data-lucide="zap" aria-hidden="true"></i></div>
+            <span class="resource-tag">Product</span>
+            <h3>PromptmaX v2.0: what changed in the enhancement workflow</h3>
+            <p>A tour of stronger quality scoring, reusable prompt assets, workflow pages, and clearer prompt output states.</p>
+            <div class="resource-meta"><span><i data-lucide="calendar" aria-hidden="true"></i>Mar 28, 2026</span><span><i data-lucide="clock" aria-hidden="true"></i>4 min</span></div>
+          </article>
+
+          <article class="resource-card reveal">
+            <div class="resource-card-top dark"><i data-lucide="monitor-check" aria-hidden="true"></i></div>
+            <span class="resource-tag">Guide</span>
+            <h3>The CREATE framework applied across prompt quality dimensions</h3>
+            <p>Clarity, specificity, structure, context, constraints, and output format - with practical examples.</p>
+            <div class="resource-meta"><span><i data-lucide="calendar" aria-hidden="true"></i>Mar 14, 2026</span><span><i data-lucide="clock" aria-hidden="true"></i>6 min</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dark">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <p class="section-kicker">Reading tracks</p>
+            <h2>Pick the workflow you care about.</h2>
+          </div>
+          <p>Each track maps to a real PromptmaX job: improve a prompt, plan a product, research a URL, compare variants, or save a reusable template.</p>
+        </div>
+        <div class="grid-3">
+          <article class="feature-card reveal">
+            <span class="icon-box"><i data-lucide="wand-sparkles" aria-hidden="true"></i></span>
+            <div><h3>Prompt improvement</h3><p>Role framing, context injection, constraints, examples, edge cases, and final output structure.</p></div>
+          </article>
+          <article class="feature-card reveal">
+            <span class="icon-box"><i data-lucide="split" aria-hidden="true"></i></span>
+            <div><h3>Prompt testing</h3><p>Compare prompt variants, score quality, identify weaknesses, and build a repeatable evaluation loop.</p></div>
+          </article>
+          <article class="feature-card reveal">
+            <span class="icon-box"><i data-lucide="archive" aria-hidden="true"></i></span>
+            <div><h3>Prompt systems</h3><p>Turn good one-off instructions into reusable templates, project assets, and workflow handoffs.</p></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section light">
+      <div class="container">
+        <div class="newsletter-card reveal">
+          <p class="section-kicker">Newsletter</p>
+          <h2>Stay in the loop</h2>
+          <p class="lead" style="margin-left:auto;margin-right:auto;">Get prompt engineering tips, product updates, and AI workflow notes. No spam.</p>
+          <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
+            <input type="email" placeholder="you@example.com" required>
+            <button type="submit" class="button primary">Subscribe</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="featured-resource reveal">
+          <div class="featured-icon"><i data-lucide="rocket" aria-hidden="true"></i></div>
+          <div>
+            <span class="resource-tag">Start now</span>
+            <h2 style="font-size:clamp(2.2rem,4vw,4.4rem);">Put the ideas into practice.</h2>
+            <p class="lead">Open PromptmaX, paste a weak prompt, and turn it into a structured instruction with scoring and quality checks.</p>
+            <div class="inline-actions">
+              <a class="button primary" href="/chat"><i data-lucide="sparkles" aria-hidden="true"></i>Launch PromptmaX</a>
+              <a class="button secondary" href="/resources"><i data-lucide="library" aria-hidden="true"></i>View resources</a>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </main>
 
-  <section class="blog-grid">
-    <article class="blog-card">
-      <div class="blog-card-image">
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-      </div>
-      <div class="blog-card-body">
-        <span class="blog-card-tag">Guide</span>
-        <h3>The 9-Stage Pipeline: How PromptX Transforms Raw Prompts Into Mastercraft</h3>
-        <p>A deep dive into each stage of our neural enhancement pipeline — from intent detection to final quality scoring.</p>
-        <div class="blog-card-meta">
-          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> May 15, 2026</span>
-          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 8 min read</span>
-        </div>
-      </div>
-    </article>
-
-    <article class="blog-card">
-      <div class="blog-card-image">
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      </div>
-      <div class="blog-card-body">
-        <span class="blog-card-tag">Engineering</span>
-        <h3>Multi-Model Fallback: Why Relying on One LLM Is a Mistake</h3>
-        <p>How automatic failover across Gemini, NVIDIA, and HuggingFace keeps your prompts processing when a model goes down.</p>
-        <div class="blog-card-meta">
-          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> May 8, 2026</span>
-          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 6 min read</span>
-        </div>
-      </div>
-    </article>
-
-    <article class="blog-card">
-      <div class="blog-card-image">
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      </div>
-      <div class="blog-card-body">
-        <span class="blog-card-tag">Tutorial</span>
-        <h3>A/B Testing Prompts: How to Measure What Actually Works</h3>
-        <p>Learn how to generate three prompt variations, score them across six quality dimensions, and pick the winner.</p>
-        <div class="blog-card-meta">
-          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Apr 22, 2026</span>
-          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 5 min read</span>
-        </div>
-      </div>
-    </article>
-
-    <article class="blog-card">
-      <div class="blog-card-image">
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-      </div>
-      <div class="blog-card-body">
-        <span class="blog-card-tag">Use Case</span>
-        <h3>Website Deep Extraction: Turning URLs Into AI-Ready Context</h3>
-        <p>How PromptX scrapes, summarizes, and transforms website content into structured prompt material.</p>
-        <div class="blog-card-meta">
-          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Apr 10, 2026</span>
-          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 7 min read</span>
-        </div>
-      </div>
-    </article>
-
-    <article class="blog-card">
-      <div class="blog-card-image">
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-      </div>
-      <div class="blog-card-body">
-        <span class="blog-card-tag">Product</span>
-        <h3>PromptX v2.0: What's New in the Neural Enhancement Protocol</h3>
-        <p>A tour of the latest features — cyberpunk UI redesign, Spline 3D integration, and improved quality scoring.</p>
-        <div class="blog-card-meta">
-          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Mar 28, 2026</span>
-          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 4 min read</span>
-        </div>
-      </div>
-    </article>
-
-    <article class="blog-card">
-      <div class="blog-card-image">
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-      </div>
-      <div class="blog-card-body">
-        <span class="blog-card-tag">Guide</span>
-        <h3>The CREATE Framework Applied: How We Score Prompts Across 6 Dimensions</h3>
-        <p>Clarity, specificity, structure, context, constraints, and format — our scoring methodology explained.</p>
-        <div class="blog-card-meta">
-          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Mar 14, 2026</span>
-          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 6 min read</span>
-        </div>
-      </div>
-    </article>
-  </section>
-
-  <!-- Newsletter -->
-  <section class="newsletter-section">
-    <div class="section-header reveal">
-      <h2>Stay in the loop</h2>
-    </div>
-    <p style="color: var(--text-secondary); max-width: 500px; margin: 0 auto;">Get prompt engineering tips, product updates, and AI insights delivered to your inbox. No spam, ever.</p>
-    <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
-      <input type="email" placeholder="you@example.com" required>
-      <button type="submit" class="btn-primary" style="white-space: nowrap;">Subscribe</button>
-    </form>
-  </section>
-
-  <!-- CTA -->
-  <section class="page-cta">
-    <h2>Ready to write better prompts?</h2>
-    <p>Put these insights into practice. Start enhancing your prompts today.</p>
-    <a href="/chat" class="btn-primary">Launch Terminal</a>
-  </section>
-
-  <!-- Footer -->
   <footer class="footer">
-    <div class="footer-content">
-      <div class="footer-brand">
-        <img src="/Public/bot-img.png" alt="PromptX">
-        <span>PromptX</span>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a href="/" class="brand">
+            <img class="brand-logo" src="/Public/promptmax-logo-cropped.png" alt="PromptmaX">
+            <span class="sr-only">PromptmaX</span>
+          </a>
+          <p>Prompt engineering OS for enhancement, scoring, comparison, and reusable AI workflows.</p>
+        </div>
+        <div>
+          <h4>Product</h4>
+          <nav>
+            <a href="/product">Product</a>
+            <a href="/chat">Prompt Playground</a>
+            <a href="/builder">AI Builder</a>
+            <a href="/integrations">Integrations</a>
+          </nav>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <nav>
+            <a href="/resources">Resources</a>
+            <a href="/blog">Blog</a>
+            <a href="/docs">Docs</a>
+            <a href="https://github.com/Santosh-Prasad-Verma/PromptX" target="_blank" rel="noreferrer">GitHub</a>
+          </nav>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <nav>
+            <a href="/about">About</a>
+            <a href="/careers">Contribute</a>
+            <a href="/developers">Developers</a>
+            <a href="/operators">Operators</a>
+          </nav>
+        </div>
       </div>
-      <div class="footer-links">
-        <a href="/">Home</a>
-        <a href="/blog">Blog</a>
-        <a href="/pricing">Pricing</a>
-        <a href="/docs">Docs</a>
-        <a href="https://github.com/Santosh-Prasad-Verma/PromptX" target="_blank">GitHub</a>
+      <div class="footer-bottom">
+        <span>&copy; <span id="year">2026</span> PromptmaX</span>
+        <span>Built for real prompt workflows.</span>
       </div>
-      <p>&copy; 2026 PromptX. All rights reserved.</p>
     </div>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="/scripts/effects.js"></script>
+  <script src="/scripts/page.js"></script>
   <script>
-    lucide.createIcons();
-    function subscribeNewsletter(e) {
-      e.preventDefault();
-      const input = e.target.querySelector('input');
-      alert('Subscribed! Welcome to the PromptX newsletter.');
-      input.value = '';
+    function subscribeNewsletter(event) {
+      event.preventDefault();
+      var input = event.target.querySelector("input");
+      if (input) input.value = "";
     }
   </script>
 </body>
