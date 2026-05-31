@@ -416,6 +416,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   ensureSelectedPlan();
+  if (window.lucide) window.lucide.createIcons();
+
   if (modeSelect) {
     activeMode = modeSelect.value || "generate";
   }
