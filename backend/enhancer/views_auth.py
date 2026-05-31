@@ -10,6 +10,8 @@ from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.models import Token
+from .auth import SupabaseJWTAuthentication
+
 
 from .serializers_auth import (
     LoginSerializer,
@@ -248,7 +250,7 @@ class TokenObtainView(APIView):
 
 
 class CurrentUserView(APIView):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication, SupabaseJWTAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -259,7 +261,7 @@ class CurrentUserView(APIView):
 
 
 class SelectPlanView(APIView):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication, SupabaseJWTAuthentication]
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -295,7 +297,7 @@ class SelectPlanView(APIView):
 
 
 class RazorpayCreateOrderView(APIView):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication, SupabaseJWTAuthentication]
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -364,7 +366,7 @@ class RazorpayCreateOrderView(APIView):
 
 
 class RazorpayVerifyPaymentView(APIView):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication, SupabaseJWTAuthentication]
     permission_classes = [IsAuthenticated]
 
     def post(self, request):

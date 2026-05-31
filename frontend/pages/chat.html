@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600;700&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/styles/page.css?v=1.0.2">
+  <link rel="stylesheet" href="/styles/page.css?v=1.0.3">
   <script src="https://unpkg.com/lucide@latest" defer></script>
 </head>
 <body class="chat-page-body">
@@ -58,24 +58,37 @@
       </div>
 
       <div class="sidebar-bottom">
-        <div id="user-profile-card" class="user-profile-card">
-          <div class="user-avatar" id="user-avatar-initial">U</div>
-          <div class="user-details">
-            <span class="user-name" id="user-profile-name">My Account</span>
-            <span class="user-email" id="user-profile-email">Not signed in</span>
-            <div class="user-plan-badge" id="user-profile-plan">Free Plan</div>
+        <!-- Floating Profile Popup Menu (ChatGPT style) -->
+        <div id="profile-popup-menu" class="profile-popup-menu">
+          <div class="popup-header">
+            <span class="popup-title">Account Settings</span>
           </div>
-        </div>
-        
-        <div class="sidebar-actions">
-          <a href="/pricing" class="sidebar-action-btn">
+          <div class="popup-divider"></div>
+          <a href="/pricing" class="popup-item">
             <i data-lucide="credit-card" aria-hidden="true"></i>
             <span>Plans & Billing</span>
           </a>
-          <button id="logout-btn" class="sidebar-action-btn logout-btn">
+          <a href="/docs" class="popup-item">
+            <i data-lucide="help-circle" aria-hidden="true"></i>
+            <span>Help & Docs</span>
+          </a>
+          <div class="popup-divider"></div>
+          <button id="logout-btn" class="popup-item logout-btn">
             <i data-lucide="log-out" aria-hidden="true"></i>
             <span>Sign Out</span>
           </button>
+        </div>
+
+        <div id="user-profile-card" class="user-profile-card" role="button" aria-haspopup="true" aria-expanded="false" tabindex="0">
+          <div class="user-profile-card-left">
+            <div class="user-avatar" id="user-avatar-initial">U</div>
+            <div class="user-details">
+              <span class="user-name" id="user-profile-name">My Account</span>
+              <span class="user-email" id="user-profile-email">Not signed in</span>
+              <div class="user-plan-badge" id="user-profile-plan">Free Plan</div>
+            </div>
+          </div>
+          <i data-lucide="more-horizontal" class="profile-more-icon" aria-hidden="true"></i>
         </div>
       </div>
     </aside>

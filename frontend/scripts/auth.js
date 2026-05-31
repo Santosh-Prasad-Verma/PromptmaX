@@ -62,6 +62,35 @@ document.addEventListener("DOMContentLoaded", function () {
     window.location.href = "/pricing?first=1";
   }
 
+  // Auto-capture Supabase session on page load (handles redirect verifications)
+  if (window.getSupabaseClient) {
+    window.getSupabaseClient(async function (supabase) {
+      if (supabase) {
+        try {
+          var sessionResult = await supabase.auth.getSession();
+          var session = sessionResult.data?.session;
+          var user = sessionResult.data?.session?.user;
+          if (session && session.access_token) {
+            localStorage.setItem("promptmax_token", session.access_token);
+            var localUserData = {
+              email: user.email,
+              name: user.user_metadata?.full_name || user.user_metadata?.name || "Supabase User",
+              plan: { plan: "free", label: "Free", price_rs: 0 }
+            };
+            localStorage.setItem("promptmax_user", JSON.stringify(localUserData));
+            
+            // Auto-redirect to chat if on login page
+            if (window.location.pathname.indexOf("/login") !== -1 || window.location.pathname.indexOf("/register") !== -1) {
+              window.location.href = "/chat";
+            }
+          }
+        } catch (err) {
+          console.error("Auth session auto-capture failed:", err);
+        }
+      }
+    });
+  }
+
   function getValue(id) {
     var el = byId(id);
     return el ? el.value.trim() : "";

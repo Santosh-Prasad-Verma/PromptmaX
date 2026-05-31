@@ -1641,8 +1641,20 @@ h3 {
   height: 100%;
   box-sizing: border-box;
   overflow: hidden;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 100;
+}
+
+/* Desktop sidebar collapsed styling */
+body.sidebar-collapsed .chat-sidebar {
+  width: 0 !important;
+  padding: 0 !important;
+  border-right-color: transparent !important;
+  pointer-events: none;
+}
+
+body.sidebar-collapsed .sidebar-toggle-btn {
+  display: inline-flex !important;
 }
 
 .sidebar-top {
@@ -1655,7 +1667,7 @@ h3 {
 }
 
 .sidebar-close-btn {
-  display: none;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 44px;
@@ -1836,13 +1848,52 @@ h3 {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  position: relative;
 }
 
 .user-profile-card {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
-  padding: 8px 4px;
+  padding: 10px 12px;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.user-profile-card:hover {
+  background: rgba(23, 23, 23, 0.05);
+  border-color: rgba(23, 23, 23, 0.1);
+}
+
+.user-profile-card:active,
+.user-profile-card.active {
+  background: #fffde8;
+  border-color: #171717;
+  box-shadow: 2px 2px 0 #171717;
+}
+
+.user-profile-card-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex-grow: 1;
+}
+
+.profile-more-icon {
+  width: 18px;
+  height: 18px;
+  color: rgba(23, 23, 23, 0.5);
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.user-profile-card:hover .profile-more-icon {
+  color: #171717;
 }
 
 .user-avatar {
@@ -1902,21 +1953,58 @@ h3 {
   letter-spacing: 0.03em;
 }
 
-.sidebar-actions {
+/* Floating profile context popup menu styled like ChatGPT */
+.profile-popup-menu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 16px;
+  right: 16px;
+  background: #fffde8;
+  border: 2px solid #171717;
+  border-radius: 12px;
+  z-index: 150;
+  box-shadow: 4px 4px 0 #171717;
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
-.sidebar-action-btn {
+.profile-popup-menu.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.popup-header {
+  padding: 6px 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(23, 23, 23, 0.4);
+}
+
+.popup-divider {
+  height: 2px;
+  background: rgba(23, 23, 23, 0.08);
+  margin: 4px 0;
+}
+
+.popup-item {
   display: flex;
   align-items: center;
   gap: 10px;
   width: 100%;
-  padding: 8px 10px;
+  padding: 10px 12px;
   background: transparent;
-  border: 1px solid transparent;
-  border-radius: 6px;
+  border: none;
+  border-radius: 8px;
   font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
@@ -1924,21 +2012,21 @@ h3 {
   text-decoration: none;
   cursor: pointer;
   transition: all 0.15s ease;
-  box-sizing: border-box;
   text-align: left;
+  box-sizing: border-box;
 }
 
-.sidebar-action-btn:hover {
-  background: rgba(23, 23, 23, 0.05);
-  color: var(--ink);
+.popup-item:hover {
+  background: rgba(0, 83, 70, 0.08);
+  color: #005346;
 }
 
-.sidebar-action-btn.logout-btn:hover {
-  background: rgba(220, 53, 69, 0.1);
+.popup-item.logout-btn:hover {
+  background: rgba(220, 53, 69, 0.08);
   color: #dc3545;
 }
 
-.sidebar-action-btn i {
+.popup-item i {
   width: 16px;
   height: 16px;
 }

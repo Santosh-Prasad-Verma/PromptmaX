@@ -251,8 +251,9 @@ document.addEventListener("DOMContentLoaded", function () {
       // If guest, customize the logout button to be a sign-in button
       if (logoutBtn) {
         logoutBtn.innerHTML = '<i data-lucide="log-in" aria-hidden="true"></i><span>Sign In</span>';
-        logoutBtn.className = "sidebar-action-btn"; // remove danger colors
-        logoutBtn.onclick = function() {
+        logoutBtn.className = "popup-item"; // keep popup-item styling
+        logoutBtn.onclick = function(e) {
+          e.stopPropagation();
           window.location.href = "/login";
         };
       }
@@ -280,8 +281,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // Logged in: keep logout button as standard logout trigger
     if (logoutBtn) {
       logoutBtn.innerHTML = '<i data-lucide="log-out" aria-hidden="true"></i><span>Sign Out</span>';
-      logoutBtn.className = "sidebar-action-btn logout-btn";
-      logoutBtn.onclick = function() {
+      logoutBtn.className = "popup-item logout-btn";
+      logoutBtn.onclick = function(e) {
+        e.stopPropagation();
         localStorage.removeItem("promptmax_token");
         localStorage.removeItem("promptmax_user");
         window.location.href = "/";
@@ -482,37 +484,61 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  var logoutBtn = document.getElementById("logout-btn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", function () {
-      localStorage.removeItem("promptmax_token");
-      localStorage.removeItem("promptmax_user");
-      window.location.href = "/";
-    });
-  }
-
-  var sidebarToggle = document.getElementById("sidebar-toggle");
-  var sidebar = document.getElementById("chat-sidebar");
-  if (sidebarToggle && sidebar) {
-    sidebarToggle.addEventListener("click", function (event) {
+  // Interactive user profile card popup settings menu (ChatGPT style)
+  var userProfileCard = document.getElementById("user-profile-card");
+  var profilePopupMenu = document.getElementById("profile-popup-menu");
+  
+  if (userProfileCard && profilePopupMenu) {
+    userProfileCard.addEventListener("click", function (event) {
       event.stopPropagation();
-      sidebar.classList.toggle("active");
+      profilePopupMenu.classList.toggle("active");
+      userProfileCard.classList.toggle("active");
     });
 
-    // Close mobile sidebar when clicking main content
+    // Close settings popup if clicked outside
     document.addEventListener("click", function (event) {
-      if (window.innerWidth <= 768 && sidebar.classList.contains("active")) {
-        if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) {
-          sidebar.classList.remove("active");
-        }
+      if (!profilePopupMenu.contains(event.target) && !userProfileCard.contains(event.target)) {
+        profilePopupMenu.classList.remove("active");
+        userProfileCard.classList.remove("active");
       }
     });
   }
 
+  var sidebarToggle = document.getElementById("sidebar-toggle");
   var sidebarClose = document.getElementById("sidebar-close");
-  if (sidebarClose && sidebar) {
-    sidebarClose.addEventListener("click", function () {
-      sidebar.classList.remove("active");
+  var sidebar = document.getElementById("chat-sidebar");
+  var body = document.body;
+
+  if (sidebar) {
+    if (sidebarToggle) {
+      sidebarToggle.addEventListener("click", function (event) {
+        event.stopPropagation();
+        if (window.innerWidth <= 768) {
+          sidebar.classList.toggle("active");
+        } else {
+          body.classList.toggle("sidebar-collapsed");
+        }
+      });
+    }
+
+    if (sidebarClose) {
+      sidebarClose.addEventListener("click", function (event) {
+        event.stopPropagation();
+        if (window.innerWidth <= 768) {
+          sidebar.classList.remove("active");
+        } else {
+          body.classList.add("sidebar-collapsed");
+        }
+      });
+    }
+
+    // Close mobile sidebar when clicking main content
+    document.addEventListener("click", function (event) {
+      if (window.innerWidth <= 768 && sidebar.classList.contains("active")) {
+        if (!sidebar.contains(event.target) && (!sidebarToggle || !sidebarToggle.contains(event.target))) {
+          sidebar.classList.remove("active");
+        }
+      }
     });
   }
 
