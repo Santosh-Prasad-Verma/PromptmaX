@@ -174,6 +174,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 email: email,
                 password: password,
                 options: {
+                  emailRedirectTo: window.location.origin + '/login',
                   data: {
                     full_name: name
                   }
