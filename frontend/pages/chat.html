@@ -27,26 +27,26 @@
   </nav>
 
   <main class="chat-page">
-    <section class="chat-workspace" aria-label="PromptmaX chat workspace">
-      <section id="chat-thread" class="chat-thread" aria-live="polite"></section>
+      <section class="chat-workspace" aria-label="PromptmaX chat workspace">
+        <section id="chat-thread" class="chat-thread" aria-live="polite"></section>
 
-      <form id="chat-form" class="chat-composer">
-        <div class="chat-input-row">
-          <select id="chat-mode" class="chat-mode-select" aria-label="Mode">
-            <option value="generate" selected>Generate</option>
-            <option value="enhance">Enhance</option>
-            <option value="analyze">Analyze</option>
-            <option value="abtest">A/B Test</option>
-          </select>
-          <textarea id="chat-prompt" class="chat-input" placeholder="Message PromptmaX..." rows="1" required></textarea>
-          <button id="chat-submit" class="chat-send" type="submit" aria-label="Send prompt">
-            <i data-lucide="arrow-up" aria-hidden="true"></i>
-          </button>
-        </div>
+        <form id="chat-form" class="chat-composer">
+          <div class="chat-input-row">
+            <select id="chat-mode" class="chat-mode-select" aria-label="Mode">
+              <option value="generate" selected>Generate</option>
+              <option value="enhance">Enhance</option>
+              <option value="analyze">Analyze</option>
+              <option value="abtest">A/B Test</option>
+            </select>
+            <textarea id="chat-prompt" class="chat-input" placeholder="Message PromptmaX..." rows="1" required></textarea>
+            <button id="chat-submit" class="chat-send" type="submit" aria-label="Send prompt">
+              <i data-lucide="arrow-up" aria-hidden="true"></i>
+            </button>
+          </div>
 
-        <div id="chat-status" class="chat-status" role="status" aria-live="polite"></div>
-      </form>
-    </section>
+          <div id="chat-status" class="chat-status" role="status" aria-live="polite"></div>
+        </form>
+      </section>
   </main>
 
   <script src="/scripts/page.js"></script>

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light dark">
   <meta name="supported-color-schemes" content="light dark">
-  <title>Reset your password</title>
+  <title>Verify your email</title>
   <!--[if mso]><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->
   <style>
     @media (prefers-color-scheme: dark) {
@@ -13,14 +13,14 @@
       .card-bg { background-color: #242420 !important; }
       .text-primary { color: #f7f6e5 !important; }
       .text-muted { color: #a3a398 !important; }
-      .otp-box { background-color: #2a2a24 !important; border-color: #b8860b !important; }
+      .otp-box { background-color: #2a2a24 !important; border-color: #005346 !important; }
     }
   </style>
 </head>
 <body style="margin:0;padding:0;background-color:#edecd8;font-family:'Inter',Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased;">
   <!-- Preheader -->
   <div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:#edecd8;">
-    Your password reset code is {{ otp }} — Use this code to set a new password.
+    Your verification code is 847291 — Enter this code to verify your PromptmaX account.
     &#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;
   </div>
 
@@ -31,14 +31,14 @@
 
           <!-- Header Bar -->
           <tr>
-            <td style="background:linear-gradient(135deg,#3d2b00,#5c4100);border-radius:14px 14px 0 0;padding:28px 32px;">
+            <td style="background:linear-gradient(135deg,#005346,#00473d);border-radius:14px 14px 0 0;padding:28px 32px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                   <td>
                     <span style="font-size:22px;font-weight:800;color:#fffbe7;letter-spacing:-0.3px;">Prompt</span><span style="font-size:22px;font-weight:800;color:#ead7ff;letter-spacing:-0.3px;">maX</span>
                   </td>
                   <td align="right">
-                    <span style="font-size:26px;">&#128273;</span>
+                    <span style="font-size:26px;">&#128274;</span>
                   </td>
                 </tr>
               </table>
@@ -49,23 +49,23 @@
           <tr>
             <td style="background-color:#fffde8;border-left:2px solid #dbdac5;border-right:2px solid #dbdac5;padding:36px 32px 20px;" class="card-bg">
               <h1 style="margin:0 0 8px;font-size:26px;font-weight:800;color:#171717;line-height:1.2;" class="text-primary">
-                Reset your password
+                Verify your email
               </h1>
               <p style="margin:0 0 28px;font-size:15px;line-height:1.6;color:#57574d;font-weight:500;" class="text-muted">
-                Use this one&#8209;time code to set a new password for <strong style="color:#171717;">{{ user_email }}</strong>.
+                Use this one&#8209;time code to finish creating your account for <strong style="color:#171717;">tarun@example.com</strong>.
               </p>
 
               <!-- OTP Box -->
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td style="background-color:#f7f6e5;border:2px solid #dbdac5;border-left:5px solid #b8860b;border-radius:12px;padding:22px 28px;text-align:center;" class="otp-box">
-                    <span style="font-size:38px;font-weight:900;letter-spacing:10px;color:#171717;font-family:'Courier New',Courier,monospace;" class="text-primary">{{ otp }}</span>
+                  <td style="background-color:#f7f6e5;border:2px solid #dbdac5;border-left:5px solid #005346;border-radius:12px;padding:22px 28px;text-align:center;" class="otp-box">
+                    <span style="font-size:38px;font-weight:900;letter-spacing:10px;color:#171717;font-family:'Courier New',Courier,monospace;" class="text-primary">847291</span>
                   </td>
                 </tr>
               </table>
 
               <p style="margin:24px 0 0;font-size:13px;line-height:1.6;color:#757566;" class="text-muted">
-                &#9200; This code expires in <strong style="color:#b8860b;">10 minutes</strong>.
+                &#9200; This code expires in <strong style="color:#005346;">10 minutes</strong>. If you didn't request this, you can safely ignore this email.
               </p>
             </td>
           </tr>
@@ -77,17 +77,17 @@
             </td>
           </tr>
 
-          <!-- Security Warning -->
+          <!-- Security Tip -->
           <tr>
             <td style="background-color:#fffde8;border-left:2px solid #dbdac5;border-right:2px solid #dbdac5;padding:18px 32px;" class="card-bg">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                   <td width="28" valign="top" style="padding-right:10px;">
-                    <span style="font-size:16px;">&#9888;&#65039;</span>
+                    <span style="font-size:16px;">&#128161;</span>
                   </td>
                   <td>
                     <p style="margin:0;font-size:12px;line-height:1.55;color:#757566;font-weight:500;" class="text-muted">
-                      <strong style="color:#8b6914;">Didn't request this?</strong> If you didn't ask to reset your password, someone may be trying to access your account. You can safely ignore this email and your password will remain unchanged.
+                      <strong style="color:#57574d;">Security tip:</strong> PromptmaX will never ask for your password via email. Only enter this code on the official PromptmaX verification page.
                     </p>
                   </td>
                 </tr>
@@ -102,7 +102,7 @@
                 PromptmaX &mdash; AI Prompt Engineering Platform
               </p>
               <p style="margin:6px 0 0;font-size:11px;color:#a3a398;">
-                &copy; {{ year|default:"2026" }} PromptmaX. All rights reserved.
+                &copy; 2026 PromptmaX. All rights reserved.
               </p>
             </td>
           </tr>

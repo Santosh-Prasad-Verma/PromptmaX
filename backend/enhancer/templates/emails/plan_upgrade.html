@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-schemes" content="light dark">
+  <title>Plan upgraded</title>
+  <!--[if mso]><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .email-bg { background-color: #1a1a1a !important; }
+      .card-bg { background-color: #242420 !important; }
+      .plan-card { background-color: #2a2a24 !important; border-color: #005346 !important; }
+      .feature-row { background-color: #2a2a24 !important; }
+      .text-primary { color: #f7f6e5 !important; }
+      .text-muted { color: #a3a398 !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background-color:#edecd8;font-family:'Inter',Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased;">
+  <!-- Preheader -->
+  <div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:#edecd8;">
+    Your PromptmaX plan has been upgraded to {{ plan_name }}. Enjoy your new features!
+    &#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;
+  </div>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#edecd8;" class="email-bg">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+        <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;">
+
+          <!-- Header Bar -->
+          <tr>
+            <td style="background:linear-gradient(135deg,#1a0a2e,#2d1654,#1a0a2e);border-radius:14px 14px 0 0;padding:28px 32px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td>
+                    <span style="font-size:22px;font-weight:800;color:#fffbe7;letter-spacing:-0.3px;">Prompt</span><span style="font-size:22px;font-weight:800;color:#ead7ff;letter-spacing:-0.3px;">maX</span>
+                  </td>
+                  <td align="right">
+                    <span style="font-size:26px;">&#128640;</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Main Card -->
+          <tr>
+            <td style="background-color:#fffde8;border-left:2px solid #dbdac5;border-right:2px solid #dbdac5;padding:36px 32px 24px;" class="card-bg">
+              <h1 style="margin:0 0 8px;font-size:26px;font-weight:800;color:#171717;line-height:1.25;" class="text-primary">
+                You're now on {{ plan_name }}! &#128640;
+              </h1>
+              <p style="margin:0;font-size:15px;line-height:1.6;color:#57574d;font-weight:500;" class="text-muted">
+                Your PromptmaX plan has been upgraded successfully.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Plan Details Card -->
+          <tr>
+            <td style="background-color:#fffde8;border-left:2px solid #dbdac5;border-right:2px solid #dbdac5;padding:0 32px 20px;" class="card-bg">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="background-color:#f7f6e5;border:2px solid #005346;border-radius:12px;padding:20px 22px;" class="plan-card">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="padding-bottom:12px;border-bottom:1px solid #dbdac5;">
+                          <span style="font-size:11px;font-weight:800;color:#005346;letter-spacing:0.08em;text-transform:uppercase;">YOUR PLAN</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding-top:14px;">
+                          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                              <td style="padding-bottom:10px;">
+                                <span style="font-size:13px;font-weight:600;color:#757566;">Plan</span>
+                              </td>
+                              <td align="right" style="padding-bottom:10px;">
+                                <span style="font-size:14px;font-weight:800;color:#171717;" class="text-primary">{{ plan_name }}</span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td style="padding-bottom:10px;">
+                                <span style="font-size:13px;font-weight:600;color:#757566;">Price</span>
+                              </td>
+                              <td align="right" style="padding-bottom:10px;">
+                                <span style="font-size:14px;font-weight:800;color:#171717;" class="text-primary">&#8377;{{ plan_price }}/month</span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <span style="font-size:13px;font-weight:600;color:#757566;">Account</span>
+                              </td>
+                              <td align="right">
+                                <span style="font-size:14px;font-weight:800;color:#171717;" class="text-primary">{{ user_email }}</span>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Unlocked Features -->
+          <tr>
+            <td style="background-color:#fffde8;border-left:2px solid #dbdac5;border-right:2px solid #dbdac5;padding:0 32px 8px;" class="card-bg">
+              <p style="margin:0 0 12px;font-size:13px;font-weight:800;color:#005346;letter-spacing:0.04em;text-transform:uppercase;">
+                &#9989; Unlocked features
+              </p>
+
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:8px;">
+                <tr>
+                  <td style="background-color:#f7f6e5;border:1px solid #dbdac5;border-radius:8px;padding:12px 16px;" class="feature-row">
+                    <span style="font-size:14px;font-weight:700;color:#171717;" class="text-primary">&#10024; Unlimited prompt enhancements</span>
+                  </td>
+                </tr>
+              </table>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:8px;">
+                <tr>
+                  <td style="background-color:#f7f6e5;border:1px solid #dbdac5;border-radius:8px;padding:12px 16px;" class="feature-row">
+                    <span style="font-size:14px;font-weight:700;color:#171717;" class="text-primary">&#9889; Priority AI models</span>
+                  </td>
+                </tr>
+              </table>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:8px;">
+                <tr>
+                  <td style="background-color:#f7f6e5;border:1px solid #dbdac5;border-radius:8px;padding:12px 16px;" class="feature-row">
+                    <span style="font-size:14px;font-weight:700;color:#171717;" class="text-primary">&#128202; Advanced analytics &amp; insights</span>
+                  </td>
+                </tr>
+              </table>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:8px;">
+                <tr>
+                  <td style="background-color:#f7f6e5;border:1px solid #dbdac5;border-radius:8px;padding:12px 16px;" class="feature-row">
+                    <span style="font-size:14px;font-weight:700;color:#171717;" class="text-primary">&#128101; Team collaboration</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- CTA Button -->
+          <tr>
+            <td style="background-color:#fffde8;border-left:2px solid #dbdac5;border-right:2px solid #dbdac5;padding:16px 32px 32px;" class="card-bg">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center">
+                <tr>
+                  <td style="background-color:#005346;border-radius:10px;">
+                    <a href="{{ site_url|default:'#' }}" target="_blank" style="display:inline-block;padding:14px 36px;color:#fffbe7;font-size:15px;font-weight:800;text-decoration:none;letter-spacing:0.2px;">
+                      Start using {{ plan_name }} &#8594;
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color:#f7f6e5;border:2px solid #dbdac5;border-top:none;border-radius:0 0 14px 14px;padding:22px 32px;text-align:center;">
+              <p style="margin:0;font-size:12px;line-height:1.5;color:#757566;font-weight:600;">
+                PromptmaX &mdash; AI Prompt Engineering Platform
+              </p>
+              <p style="margin:6px 0 0;font-size:11px;color:#a3a398;">
+                &copy; {{ year|default:"2026" }} PromptmaX. All rights reserved.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

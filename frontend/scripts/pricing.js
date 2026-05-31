@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
       method: payload ? "POST" : "GET",
       headers: Object.assign(
         { "Content-Type": "application/json" },
-        token ? { Authorization: "Token " + token } : {}
+        token ? { Authorization: (token.indexOf(".") !== -1 ? "Bearer " : "Token ") + token } : {}
       ),
       credentials: "same-origin",
       body: payload ? JSON.stringify(payload) : undefined,

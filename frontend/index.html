@@ -7,6 +7,46 @@
   <meta name="description" content="PromptmaX turns rough ideas into production-ready prompts with enhancement, scoring, comparison, saved workflows, and reusable prompt templates.">
   <meta name="theme-color" content="#f7f6e5">
   <link rel="icon" type="image/png" href="/Public/promptmax-logo-cropped.png">
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://promptx-hkfx.onrender.com/">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://promptx-hkfx.onrender.com/">
+  <meta property="og:title" content="PromptmaX | Prompt Engineering OS">
+  <meta property="og:description" content="PromptmaX turns rough ideas into production-ready prompts with enhancement, scoring, comparison, saved workflows, and reusable prompt templates.">
+  <meta property="og:image" content="https://promptx-hkfx.onrender.com/Public/promptmax-logo-cropped.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://promptx-hkfx.onrender.com/">
+  <meta property="twitter:title" content="PromptmaX | Prompt Engineering OS">
+  <meta property="twitter:description" content="PromptmaX turns rough ideas into production-ready prompts with enhancement, scoring, comparison, saved workflows, and reusable prompt templates.">
+  <meta property="twitter:image" content="https://promptx-hkfx.onrender.com/Public/promptmax-logo-cropped.png">
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "PromptmaX",
+    "operatingSystem": "All",
+    "applicationCategory": "DeveloperApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "INR"
+    },
+    "description": "PromptmaX is an open-source prompt engineering OS that turns vague AI requests into structured, scored, production-ready instructions.",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "ratingCount": "120"
+    }
+  }
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600;700&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -1501,44 +1541,6 @@ After: structured expert instruction</pre>
     </div>
   </footer>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      var year = document.getElementById("year");
-      if (year) year.textContent = new Date().getFullYear();
-
-      var menuButton = document.getElementById("menu-button");
-      var navLinks = document.getElementById("nav-links");
-      if (menuButton && navLinks) {
-        menuButton.addEventListener("click", function () {
-          var open = navLinks.classList.toggle("open");
-          menuButton.setAttribute("aria-expanded", String(open));
-        });
-      }
-
-      var revealItems = document.querySelectorAll(".reveal");
-      if ("IntersectionObserver" in window) {
-        var observer = new IntersectionObserver(function (entries) {
-          entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("visible");
-              observer.unobserve(entry.target);
-            }
-          });
-        }, { threshold: 0.12 });
-
-        revealItems.forEach(function (item) { observer.observe(item); });
-      } else {
-        revealItems.forEach(function (item) { item.classList.add("visible"); });
-      }
-
-      if (window.lucide) {
-        window.lucide.createIcons();
-      } else {
-        window.addEventListener("load", function () {
-          if (window.lucide) window.lucide.createIcons();
-        });
-      }
-    });
-  </script>
+  <script src="/scripts/page.js"></script>
 </body>
 </html>

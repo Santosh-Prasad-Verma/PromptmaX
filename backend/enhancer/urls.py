@@ -34,6 +34,8 @@ from .views_auth import (
     TokenObtainView,
 )
 
+from .views_dynamic import ExtractVariablesView
+
 app_name = 'enhancer'
 
 router = DefaultRouter()
@@ -43,6 +45,7 @@ router.register(r'versions', PromptVersionViewSet, basename='promptversion')
 
 urlpatterns = [
     path('api/', include(router.urls)),
+    path('extract-variables/', ExtractVariablesView.as_view(), name='extract-variables'),
     path('execute/', ExecutePromptView.as_view(), name='execute'),
     # Core endpoints
     path('enhance/', EnhancePromptView.as_view(), name='enhance'),

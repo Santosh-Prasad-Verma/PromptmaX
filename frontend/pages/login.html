@@ -131,6 +131,11 @@
   </footer>
 
   <script src="/scripts/page.js"></script>
+  <script>
+    window.SUPABASE_URL = "{{ SUPABASE_URL }}";
+    window.SUPABASE_ANON_KEY = "{{ SUPABASE_ANON_KEY }}";
+  </script>
+  <script src="/scripts/supabase-client.js"></script>
   <script src="/scripts/auth.js"></script>
 </body>
 </html>

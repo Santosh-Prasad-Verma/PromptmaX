@@ -1,4 +1,9 @@
 """Views for PromptX API — unified DRF layer."""
+# Supabase dual-write sync (fire-and-forget, never blocks responses)
+from enhancer.supabase_sync import (
+    sync_prompt_history, sync_prompt_asset, sync_prompt_version,
+    get_supabase_user_id,
+)
 
 import time
 import re
@@ -8,6 +13,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, viewsets
 from rest_framework.authentication import TokenAuthentication
+from enhancer.auth import SupabaseJWTAuthentication
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
@@ -142,7 +148,7 @@ class TaskStatusView(APIView):
 
 
 class EnhancePromptView(APIView):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication, SupabaseJWTAuthentication]
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -304,7 +310,7 @@ class EnhancePromptView(APIView):
 
     def _save_history(self, request, result):
         try:
-            PromptHistory.objects.create(
+            history = PromptHistory.objects.create(
                 user=request.user if request.user.is_authenticated else None,
                 session_id=request.session.session_key or '',
                 original_prompt=result.original_prompt,
@@ -326,12 +332,18 @@ class EnhancePromptView(APIView):
                 enhancement_method=result.enhancement_method,
                 pipeline_stages_completed=result.pipeline_stages,
             )
+            # Dual-write to Supabase (fire-and-forget)
+            try:
+                sb_uid = get_supabase_user_id(request)
+                sync_prompt_history(history, supabase_user_id=sb_uid)
+            except Exception as sync_err:
+                logger.debug("Supabase history sync skipped: %s", sync_err)
         except Exception as e:
             logger.error(f"Failed to save history: {e}")
 
 
 class AnalyzePromptView(APIView):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication, SupabaseJWTAuthentication]
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -464,7 +476,7 @@ class ComparePromptsView(APIView):
 
 
 class ABTestView(APIView):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication, SupabaseJWTAuthentication]
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -703,13 +715,25 @@ class PromptAssetViewSet(viewsets.ModelViewSet):
             is_public=False
         )
         for version in asset.versions.all():
-            PromptVersion.objects.create(
+            new_ver = PromptVersion.objects.create(
                 asset=new_asset,
                 version_number=version.version_number,
                 content=version.content,
                 commit_message=version.commit_message,
                 quality_score=version.quality_score
             )
+            # Dual-write version to Supabase
+            try:
+                sync_prompt_version(new_ver)
+            except Exception:
+                pass
+        # Dual-write forked asset to Supabase
+        try:
+            sb_uid = get_supabase_user_id(request)
+            if sb_uid:
+                sync_prompt_asset(new_asset, sb_uid)
+        except Exception:
+            pass
         return Response(PromptAssetSerializer(new_asset).data, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['post'])
@@ -753,6 +777,11 @@ class PromptAssetViewSet(viewsets.ModelViewSet):
             quality_score=quality_score,
             history_reference=history_ref
         )
+        # Dual-write version to Supabase
+        try:
+            sync_prompt_version(new_version)
+        except Exception:
+            pass
 
         return Response(PromptVersionSerializer(new_version).data, status=status.HTTP_201_CREATED)
 
@@ -850,13 +879,25 @@ def fork_asset(request, asset):
     )
     # copy versions
     for version in asset.versions.all():
-        PromptVersion.objects.create(
+        new_ver = PromptVersion.objects.create(
             asset=new_asset,
             version_number=version.version_number,
             content=version.content,
             commit_message=version.commit_message,
             quality_score=version.quality_score
         )
+        # Dual-write version to Supabase
+        try:
+            sync_prompt_version(new_ver)
+        except Exception:
+            pass
+    # Dual-write forked asset to Supabase
+    try:
+        sb_uid = get_supabase_user_id(request)
+        if sb_uid:
+            sync_prompt_asset(new_asset, sb_uid)
+    except Exception:
+        pass
     return new_asset
 
 # Use python replacement for PromptAssetViewSet to add the actions instead of cat appending if it doesn't work.

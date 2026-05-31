@@ -2,12 +2,14 @@ services:
   web:
     build: .
     restart: always
+    working_dir: /app/backend
     ports:
       - "8000:8000"
     volumes:
       - .:/app:Z
     environment:
       - DEBUG=True
+      - PYTHONPATH=/app/backend
       - DJANGO_SETTINGS_MODULE=promptx_project.settings
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
@@ -20,10 +22,12 @@ services:
   worker:
     build: .
     restart: always
+    working_dir: /app/backend
     volumes:
       - .:/app:Z
     environment:
       - DEBUG=True
+      - PYTHONPATH=/app/backend
       - DJANGO_SETTINGS_MODULE=promptx_project.settings
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0

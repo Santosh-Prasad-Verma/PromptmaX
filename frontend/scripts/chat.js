@@ -177,12 +177,16 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   async function postJSON(path, payload) {
+    var headers = {
+      "Content-Type": "application/json",
+    };
+    var userToken = token();
+    if (userToken) {
+      headers["Authorization"] = (userToken.indexOf(".") !== -1 ? "Bearer " : "Token ") + userToken;
+    }
     var response = await fetch(path, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Token " + token(),
-      },
+      headers: headers,
       credentials: "same-origin",
       body: JSON.stringify(payload),
     });
@@ -196,9 +200,14 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   async function ensureSelectedPlan() {
+    if (!token()) {
+      planReady = true;
+      return;
+    }
+
     try {
       var response = await fetch("/api/v1/auth/me/", {
-        headers: { Authorization: "Token " + token() },
+        headers: { Authorization: (token().indexOf(".") !== -1 ? "Bearer " : "Token ") + token() },
         credentials: "same-origin",
       });
       var data = await response.json().catch(function () {
@@ -215,8 +224,9 @@ document.addEventListener("DOMContentLoaded", function () {
     } catch (error) {
       localStorage.removeItem("promptmax_token");
       localStorage.removeItem("promptmax_user");
-      window.location.href = "/login";
+      planReady = true;
     }
+
   }
 
   function autoGrowInput() {
@@ -265,12 +275,10 @@ document.addEventListener("DOMContentLoaded", function () {
     return lines.join("\n");
   }
 
-  if (!token()) {
-    window.location.href = "/login";
-    return;
-  }
-
   ensureSelectedPlan();
+  if (modeSelect) {
+    activeMode = modeSelect.value || "generate";
+  }
 
   if (input) {
     input.addEventListener("input", autoGrowInput);
