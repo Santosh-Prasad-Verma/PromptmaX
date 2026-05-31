@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="./frontend/Public/promptmax-logo-cropped.png" alt="PromptmaX Logo" width="180" />
+
 # 🌌 PROMPTX — NEURAL PROMPT PROTOCOL
 **[ SYSTEM STATUS: OPERATIONAL ]**  
 *The ultimate AI orchestration layer for precision-engineered instructions.*

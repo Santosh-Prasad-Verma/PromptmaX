@@ -97,11 +97,7 @@ class BatchEnhanceRequestSerializer(serializers.Serializer):
 class ExecutePromptSerializer(serializers.Serializer):
     prompt_text = serializers.CharField(min_length=1, max_length=15000)
     model = serializers.ChoiceField(
-        choices=[
-            'auto',
-            'g4f_gpt4o', 'g4f_gemini_flash', 'g4f_llama3_70b', 'g4f_gpt4o_mini',
-            'g4f_gpt5_nano',
-        ],
+        choices=['auto', 'mistral_large', 'mistral_small', 'codestral'],
         default='auto'
     )
     max_tokens = serializers.IntegerField(default=1000, min_value=10, max_value=8000)

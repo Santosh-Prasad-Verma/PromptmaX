@@ -7,7 +7,11 @@ import os
 
 
 def render_frontend(request, template_name):
-    response = render(request, template_name)
+    context = {
+        'SUPABASE_URL': getattr(settings, 'SUPABASE_URL', ''),
+        'SUPABASE_ANON_KEY': getattr(settings, 'SUPABASE_ANON_KEY', ''),
+    }
+    response = render(request, template_name, context)
     if settings.DEBUG:
         add_never_cache_headers(response)
     return response

@@ -54,7 +54,8 @@ INTENT_PATTERNS = {
             'code', 'program', 'function', 'script', 'algorithm',
             'debug', 'implement', 'api', 'endpoint', 'class',
             'module', 'library', 'framework', 'deploy', 'test',
-            'unit test', 'integration',
+            'unit test', 'integration', 'python', 'javascript',
+            'typescript', 'java', 'c++', 'rust', 'golang',
         ],
         'weight': 1.2,  # Higher weight because code tasks are very specific
     },

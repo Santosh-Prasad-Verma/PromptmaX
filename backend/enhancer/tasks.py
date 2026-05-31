@@ -14,17 +14,7 @@ from .utils.prompts import MASTER_PROMPT, build_website_analysis_prompt
 
 logger = logging.getLogger("enhancer")
 
-G4F_AVAILABLE = False
-try:
-    import g4f
-    from g4f.Provider import PollinationsAI, GeminiPro, IterListProvider
-    G4F_AVAILABLE = True
-except ImportError:
-    g4f = None
-    PollinationsAI = None
-    GeminiPro = None
-    IterListProvider = None
-    logger.warning("g4f package not installed - multi-model tasks unavailable")
+# G4F and PollinationsAI are removed, exclusively using official Mistral AI API
 
 
 def _store_task_result(task_id: str, result: dict, ttl: int = 3600):
@@ -262,45 +252,30 @@ def run_multi_model(self, prompt: str):
     task_id = self.request.id
     _store_task_result(task_id, {"status": "started", "progress": 0})
 
-    if not G4F_AVAILABLE:
-        data = {
-            "success": False,
-            "error": "g4f package is not installed. Install backend requirements to use multi-model.",
-        }
-        _store_task_result(task_id, {"status": "failed", "error": data["error"]})
-        return data
-
     models = [
-        {"name": "gpt-4.1-nano", "label": "GPT-4o", "provider": "pollinations"},
-        {"name": "mistral-small-3.1-24b", "label": "Mistral Small", "provider": "pollinations"},
-        {"name": "deepseek-r1", "label": "DeepSeek R1", "provider": "pollinations"},
-        {"name": "gpt-4.1-nano", "label": "GPT-4.1 Nano", "provider": "pollinations"},
+        {"name": "mistral_large", "label": "Mistral Large"},
+        {"name": "mistral_small", "label": "Mistral Small"},
+        {"name": "codestral", "label": "Codestral"},
     ]
 
     results = []
-    errors = []
 
     def _call_one(model_info):
         import time
         start = time.time()
         try:
-            kwargs = {
-                "model": model_info["name"],
-                "messages": [{"role": "user", "content": prompt}],
-                "stream": False,
-            }
-            if model_info["provider"] == "pollinations":
-                kwargs["provider"] = PollinationsAI
-            elif model_info["provider"] == "gemini":
-                kwargs["provider"] = IterListProvider([GeminiPro])
-            response = g4f.ChatCompletion.create(**kwargs)
+            res = generate_with_fallback(
+                prompt=prompt,
+                preferred_model=model_info["name"]
+            )
             elapsed = time.time() - start
+            text = res.get("text", "")
             return {
                 "model": model_info["label"],
                 "model_key": model_info["name"],
-                "text": str(response).strip() if response else "",
+                "text": text,
                 "time": round(elapsed, 2),
-                "chars": len(str(response)) if response else 0,
+                "chars": len(text),
                 "success": True,
             }
         except Exception as e:
@@ -316,7 +291,7 @@ def run_multi_model(self, prompt: str):
             }
 
     try:
-        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:
             futures = {pool.submit(_call_one, m): m for m in models}
             for future in concurrent.futures.as_completed(futures, timeout=120):
                 result = future.result()
@@ -325,7 +300,7 @@ def run_multi_model(self, prompt: str):
         logger.error(f"Multi-model parallel call failed: {e}")
 
     results.sort(key=lambda r: models.index(
-        next((m for m in models if m["label"] == r["model"]), models[0]),
+        next((m for m in models if m["name"] == r["model_key"]), models[0]),
     ))
 
     winner = None

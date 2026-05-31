@@ -72,16 +72,80 @@ document.addEventListener("DOMContentLoaded", function () {
     loginForm.addEventListener("submit", async function (event) {
       event.preventDefault();
       clearStatus("auth-status");
-      try {
-        var data = await postJSON("/login/", {
-          email: getValue("login-email").toLowerCase(),
-          password: getValue("login-password"),
+      var email = getValue("login-email").toLowerCase();
+      var password = getValue("login-password");
+
+      // Check if Supabase client is available
+      if (window.getSupabaseClient) {
+        window.getSupabaseClient(async function (supabase) {
+          if (supabase) {
+            try {
+              setStatus("auth-status", "Signing in via Supabase...", "info");
+              var authResult = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password,
+              });
+              
+              if (authResult.error) {
+                throw new Error(authResult.error.message);
+              }
+
+              var session = authResult.data.session;
+              var user = authResult.data.user;
+              if (session && session.access_token) {
+                localStorage.setItem("promptmax_token", session.access_token);
+                var localUserData = {
+                  email: user.email,
+                  name: user.user_metadata?.full_name || user.user_metadata?.name || "Supabase User",
+                  plan: { plan: "free", label: "Free", price_rs: 0 }
+                };
+                localStorage.setItem("promptmax_user", JSON.stringify(localUserData));
+                
+                // Fast-sync/provision with Django backend
+                try {
+                  var meResponse = await fetch("/api/v1/auth/me/", {
+                    headers: { "Authorization": "Bearer " + session.access_token }
+                  });
+                  if (meResponse.ok) {
+                    var meData = await meResponse.json();
+                    if (meData.success && meData.user) {
+                      localStorage.setItem("promptmax_user", JSON.stringify(meData.user));
+                    }
+                  }
+                } catch (meError) {
+                  console.warn("Failed to sync user with Django backend during login:", meError);
+                }
+
+                setStatus("auth-status", "Signed in. Opening PromptmaX...", "success");
+                setTimeout(redirectAfterAuth, 450);
+              } else {
+                throw new Error("No session returned from Supabase authentication");
+              }
+            } catch (error) {
+              setStatus("auth-status", error.message, "error");
+            }
+            return;
+          } else {
+            // Fallback to Django login
+            runDjangoLogin();
+          }
         });
-        saveSession(data);
-        setStatus("auth-status", "Signed in. Opening PromptmaX...", "success");
-        setTimeout(redirectAfterAuth, 450);
-      } catch (error) {
-        setStatus("auth-status", error.message, "error");
+      } else {
+        runDjangoLogin();
+      }
+
+      async function runDjangoLogin() {
+        try {
+          var data = await postJSON("/login/", {
+            email: email,
+            password: password,
+          });
+          saveSession(data);
+          setStatus("auth-status", "Signed in. Opening PromptmaX...", "success");
+          setTimeout(redirectAfterAuth, 450);
+        } catch (error) {
+          setStatus("auth-status", error.message, "error");
+        }
       }
     });
   }
@@ -91,24 +155,93 @@ document.addEventListener("DOMContentLoaded", function () {
     registerForm.addEventListener("submit", async function (event) {
       event.preventDefault();
       clearStatus("auth-status");
+      var name = getValue("register-name");
+      var email = getValue("register-email").toLowerCase();
       var password = getValue("register-password");
       var confirm = getValue("register-confirm");
+
       if (password !== confirm) {
         setStatus("auth-status", "Passwords do not match.", "error");
         return;
       }
-      try {
-        await postJSON("/register/", {
-          name: getValue("register-name"),
-          email: getValue("register-email").toLowerCase(),
-          password: password,
+
+      if (window.getSupabaseClient) {
+        window.getSupabaseClient(async function (supabase) {
+          if (supabase) {
+            try {
+              setStatus("auth-status", "Creating Supabase account...", "info");
+              var authResult = await supabase.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                  data: {
+                    full_name: name
+                  }
+                }
+              });
+
+              if (authResult.error) {
+                throw new Error(authResult.error.message);
+              }
+
+              var session = authResult.data.session;
+              var user = authResult.data.user;
+
+              if (session && session.access_token) {
+                // Auto-logged in after signup
+                localStorage.setItem("promptmax_token", session.access_token);
+                var localUserData = {
+                  email: user.email,
+                  name: user.user_metadata?.full_name || user.user_metadata?.name || "Supabase User",
+                  plan: { plan: "free", label: "Free", price_rs: 0 }
+                };
+                localStorage.setItem("promptmax_user", JSON.stringify(localUserData));
+                
+                try {
+                  var meResponse = await fetch("/api/v1/auth/me/", {
+                    headers: { "Authorization": "Bearer " + session.access_token }
+                  });
+                  if (meResponse.ok) {
+                    var meData = await meResponse.json();
+                    if (meData.success && meData.user) {
+                      localStorage.setItem("promptmax_user", JSON.stringify(meData.user));
+                    }
+                  }
+                } catch (meError) {
+                  console.warn("Failed to sync user with Django backend during registration:", meError);
+                }
+
+                setStatus("auth-status", "Account created successfully. Redirecting...", "success");
+                setTimeout(redirectAfterAuth, 450);
+              } else {
+                setStatus("auth-status", "Registration successful! Please check your email to verify your account.", "success");
+              }
+            } catch (error) {
+              setStatus("auth-status", error.message, "error");
+            }
+            return;
+          } else {
+            runDjangoRegister();
+          }
         });
-        byId("otp-email").value = getValue("register-email").toLowerCase();
-        byId("register-step").hidden = true;
-        byId("otp-step").hidden = false;
-        setStatus("otp-status", "Verification code sent. Check your email.", "success");
-      } catch (error) {
-        setStatus("auth-status", error.message, "error");
+      } else {
+        runDjangoRegister();
+      }
+
+      async function runDjangoRegister() {
+        try {
+          await postJSON("/register/", {
+            name: name,
+            email: email,
+            password: password,
+          });
+          byId("otp-email").value = email;
+          byId("register-step").hidden = true;
+          byId("otp-step").hidden = false;
+          setStatus("otp-status", "Verification code sent. Check your email.", "success");
+        } catch (error) {
+          setStatus("auth-status", error.message, "error");
+        }
       }
     });
   }
@@ -150,14 +283,44 @@ document.addEventListener("DOMContentLoaded", function () {
     forgotRequestForm.addEventListener("submit", async function (event) {
       event.preventDefault();
       clearStatus("auth-status");
-      try {
-        await postJSON("/forgot-password/", { email: getValue("forgot-email").toLowerCase() });
-        byId("reset-email").value = getValue("forgot-email").toLowerCase();
-        byId("request-step").hidden = true;
-        byId("reset-step").hidden = false;
-        setStatus("reset-status", "If the account exists, a reset code has been sent to that email.", "success");
-      } catch (error) {
-        setStatus("auth-status", error.message, "error");
+      var email = getValue("forgot-email").toLowerCase();
+
+      if (window.getSupabaseClient) {
+        window.getSupabaseClient(async function (supabase) {
+          if (supabase) {
+            try {
+              setStatus("auth-status", "Sending password reset via Supabase...", "info");
+              var resetResult = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: window.location.origin + '/forgot-password',
+              });
+
+              if (resetResult.error) {
+                throw new Error(resetResult.error.message);
+              }
+
+              setStatus("auth-status", "If the account exists, a reset link has been sent to your email.", "success");
+            } catch (error) {
+              setStatus("auth-status", error.message, "error");
+            }
+            return;
+          } else {
+            runDjangoForgot();
+          }
+        });
+      } else {
+        runDjangoForgot();
+      }
+
+      async function runDjangoForgot() {
+        try {
+          await postJSON("/forgot-password/", { email: email });
+          byId("reset-email").value = email;
+          byId("request-step").hidden = true;
+          byId("reset-step").hidden = false;
+          setStatus("reset-status", "If the account exists, a reset code has been sent to that email.", "success");
+        } catch (error) {
+          setStatus("auth-status", error.message, "error");
+        }
       }
     });
   }
@@ -167,24 +330,59 @@ document.addEventListener("DOMContentLoaded", function () {
     resetForm.addEventListener("submit", async function (event) {
       event.preventDefault();
       clearStatus("reset-status");
+      var email = getValue("reset-email").toLowerCase();
+      var otp = getValue("reset-otp");
       var password = getValue("reset-password");
       var confirm = getValue("reset-confirm");
+
       if (password !== confirm) {
         setStatus("reset-status", "Passwords do not match.", "error");
         return;
       }
-      try {
-        await postJSON("/reset-password/", {
-          email: getValue("reset-email").toLowerCase(),
-          otp: getValue("reset-otp"),
-          password: password,
+
+      if (window.getSupabaseClient) {
+        window.getSupabaseClient(async function (supabase) {
+          if (supabase) {
+            try {
+              setStatus("reset-status", "Updating password via Supabase...", "info");
+              var updateResult = await supabase.auth.updateUser({
+                password: password,
+              });
+
+              if (updateResult.error) {
+                throw new Error(updateResult.error.message);
+              }
+
+              setStatus("reset-status", "Password updated successfully. Redirecting to sign in...", "success");
+              setTimeout(function () {
+                window.location.href = "/login";
+              }, 750);
+            } catch (error) {
+              setStatus("reset-status", error.message, "error");
+            }
+            return;
+          } else {
+            runDjangoReset();
+          }
         });
-        setStatus("reset-status", "Password updated. Redirecting to sign in...", "success");
-        setTimeout(function () {
-          window.location.href = "/login";
-        }, 750);
-      } catch (error) {
-        setStatus("reset-status", error.message, "error");
+      } else {
+        runDjangoReset();
+      }
+
+      async function runDjangoReset() {
+        try {
+          await postJSON("/reset-password/", {
+            email: email,
+            otp: otp,
+            password: password,
+          });
+          setStatus("reset-status", "Password updated. Redirecting to sign in...", "success");
+          setTimeout(function () {
+            window.location.href = "/login";
+          }, 750);
+        } catch (error) {
+          setStatus("reset-status", error.message, "error");
+        }
       }
     });
   }

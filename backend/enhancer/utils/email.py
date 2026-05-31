@@ -81,3 +81,30 @@ def send_password_reset_otp_email(email, otp):
             'user_email': email,
         },
     )
+
+
+def send_plan_upgrade_email(email, user_name, plan_name, plan_price):
+    return send_html_email(
+        user_email=email,
+        subject=f"Plan upgraded to {plan_name}",
+        template_name='emails/plan_upgrade.html',
+        context={
+            'user_name': user_name,
+            'user_email': email,
+            'plan_name': plan_name,
+            'plan_price': plan_price,
+        },
+    )
+
+
+def send_account_deactivation_email(email, user_name):
+    return send_html_email(
+        user_email=email,
+        subject="Your PromptmaX account has been deactivated",
+        template_name='emails/account_deactivation.html',
+        context={
+            'user_name': user_name,
+            'user_email': email,
+        },
+    )
+

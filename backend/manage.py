@@ -11,7 +11,7 @@ def load_environment():
 
     base_dir = Path(__file__).resolve().parent
     load_dotenv(base_dir.parent / '.env')
-    load_dotenv(base_dir / '.env', override=True)
+    load_dotenv(base_dir / '.env', override=False)
 
 
 def main():

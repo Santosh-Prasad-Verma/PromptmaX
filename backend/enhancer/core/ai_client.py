@@ -9,30 +9,28 @@ from ..utils.cache import DeepCopyLRUCache
 load_dotenv()
 logger = logging.getLogger("enhancer")
 
-G4F_AVAILABLE = False
-try:
-    import g4f
-    from g4f.Provider import PollinationsAI
-    G4F_AVAILABLE = True
-except ImportError:
-    logger.warning("g4f package not installed — GPT4Free models unavailable")
-
 
 class AIModelFallback:
     def __init__(self):
+        self.mistral_api_key = os.getenv("MISTRAL_API_KEY")
+        if not self.mistral_api_key:
+            try:
+                self.mistral_api_key = getattr(settings, "MISTRAL_API_KEY", None)
+            except Exception:
+                pass
+
         self.models = [
-            {"name": "g4f_gpt4o", "priority": 1},
-            {"name": "g4f_gemini_flash", "priority": 2},
-            {"name": "g4f_llama3_70b", "priority": 3},
-            {"name": "g4f_gpt4o_mini", "priority": 4},
-            {"name": "g4f_gpt5_nano", "priority": 5},
+            {"name": "mistral_large", "priority": 1},
+            {"name": "mistral_small", "priority": 2},
+            {"name": "codestral", "priority": 3},
         ]
+        self.valid_choices = ["mistral_large", "mistral_small", "codestral"]
 
     def generate(self, prompt, max_tokens=2000, preferred_model=None, api_key=None):
         if preferred_model and preferred_model != "auto":
-            if preferred_model in [m["name"] for m in self.models]:
+            if preferred_model in self.valid_choices:
                 try:
-                    result = self._call_model(preferred_model, prompt, max_tokens)
+                    result = self._call_model(preferred_model, prompt, max_tokens, api_key=api_key)
                     if result:
                         return {"text": result, "model": preferred_model, "success": True}
                 except Exception as e:
@@ -45,7 +43,7 @@ class AIModelFallback:
         errors = []
         for model in self.models:
             try:
-                result = self._call_model(model["name"], prompt, max_tokens)
+                result = self._call_model(model["name"], prompt, max_tokens, api_key=api_key)
                 if result:
                     return {"text": result, "model": model["name"], "success": True}
             except Exception as e:
@@ -54,33 +52,58 @@ class AIModelFallback:
 
         raise Exception(f"All models failed: {'; '.join(errors[:3])}")
 
-    def _call_model(self, model_name, prompt, max_tokens):
-        routing = {
-            "g4f_gpt4o": ("gpt-4.1-nano", PollinationsAI),
-            "g4f_gpt4o_mini": ("mistral-small-3.1-24b", PollinationsAI),
-            "g4f_llama3_70b": ("gpt-4.1-nano", PollinationsAI),
-            "g4f_gemini_flash": ("deepseek-r1", PollinationsAI),
-            "g4f_gpt5_nano": ("gpt-5-nano", PollinationsAI),
-        }
-        if model_name not in routing:
-            raise ValueError(f"Unknown model: {model_name}")
-        g4f_model, provider = routing[model_name]
-        return self._call_g4f(g4f_model, prompt, max_tokens, provider=provider)
+    def _call_model(self, model_name, prompt, max_tokens, api_key=None):
+        if model_name in self.valid_choices:
+            return self._call_mistral(model_name, prompt, max_tokens, api_key=api_key)
+        raise ValueError(f"Unknown model: {model_name}")
 
-    def _call_g4f(self, model_name, prompt, max_tokens, provider=None):
-        if not G4F_AVAILABLE:
-            raise RuntimeError("g4f package is not installed")
+    def _call_mistral(self, model_alias, prompt, max_tokens, api_key=None):
+        import requests
+        key = api_key or self.mistral_api_key or os.getenv("MISTRAL_API_KEY")
+        if not key:
+            raise ValueError(f"Mistral API key is not configured for {model_alias}")
+
+        model_mapping = {
+            "mistral_large": "mistral-large-latest",
+            "mistral_small": "mistral-small-latest",
+            "codestral": "codestral-latest",
+        }
+        mistral_model = model_mapping.get(model_alias, "mistral-large-latest")
         messages = self._split_prompt(prompt)
+
+        url = "https://api.mistral.ai/v1/chat/completions"
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": f"Bearer {key}"
+        }
+
+        timeout = 30
         try:
-            kwargs = {"model": model_name, "messages": messages, "stream": False}
-            if provider is not None:
-                kwargs["provider"] = provider
-            response = g4f.ChatCompletion.create(**kwargs)
-            if not response:
-                raise Exception(f"g4f returned empty response for {model_name}")
-            return str(response).strip()
+            timeout = settings.PROMPTX.get("AI_CLIENT", {}).get("REQUEST_TIMEOUT", 30)
+        except Exception:
+            pass
+
+        payload = {
+            "model": mistral_model,
+            "messages": messages,
+            "max_tokens": max_tokens,
+            "temperature": 0.7,
+        }
+
+        try:
+            response = requests.post(url, headers=headers, json=payload, timeout=timeout)
+            if response.status_code != 200:
+                raise Exception(f"Mistral API error (status {response.status_code}): {response.text}")
+
+            data = response.json()
+            if "choices" in data and len(data["choices"]) > 0:
+                content = data["choices"][0]["message"]["content"]
+                return content.strip()
+            else:
+                raise Exception("Mistral API returned empty choices list")
         except Exception as e:
-            raise Exception(f"g4f {model_name} error: {str(e)}")
+            raise Exception(f"Mistral {mistral_model} call failed: {str(e)}")
 
     def _split_prompt(self, prompt):
         delimiter = "\n\nUser prompt to enhance:\n"

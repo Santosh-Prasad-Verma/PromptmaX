@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>Confirm your email</title>
+</head>
+<body style="margin:0;padding:0;background-color:#edecd8;font-family:'Inter',Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased;">
+  <div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:#edecd8;">
+    Confirm your PromptmaX account to get started.
+  </div>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#edecd8;">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+        <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;">
+
+          <!-- Header -->
+          <tr>
+            <td style="background:linear-gradient(135deg,#005346,#00473d);border-radius:14px 14px 0 0;padding:26px 32px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td>
+                    <span style="font-size:22px;font-weight:800;color:#fffbe7;letter-spacing:-0.3px;">Prompt</span><span style="font-size:22px;font-weight:800;color:#ead7ff;letter-spacing:-0.3px;">maX</span>
+                  </td>
+                  <td align="right">
+                    <span style="font-size:24px;">&#128274;</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="background-color:#fffde8;border-left:2px solid #dbdac5;border-right:2px solid #dbdac5;padding:36px 32px 28px;">
+              <h1 style="margin:0 0 10px;font-size:24px;font-weight:800;color:#171717;line-height:1.25;">
+                Verify your email
+              </h1>
+              <p style="margin:0 0 28px;font-size:15px;line-height:1.65;color:#57574d;font-weight:500;">
+                Thanks for signing up for PromptmaX! Click the button below to confirm your email address and activate your account.
+              </p>
+
+              <!-- CTA Button -->
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" width="100%">
+                <tr>
+                  <td align="center">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="background-color:#005346;border-radius:10px;box-shadow:0 2px 0 #003d32;">
+                          <a href="{{ .ConfirmationURL }}" target="_blank" style="display:inline-block;padding:15px 42px;color:#fffbe7;font-size:15px;font-weight:800;text-decoration:none;letter-spacing:0.2px;">
+                            Confirm my account &#8594;
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Divider -->
+          <tr>
+            <td style="background-color:#fffde8;border-left:2px solid #dbdac5;border-right:2px solid #dbdac5;padding:0 32px;">
+              <div style="height:1px;background-color:#dbdac5;"></div>
+            </td>
+          </tr>
+
+          <!-- Fallback Link -->
+          <tr>
+            <td style="background-color:#fffde8;border-left:2px solid #dbdac5;border-right:2px solid #dbdac5;padding:18px 32px;">
+              <p style="margin:0 0 6px;font-size:12px;font-weight:700;color:#57574d;">
+                Button not working?
+              </p>
+              <p style="margin:0;font-size:11px;line-height:1.5;color:#757566;word-break:break-all;">
+                Copy and paste this link into your browser:<br>
+                <a href="{{ .ConfirmationURL }}" style="color:#005346;text-decoration:underline;">{{ .ConfirmationURL }}</a>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Security Tip -->
+          <tr>
+            <td style="background-color:#fffde8;border-left:2px solid #dbdac5;border-right:2px solid #dbdac5;padding:0 32px 20px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="background-color:#f7f6e5;border:1px solid #dbdac5;border-left:4px solid #005346;border-radius:8px;padding:14px 16px;">
+                    <p style="margin:0;font-size:12px;line-height:1.55;color:#757566;font-weight:500;">
+                      &#128161; <strong style="color:#57574d;">Security tip:</strong> If you didn't create a PromptmaX account, you can safely ignore this email.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color:#f7f6e5;border:2px solid #dbdac5;border-top:none;border-radius:0 0 14px 14px;padding:20px 32px;text-align:center;">
+              <p style="margin:0;font-size:12px;line-height:1.5;color:#757566;font-weight:600;">
+                PromptmaX &mdash; AI Prompt Engineering Platform
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

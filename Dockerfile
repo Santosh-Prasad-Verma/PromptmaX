@@ -20,7 +20,8 @@ COPY . /app/
 
 WORKDIR /app/backend
 
-RUN python manage.py collectstatic --noinput
+# Provide a dummy secret key just for collectstatic to succeed during build
+RUN DJANGO_SECRET_KEY=dummy-key-for-build python manage.py collectstatic --noinput
 
 ENV PORT=10000
 EXPOSE 10000

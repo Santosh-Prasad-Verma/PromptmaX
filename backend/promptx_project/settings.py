@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 PROJECT_ROOT = BASE_DIR.parent
 
 load_dotenv(PROJECT_ROOT / '.env')
-load_dotenv(BASE_DIR / '.env', override=True)
+load_dotenv(BASE_DIR / '.env', override=False)
 
 
 def env_bool(name, default=False):
@@ -26,7 +26,7 @@ if not SECRET_KEY:
 
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = ['*'] if DEBUG else os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0').split(',')
 
 # Email - SMTP sender for verification and password reset emails.
 EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
@@ -192,6 +192,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
+        'enhancer.auth.SupabaseJWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
@@ -253,6 +254,11 @@ STATIC_URL = '/static/'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 PORT = int(os.getenv('PORT', 8000))
+MISTRAL_API_KEY = os.getenv('MISTRAL_API_KEY', '').strip()
+SUPABASE_JWT_SECRET = os.getenv('SUPABASE_JWT_SECRET', '').strip()
+SUPABASE_URL = os.getenv('SUPABASE_URL', '').strip()
+SUPABASE_ANON_KEY = os.getenv('SUPABASE_ANON_KEY', '').strip()
+SUPABASE_SERVICE_ROLE_KEY = os.getenv('SUPABASE_SERVICE_ROLE_KEY', '').strip()
 
 # PromptX-specific configuration
 PROMPTX = {
