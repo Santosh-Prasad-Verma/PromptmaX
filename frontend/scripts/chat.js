@@ -240,12 +240,29 @@ document.addEventListener("DOMContentLoaded", function () {
     var emailEl = document.getElementById("user-profile-email");
     var planEl = document.getElementById("user-profile-plan");
     var avatarEl = document.getElementById("user-avatar-initial");
+    var logoutBtn = document.getElementById("logout-btn");
 
     if (!user) {
       if (nameEl) nameEl.textContent = "Guest User";
       if (emailEl) emailEl.textContent = "Please sign in";
       if (planEl) planEl.textContent = "Free Plan";
       if (avatarEl) avatarEl.textContent = "G";
+      
+      // If guest, customize the logout button to be a sign-in button
+      if (logoutBtn) {
+        logoutBtn.innerHTML = '<i data-lucide="log-in" aria-hidden="true"></i><span>Sign In</span>';
+        logoutBtn.className = "sidebar-action-btn"; // remove danger colors
+        logoutBtn.onclick = function() {
+          window.location.href = "/login";
+        };
+      }
+
+      // Display prompt history call-to-action for guests instead of spinner
+      var historyList = document.getElementById("history-list");
+      if (historyList) {
+        historyList.innerHTML = '<div class="history-empty">Please <a href="/login" style="color: #005346; font-weight: 800; text-decoration: underline;">Sign In</a> to save and view your enhancement history.</div>';
+      }
+      if (window.lucide) window.lucide.createIcons();
       return;
     }
 
@@ -259,6 +276,18 @@ document.addEventListener("DOMContentLoaded", function () {
       var initial = (displayName.trim()[0] || user.email.trim()[0] || "U").toUpperCase();
       avatarEl.textContent = initial;
     }
+
+    // Logged in: keep logout button as standard logout trigger
+    if (logoutBtn) {
+      logoutBtn.innerHTML = '<i data-lucide="log-out" aria-hidden="true"></i><span>Sign Out</span>';
+      logoutBtn.className = "sidebar-action-btn logout-btn";
+      logoutBtn.onclick = function() {
+        localStorage.removeItem("promptmax_token");
+        localStorage.removeItem("promptmax_user");
+        window.location.href = "/";
+      };
+    }
+    if (window.lucide) window.lucide.createIcons();
   }
 
   async function loadHistory() {
@@ -477,6 +506,13 @@ document.addEventListener("DOMContentLoaded", function () {
           sidebar.classList.remove("active");
         }
       }
+    });
+  }
+
+  var sidebarClose = document.getElementById("sidebar-close");
+  if (sidebarClose && sidebar) {
+    sidebarClose.addEventListener("click", function () {
+      sidebar.classList.remove("active");
     });
   }
 

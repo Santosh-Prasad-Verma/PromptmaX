@@ -1646,8 +1646,38 @@ h3 {
 }
 
 .sidebar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   padding: 16px;
   border-bottom: 2px solid rgba(23, 23, 23, 0.08);
+}
+
+.sidebar-close-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 2px solid rgba(23, 23, 23, 0.14);
+  border-radius: 10px;
+  background: #fffde8;
+  cursor: pointer;
+  color: var(--ink);
+  transition: all 0.2s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.sidebar-close-btn:hover {
+  background: var(--cream);
+  transform: translateY(-2px);
+}
+
+.sidebar-close-btn i {
+  width: 20px;
+  height: 20px;
 }
 
 .new-chat-btn {
@@ -1916,6 +1946,10 @@ h3 {
 /* Mobile responsive layout */
 @media (max-width: 768px) {
   .sidebar-toggle-btn {
+    display: inline-flex;
+  }
+
+  .sidebar-close-btn {
     display: inline-flex;
   }
 
