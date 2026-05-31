@@ -25,6 +25,54 @@ def _get_task_status(task_id: str):
     return cache.get(f"task:{task_id}")
 
 
+@shared_task(bind=True, max_retries=3, default_retry_delay=30)
+def sync_prompt_history_task(self, history_id: str, supabase_user_id=None):
+    from .models import PromptHistory
+    from .supabase_sync import sync_prompt_history
+
+    try:
+        history = PromptHistory.objects.get(id=history_id)
+        return sync_prompt_history(history, supabase_user_id=supabase_user_id)
+    except PromptHistory.DoesNotExist:
+        logger.warning("Supabase history sync skipped; history %s not found", history_id)
+        return None
+    except Exception as exc:
+        logger.warning("Supabase history sync task failed for %s: %s", history_id, exc)
+        raise self.retry(exc=exc)
+
+
+@shared_task(bind=True, max_retries=3, default_retry_delay=30)
+def sync_prompt_asset_task(self, asset_id: str, supabase_user_id: str):
+    from .models import PromptAsset
+    from .supabase_sync import sync_prompt_asset
+
+    try:
+        asset = PromptAsset.objects.select_related('project', 'user').get(id=asset_id)
+        return sync_prompt_asset(asset, supabase_user_id)
+    except PromptAsset.DoesNotExist:
+        logger.warning("Supabase asset sync skipped; asset %s not found", asset_id)
+        return None
+    except Exception as exc:
+        logger.warning("Supabase asset sync task failed for %s: %s", asset_id, exc)
+        raise self.retry(exc=exc)
+
+
+@shared_task(bind=True, max_retries=3, default_retry_delay=30)
+def sync_prompt_version_task(self, version_id: str):
+    from .models import PromptVersion
+    from .supabase_sync import sync_prompt_version
+
+    try:
+        version = PromptVersion.objects.select_related('asset', 'history_reference').get(id=version_id)
+        return sync_prompt_version(version)
+    except PromptVersion.DoesNotExist:
+        logger.warning("Supabase version sync skipped; version %s not found", version_id)
+        return None
+    except Exception as exc:
+        logger.warning("Supabase version sync task failed for %s: %s", version_id, exc)
+        raise self.retry(exc=exc)
+
+
 @shared_task(bind=True, max_retries=2, default_retry_delay=5)
 def run_enhance(self, prompt: str, level: str = "intermediate",
                 mode: str = "enhance", preferred_model: str = "auto"):

@@ -1,14 +1,18 @@
 """Views for PromptX API — unified DRF layer."""
 # Supabase dual-write sync (fire-and-forget, never blocks responses)
 from enhancer.supabase_sync import (
-    sync_prompt_history, sync_prompt_asset, sync_prompt_version,
     get_supabase_user_id,
 )
 
 import time
 import re
+import json
+import hashlib
 import logging
+from django.conf import settings
 from django.core.cache import cache
+from django.db import transaction
+from django.db.models import Count, Prefetch, Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, viewsets
@@ -38,15 +42,16 @@ from .core.pipeline import PromptXPipeline
 from .core.analyzer import PromptAnalyzer
 from .core.quality_scorer import QualityScorer
 from .core.ai_client import generate_with_fallback
-from .core.scraper import scrape_url, scrape_website_deep, web_search
+from .core.scraper import scrape_website_deep, web_search
 from .core.ab_testing import generate_ab_variations, compare_variations
 from .core.idea_generator import IdeaGenerator
 from .models import PromptHistory, PromptProject, PromptAsset, PromptVersion
-from .utils.text_processing import hash_text, sanitize_input
+from .utils.text_processing import sanitize_input
 from .utils.prompts import MASTER_PROMPT, build_website_analysis_prompt
 from .tasks import (
     run_enhance, run_generate, run_deep_research, run_greeting,
-    run_url_analysis, run_ab_test, run_execute,
+    run_url_analysis, run_ab_test, run_execute, run_multi_model,
+    sync_prompt_history_task, sync_prompt_asset_task, sync_prompt_version_task,
 )
 
 logger = logging.getLogger('enhancer')
@@ -127,8 +132,55 @@ def _use_async(request):
     return request.query_params.get("async", "").lower() in ("true", "1")
 
 
+def _cache_key(namespace, payload):
+    encoded = json.dumps(payload, sort_keys=True, default=str).encode("utf-8")
+    digest = hashlib.sha256(encoded).hexdigest()
+    return f"promptx:{namespace}:{digest}"
+
+
+def _request_task_owner(request, create_session=False):
+    if request.user.is_authenticated:
+        return f"user:{request.user.pk}"
+    if create_session and not request.session.session_key:
+        request.session.save()
+    if request.session.session_key:
+        return f"session:{request.session.session_key}"
+    return None
+
+
+def _can_use_celery():
+    return bool(getattr(settings, "REDIS_URL", "") or settings.CELERY_BROKER_URL != "redis://localhost:6379/0")
+
+
+def _enqueue_background(task, *args, **kwargs):
+    if not _can_use_celery():
+        return False
+    try:
+        task.delay(*args, **kwargs)
+        return True
+    except Exception as exc:
+        logger.warning("Background task enqueue failed for %s: %s", getattr(task, "name", task), exc)
+        return False
+
+
 def _dispatch_task(task, *args, **kwargs):
-    result = task.delay(*args, **kwargs)
+    request = kwargs.pop("_request", None)
+    if not _can_use_celery():
+        return Response(
+            {"success": False, "error": "ASYNC_WORKER_NOT_CONFIGURED"},
+            status=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+    try:
+        result = task.delay(*args, **kwargs)
+    except Exception as exc:
+        logger.warning("Task dispatch failed for %s: %s", getattr(task, "name", task), exc)
+        return Response(
+            {"success": False, "error": "ASYNC_DISPATCH_FAILED"},
+            status=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+    if request is not None:
+        owner = _request_task_owner(request, create_session=True)
+        cache.set(f"task-owner:{result.id}", owner, timeout=3600)
     return Response({
         "success": True,
         "async": True,
@@ -139,8 +191,12 @@ def _dispatch_task(task, *args, **kwargs):
 
 class TaskStatusView(APIView):
     permission_classes = [AllowAny]
+    throttle_scope = "task_status"
 
     def get(self, request, task_id):
+        owner = cache.get(f"task-owner:{task_id}")
+        if owner and owner != _request_task_owner(request):
+            return Response({"detail": "Task not found"}, status=status.HTTP_404_NOT_FOUND)
         cached = cache.get(f"task:{task_id}")
         if cached:
             return Response(cached, status=status.HTTP_200_OK)
@@ -150,6 +206,7 @@ class TaskStatusView(APIView):
 class EnhancePromptView(APIView):
     authentication_classes = [TokenAuthentication, SupabaseJWTAuthentication]
     permission_classes = [AllowAny]
+    throttle_scope = "ai_enhance"
 
     def post(self, request):
         serializer = EnhanceRequestSerializer(data=request.data)
@@ -172,9 +229,17 @@ class EnhancePromptView(APIView):
         preferred_model = serializer.validated_data.get("model", "auto")
         async_mode = _use_async(request)
 
-        cache_key = f"promptx:enhance:{hash_text(f'{prompt}:{level}:{mode}')}"
+        cache_key = _cache_key("enhance", {
+            "prompt": prompt,
+            "level": level,
+            "mode": mode,
+            "preferences": preferences,
+            "model": preferred_model,
+            "version": 2,
+        })
         cached = cache.get(cache_key)
         if cached:
+            cached = dict(cached)
             cached["from_cache"] = True
             return Response(cached, status=status.HTTP_200_OK)
 
@@ -182,7 +247,7 @@ class EnhancePromptView(APIView):
 
         if _is_greeting(prompt):
             if async_mode:
-                return _dispatch_task(run_greeting, prompt, preferred_model)
+                return _dispatch_task(run_greeting, prompt, preferred_model, _request=request)
             try:
                 result = generate_with_fallback(
                     f"{MASTER_PROMPT}\n\n---\n**CURRENT MODE: MODE 5 — DEEP CONVERSATION**\n\nUser: {prompt}",
@@ -214,7 +279,7 @@ class EnhancePromptView(APIView):
 
         if urls and mode == "generate":
             if async_mode:
-                return _dispatch_task(run_url_analysis, prompt, urls[0], preferred_model)
+                return _dispatch_task(run_url_analysis, prompt, urls[0], preferred_model, _request=request)
             try:
                 url = urls[0]
                 scraped = scrape_website_deep(url)
@@ -250,7 +315,7 @@ class EnhancePromptView(APIView):
 
         if _needs_deep_research(prompt):
             if async_mode:
-                return _dispatch_task(run_deep_research, prompt, preferred_model)
+                return _dispatch_task(run_deep_research, prompt, preferred_model, _request=request)
             try:
                 response_data = generate_with_fallback(
                     f"{MASTER_PROMPT}\n\n---\n**CURRENT MODE: MODE 4 — TECH KNOWLEDGE EXPLORER**\n\nUser request: {prompt}",
@@ -280,7 +345,7 @@ class EnhancePromptView(APIView):
 
         if mode == "generate":
             if async_mode:
-                return _dispatch_task(run_generate, prompt, preferred_model)
+                return _dispatch_task(run_generate, prompt, preferred_model, _request=request)
             try:
                 response_data = generate_with_fallback(
                     f"{MASTER_PROMPT}\n\n---\n**CURRENT MODE: Auto-detected**\n\nUser prompt: {prompt}",
@@ -296,7 +361,7 @@ class EnhancePromptView(APIView):
                 return Response({"success": False, "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         if async_mode:
-            return _dispatch_task(run_enhance, prompt, level, mode, preferred_model)
+            return _dispatch_task(run_enhance, prompt, level, mode, preferred_model, _request=request)
 
         pipeline = PromptXPipeline()
         result = pipeline.execute(prompt=prompt, enhancement_level=level, user_preferences=preferences)
@@ -335,7 +400,8 @@ class EnhancePromptView(APIView):
             # Dual-write to Supabase (fire-and-forget)
             try:
                 sb_uid = get_supabase_user_id(request)
-                sync_prompt_history(history, supabase_user_id=sb_uid)
+                if not _enqueue_background(sync_prompt_history_task, str(history.id), sb_uid):
+                    logger.debug("Supabase history sync skipped: no background queue")
             except Exception as sync_err:
                 logger.debug("Supabase history sync skipped: %s", sync_err)
         except Exception as e:
@@ -345,6 +411,7 @@ class EnhancePromptView(APIView):
 class AnalyzePromptView(APIView):
     authentication_classes = [TokenAuthentication, SupabaseJWTAuthentication]
     permission_classes = [AllowAny]
+    throttle_scope = "ai_light"
 
     def post(self, request):
         serializer = AnalyzeRequestSerializer(data=request.data)
@@ -399,6 +466,7 @@ class AnalyzePromptView(APIView):
 
 class ValidatePromptView(APIView):
     permission_classes = [AllowAny]
+    throttle_scope = "ai_light"
 
     def post(self, request):
         serializer = AnalyzeRequestSerializer(data=request.data)
@@ -435,6 +503,7 @@ class ValidatePromptView(APIView):
 
 class ComparePromptsView(APIView):
     permission_classes = [AllowAny]
+    throttle_scope = "ai_light"
 
     def post(self, request):
         serializer = CompareRequestSerializer(data=request.data)
@@ -478,6 +547,7 @@ class ComparePromptsView(APIView):
 class ABTestView(APIView):
     authentication_classes = [TokenAuthentication, SupabaseJWTAuthentication]
     permission_classes = [AllowAny]
+    throttle_scope = "ai_generate"
 
     def post(self, request):
         serializer = ABTestRequestSerializer(data=request.data)
@@ -488,7 +558,7 @@ class ABTestView(APIView):
         preferred_model = serializer.validated_data.get('model', 'auto')
 
         if _use_async(request):
-            return _dispatch_task(run_ab_test, prompt, preferred_model)
+            return _dispatch_task(run_ab_test, prompt, preferred_model, _request=request)
 
         variations = generate_ab_variations(prompt, preferred_model=preferred_model)
         comparison = compare_variations(prompt, variations)
@@ -502,6 +572,7 @@ class ABTestView(APIView):
 
 class AnalyzeURLView(APIView):
     permission_classes = [AllowAny]
+    throttle_scope = "ai_scrape"
 
     def post(self, request):
         serializer = AnalyzeURLRequestSerializer(data=request.data)
@@ -511,32 +582,12 @@ class AnalyzeURLView(APIView):
         url = serializer.validated_data['url']
         question = serializer.validated_data.get('question', '')
 
-        scraped = scrape_website_deep(url)
-        if not scraped['success']:
-            return Response({'success': False, 'error': scraped['error']}, status=status.HTTP_400_BAD_REQUEST)
-
-        search_context = web_search(question or scraped['site_title'])
-        pages_summary = '\n'.join(f"- {p['title']}: {p['url']} ({len(p['text'])} chars)" for p in scraped['pages'])
-        analysis_prompt = build_website_analysis_prompt(
-            question or f"Analyze {scraped['site_title']}", scraped['site_title'], url,
-            scraped['pages_scraped'], scraped['total_chars'],
-            pages_summary, scraped['combined_text'],
-            '\n'.join(f"[{s['title']}] {s['snippet']}" for s in search_context),
-        )
-
-        try:
-            response_data = generate_with_fallback(analysis_prompt, max_tokens=4000)
-            return Response({
-                'success': True, 'text': response_data['text'], 'model': response_data['model'],
-                'site_title': scraped['site_title'], 'url': url,
-                'pages_scraped': scraped['pages_scraped'], 'total_chars': scraped['total_chars'],
-            }, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'success': False, 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return _dispatch_task(run_url_analysis, question or f"Analyze {url}", url, "auto", _request=request)
 
 
 class WebSearchView(APIView):
     permission_classes = [AllowAny]
+    throttle_scope = "ai_search"
 
     def post(self, request):
         serializer = WebSearchRequestSerializer(data=request.data)
@@ -552,6 +603,7 @@ class WebSearchView(APIView):
 
 class IdeasView(APIView):
     permission_classes = [AllowAny]
+    throttle_scope = "ai_light"
 
     def post(self, request):
         serializer = IdeasRequestSerializer(data=request.data)
@@ -595,6 +647,7 @@ class PromptHistoryView(APIView):
 
 class BatchEnhanceView(APIView):
     permission_classes = [AllowAny]
+    throttle_scope = "ai_batch"
 
     def post(self, request):
         serializer = BatchEnhanceRequestSerializer(data=request.data)
@@ -628,7 +681,7 @@ class BatchEnhanceView(APIView):
 
 
 class FeedbackView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         serializer = FeedbackSerializer(data=request.data)
@@ -636,7 +689,7 @@ class FeedbackView(APIView):
             return Response({'success': False, 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            history = PromptHistory.objects.get(id=serializer.validated_data['prompt_id'])
+            history = PromptHistory.objects.get(id=serializer.validated_data['prompt_id'], user=request.user)
             history.user_rating = serializer.validated_data['rating']
             history.user_feedback = serializer.validated_data.get('feedback', '')
             history.save()
@@ -649,21 +702,13 @@ class HealthCheckView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        checks = {'pipeline': 'ok', 'database': 'ok', 'cache': 'ok'}
+        checks = {'app': 'ok', 'database': 'ok', 'cache': 'ok'}
         status_code = status.HTTP_200_OK
-
-        try:
-            pipeline = PromptXPipeline()
-            result = pipeline.execute("test", "basic")
-            if not result.success:
-                checks['pipeline'] = 'degraded'
-        except Exception:
-            checks['pipeline'] = 'error'
-            status_code = status.HTTP_503_SERVICE_UNAVAILABLE
 
         from django.db import connections
         try:
-            connections['default'].cursor()
+            with connections['default'].cursor() as cursor:
+                cursor.execute("SELECT 1")
         except Exception:
             checks['database'] = 'error'
             status_code = status.HTTP_503_SERVICE_UNAVAILABLE
@@ -697,20 +742,40 @@ class PromptAssetViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return PromptAsset.objects.filter(user=self.request.user)
+        versions = PromptVersion.objects.order_by('-version_number')
+        return (
+            PromptAsset.objects
+            .filter(user=self.request.user)
+            .select_related('project', 'user')
+            .prefetch_related(Prefetch('versions', queryset=versions, to_attr='prefetched_versions'))
+            .annotate(versions_total=Count('versions'))
+        )
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
     @action(detail=True, methods=['post'])
     def fork(self, request, pk=None):
-        asset = self.get_object()
-        if not asset.is_public and asset.user != request.user:
-            return Response({'error': 'Cannot fork a private asset from another user'}, status=status.HTTP_403_FORBIDDEN)
+        try:
+            asset = (
+                PromptAsset.objects
+                .filter(Q(user=request.user) | Q(is_public=True), pk=pk)
+                .prefetch_related('versions')
+                .get()
+            )
+        except PromptAsset.DoesNotExist:
+            return Response({'error': 'Asset not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        base_name = f"{asset.name} (Forked)"
+        fork_name = base_name
+        suffix = 2
+        while PromptAsset.objects.filter(user=request.user, name=fork_name).exists():
+            fork_name = f"{base_name} {suffix}"
+            suffix += 1
         
         new_asset = PromptAsset.objects.create(
             user=request.user,
-            name=f"{asset.name} (Forked)",
+            name=fork_name,
             description=asset.description,
             is_public=False
         )
@@ -724,14 +789,14 @@ class PromptAssetViewSet(viewsets.ModelViewSet):
             )
             # Dual-write version to Supabase
             try:
-                sync_prompt_version(new_ver)
+                _enqueue_background(sync_prompt_version_task, str(new_ver.id))
             except Exception:
                 pass
         # Dual-write forked asset to Supabase
         try:
             sb_uid = get_supabase_user_id(request)
             if sb_uid:
-                sync_prompt_asset(new_asset, sb_uid)
+                _enqueue_background(sync_prompt_asset_task, str(new_asset.id), sb_uid)
         except Exception:
             pass
         return Response(PromptAssetSerializer(new_asset).data, status=status.HTTP_201_CREATED)
@@ -745,12 +810,23 @@ class PromptAssetViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def marketplace(self, request):
-        public_assets = PromptAsset.objects.filter(is_public=True).exclude(user=request.user).order_by('-created_at')
-        return Response(PromptAssetSerializer(public_assets, many=True).data)
+        versions = PromptVersion.objects.order_by('-version_number')
+        public_assets = (
+            PromptAsset.objects
+            .filter(is_public=True)
+            .exclude(user=request.user)
+            .select_related('project', 'user')
+            .prefetch_related(Prefetch('versions', queryset=versions, to_attr='prefetched_versions'))
+            .annotate(versions_total=Count('versions'))
+            .order_by('-created_at')
+        )
+        paginator = PageNumberPagination()
+        page = paginator.paginate_queryset(public_assets, request)
+        data = PromptAssetSerializer(page, many=True).data
+        return paginator.get_paginated_response(data)
 
     @action(detail=True, methods=['post'])
     def commit(self, request, pk=None):
-        asset = self.get_object()
         content = request.data.get('content')
         commit_message = request.data.get('commit_message', 'Updated version')
         quality_score = request.data.get('quality_score', 0.0)
@@ -759,27 +835,37 @@ class PromptAssetViewSet(viewsets.ModelViewSet):
         if not content:
             return Response({'error': 'content is required'}, status=status.HTTP_400_BAD_REQUEST)
 
-        latest_version = asset.versions.first()
-        next_version_num = latest_version.version_number + 1 if latest_version else 1
+        try:
+            quality_score = float(quality_score)
+        except (TypeError, ValueError):
+            return Response({'error': 'quality_score must be numeric'}, status=status.HTTP_400_BAD_REQUEST)
 
-        history_ref = None
-        if history_id:
+        with transaction.atomic():
             try:
-                history_ref = PromptHistory.objects.get(id=history_id, user=request.user)
-            except PromptHistory.DoesNotExist:
-                pass
+                asset = PromptAsset.objects.select_for_update().get(pk=pk, user=request.user)
+            except PromptAsset.DoesNotExist:
+                return Response({'error': 'Asset not found'}, status=status.HTTP_404_NOT_FOUND)
+            latest_version = asset.versions.order_by('-version_number').first()
+            next_version_num = latest_version.version_number + 1 if latest_version else 1
 
-        new_version = PromptVersion.objects.create(
-            asset=asset,
-            version_number=next_version_num,
-            content=content,
-            commit_message=commit_message,
-            quality_score=quality_score,
-            history_reference=history_ref
-        )
+            history_ref = None
+            if history_id:
+                try:
+                    history_ref = PromptHistory.objects.get(id=history_id, user=request.user)
+                except PromptHistory.DoesNotExist:
+                    pass
+
+            new_version = PromptVersion.objects.create(
+                asset=asset,
+                version_number=next_version_num,
+                content=content,
+                commit_message=commit_message,
+                quality_score=quality_score,
+                history_reference=history_ref
+            )
         # Dual-write version to Supabase
         try:
-            sync_prompt_version(new_version)
+            _enqueue_background(sync_prompt_version_task, str(new_version.id))
         except Exception:
             pass
 
@@ -794,6 +880,7 @@ class PromptVersionViewSet(viewsets.ReadOnlyModelViewSet):
 
 class ExecutePromptView(APIView):
     permission_classes = [AllowAny]
+    throttle_scope = "ai_generate"
 
     def post(self, request):
         serializer = ExecutePromptSerializer(data=request.data)
@@ -805,7 +892,7 @@ class ExecutePromptView(APIView):
         max_tokens = serializer.validated_data['max_tokens']
 
         if _use_async(request):
-            return _dispatch_task(run_execute, prompt_text, model, max_tokens)
+            return _dispatch_task(run_execute, prompt_text, model, max_tokens, _request=request)
 
         try:
             start_time = time.time()
@@ -827,9 +914,9 @@ class ExecutePromptView(APIView):
 
 class MultiModelView(APIView):
     permission_classes = [AllowAny]
+    throttle_scope = "ai_multi_model"
 
     def post(self, request):
-        from .serializers import MultiModelRequestSerializer
         serializer = MultiModelRequestSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(
@@ -838,66 +925,4 @@ class MultiModelView(APIView):
             )
 
         prompt = serializer.validated_data["prompt"]
-
-        if _use_async(request):
-            from .tasks import run_multi_model
-            return _dispatch_task(run_multi_model, prompt)
-
-        try:
-            task = run_multi_model.delay(prompt)
-            max_wait = 120
-            elapsed = 0
-            while elapsed < max_wait:
-                cached = cache.get(f"task:{task.id}")
-                if cached and cached["status"] in ("completed", "failed"):
-                    if cached["status"] == "completed":
-                        return Response(cached["data"], status=status.HTTP_200_OK)
-                    return Response(
-                        {"success": False, "error": cached.get("error", "Task failed")},
-                        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    )
-                time.sleep(1)
-                elapsed += 1
-            return Response(
-                {"success": False, "error": "Multi-model run timed out"},
-                status=status.HTTP_504_GATEWAY_TIMEOUT,
-            )
-        except Exception as e:
-            return Response(
-                {"success": False, "error": str(e)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-
-
-def fork_asset(request, asset):
-    """Helper to fork an asset"""
-    new_asset = PromptAsset.objects.create(
-        user=request.user,
-        name=f"{asset.name} (Forked)",
-        description=asset.description,
-        is_public=False
-    )
-    # copy versions
-    for version in asset.versions.all():
-        new_ver = PromptVersion.objects.create(
-            asset=new_asset,
-            version_number=version.version_number,
-            content=version.content,
-            commit_message=version.commit_message,
-            quality_score=version.quality_score
-        )
-        # Dual-write version to Supabase
-        try:
-            sync_prompt_version(new_ver)
-        except Exception:
-            pass
-    # Dual-write forked asset to Supabase
-    try:
-        sb_uid = get_supabase_user_id(request)
-        if sb_uid:
-            sync_prompt_asset(new_asset, sb_uid)
-    except Exception:
-        pass
-    return new_asset
-
-# Use python replacement for PromptAssetViewSet to add the actions instead of cat appending if it doesn't work.
+        return _dispatch_task(run_multi_model, prompt, _request=request)

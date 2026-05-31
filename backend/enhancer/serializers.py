@@ -23,12 +23,18 @@ class PromptAssetSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'user', 'created_at', 'updated_at']
 
     def get_latest_version(self, obj):
-        latest = obj.versions.first()
+        prefetched = getattr(obj, 'prefetched_versions', None)
+        latest = prefetched[0] if prefetched else obj.versions.order_by('-version_number').first()
         if latest:
             return PromptVersionSerializer(latest).data
         return None
 
     def get_versions_count(self, obj):
+        if hasattr(obj, 'versions_total'):
+            return obj.versions_total
+        prefetched = getattr(obj, 'prefetched_versions', None)
+        if prefetched is not None:
+            return len(prefetched)
         return obj.versions.count()
 
 class EnhanceRequestSerializer(serializers.Serializer):

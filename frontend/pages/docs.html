@@ -204,11 +204,11 @@ ALLOWED_HOSTS=127.0.0.1,localhost</code></pre>
           <span class="method post">POST</span>
           <code>/api/v1/analyze-url/</code>
         </div>
-        <p>Extracts page context and turns it into useful prompt material for summaries, research briefs, and product analysis.</p>
+        <p>Queues page research and returns a task status URL for polling.</p>
       </div>
       <pre><code>{
   "url": "https://example.com",
-  "prompt": "Create a product positioning brief from this page"
+  "question": "Create a product positioning brief from this page"
 }</code></pre>
 
       <h2 id="projects">Projects and assets</h2>

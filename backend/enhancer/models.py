@@ -128,6 +128,7 @@ class PromptHistory(models.Model):
         indexes = [
             models.Index(fields=['detected_intent', 'detected_domain']),
             models.Index(fields=['enhancement_level']),
+            models.Index(fields=['user', '-created_at'], name='history_user_created_idx'),
         ]
 
     def __str__(self):
@@ -200,6 +201,10 @@ class PaymentOrder(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['user', '-created_at'], name='payment_user_created_idx'),
+            models.Index(fields=['status', '-created_at'], name='payment_status_created_idx'),
+        ]
 
     def __str__(self):
         return f"{self.user.email} - {self.razorpay_order_id} - {self.status}"
@@ -216,6 +221,9 @@ class PromptProject(models.Model):
 
     class Meta:
         ordering = ['-updated_at']
+        indexes = [
+            models.Index(fields=['user', '-updated_at'], name='project_user_updated_idx'),
+        ]
 
     def __str__(self):
         return self.name
@@ -235,6 +243,15 @@ class PromptAsset(models.Model):
     class Meta:
         ordering = ['-updated_at']
         unique_together = ['user', 'name']
+        indexes = [
+            models.Index(fields=['user', '-updated_at'], name='asset_user_updated_idx'),
+            models.Index(fields=['project', '-updated_at'], name='asset_project_updated_idx'),
+            models.Index(
+                fields=['is_public', '-created_at'],
+                name='asset_public_created_idx',
+                condition=models.Q(is_public=True),
+            ),
+        ]
 
     def __str__(self):
         return f"{self.name} ({self.user.username})"
@@ -262,10 +279,9 @@ class PromptVersion(models.Model):
     class Meta:
         ordering = ['-version_number']
         unique_together = ['asset', 'version_number']
+        indexes = [
+            models.Index(fields=['asset', '-version_number'], name='version_asset_number_idx'),
+        ]
 
     def __str__(self):
         return f"{self.asset.name} - v{self.version_number}"
-
-
-    def __str__(self):
-        return f"{self.name} ({self.intent}/{self.domain})"

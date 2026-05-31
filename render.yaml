@@ -3,15 +3,15 @@ services:
   - type: web
     name: promptx-backend
     env: python
-    buildCommand: "pip install -r requirements.txt && python backend/manage.py collectstatic --noinput && python backend/manage.py migrate"
-    startCommand: "gunicorn --chdir backend promptx_project.wsgi:application --bind 0.0.0.0:$PORT"
+    buildCommand: "pip install -r backend/requirements.txt && python backend/manage.py collectstatic --noinput && python backend/manage.py migrate"
+    startCommand: "gunicorn --chdir backend promptx_project.wsgi:application --bind 0.0.0.0:$PORT --workers ${WEB_CONCURRENCY:-2} --threads ${GUNICORN_THREADS:-4} --timeout ${GUNICORN_TIMEOUT:-120} --max-requests ${GUNICORN_MAX_REQUESTS:-1000} --max-requests-jitter ${GUNICORN_MAX_REQUESTS_JITTER:-100}"
     envVars:
       - key: DEBUG
         value: "False"
       - key: SECRET_KEY
         generateValue: true
       - key: ALLOWED_HOSTS
-        value: "*"
+        value: "promptx-backend.onrender.com,promptx-hkfx.onrender.com"
       - key: CORS_ALLOWED_ORIGINS
         value: "https://promptx-hkfx.onrender.com"
       - key: DATABASE_URL
@@ -23,7 +23,7 @@ services:
           type: redis
           name: promptx-redis
           property: connectionString
-      - key: GEMINI_API_KEY
+      - key: MISTRAL_API_KEY
         sync: false
       - key: SUPABASE_URL
         sync: false
@@ -44,8 +44,8 @@ services:
   - type: worker
     name: promptx-celery-worker
     env: python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "celery -A promptx_project worker --loglevel=info --chdir backend"
+    buildCommand: "pip install -r backend/requirements.txt"
+    startCommand: "cd backend && celery -A promptx_project worker --loglevel=info --concurrency=${CELERY_CONCURRENCY:-2}"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -56,7 +56,7 @@ services:
           type: redis
           name: promptx-redis
           property: connectionString
-      - key: GEMINI_API_KEY
+      - key: MISTRAL_API_KEY
         sync: false
 
 databases:

@@ -69,8 +69,6 @@ urlpatterns = [
     path('quality-heatmap/', AnalyzePromptView.as_view()),
     path('quality-heatmap', AnalyzePromptView.as_view()),
 
-    path('execute/', ExecutePromptView.as_view(), name='execute'),
-    
     # Auth
     path('auth/register/', RegisterView.as_view(), name='auth-register'),
     path('auth/verify-otp/', VerifyOTPView.as_view(), name='auth-verify-otp'),

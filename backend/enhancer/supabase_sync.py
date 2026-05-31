@@ -225,6 +225,10 @@ def get_supabase_user_id(request):
 
     Returns the UUID string or None.
     """
+    payload = getattr(request, 'supabase_jwt_payload', None)
+    if payload:
+        return payload.get('sub')
+
     auth_header = request.META.get('HTTP_AUTHORIZATION', '')
     if not auth_header.lower().startswith('bearer '):
         return None
@@ -238,7 +242,7 @@ def get_supabase_user_id(request):
             return None
         payload = pyjwt.decode(
             token, secret, algorithms=['HS256'],
-            options={"verify_aud": False, "verify_exp": False}
+            options={"verify_aud": False, "verify_exp": True}
         )
         return payload.get('sub')
     except Exception:

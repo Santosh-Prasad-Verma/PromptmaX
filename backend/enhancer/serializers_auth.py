@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.contrib.auth.password_validation import validate_password
 
 
 class LoginSerializer(serializers.Serializer):
@@ -8,8 +9,12 @@ class LoginSerializer(serializers.Serializer):
 
 class RegisterSerializer(serializers.Serializer):
     email = serializers.EmailField()
-    password = serializers.CharField(min_length=6, max_length=128)
+    password = serializers.CharField(min_length=8, max_length=128)
     name = serializers.CharField(max_length=150, required=False)
+
+    def validate_password(self, value):
+        validate_password(value)
+        return value
 
 
 class OTPVerifySerializer(serializers.Serializer):
@@ -28,7 +33,11 @@ class PasswordResetRequestSerializer(serializers.Serializer):
 class PasswordResetConfirmSerializer(serializers.Serializer):
     email = serializers.EmailField()
     otp = serializers.CharField(min_length=6, max_length=6)
-    password = serializers.CharField(min_length=6, max_length=128)
+    password = serializers.CharField(min_length=8, max_length=128)
+
+    def validate_password(self, value):
+        validate_password(value)
+        return value
 
 
 class PlanSelectSerializer(serializers.Serializer):

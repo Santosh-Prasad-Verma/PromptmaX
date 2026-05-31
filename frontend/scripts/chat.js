@@ -196,6 +196,47 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!response.ok || data.success === false) {
       throw new Error(apiErrorMessage(data, response));
     }
+    
+    // Transparently poll Celery async task status if 202 Accepted is returned
+    if (data.async === true && data.status_url) {
+      var statusUrl = data.status_url;
+      while (true) {
+        await new Promise(function (resolve) {
+          setTimeout(resolve, 1000);
+        });
+        
+        var statusHeaders = {};
+        if (userToken) {
+          statusHeaders["Authorization"] = (userToken.indexOf(".") !== -1 ? "Bearer " : "Token ") + userToken;
+        }
+        
+        var statusResponse = await fetch(statusUrl, {
+          headers: statusHeaders,
+          credentials: "same-origin",
+        });
+        
+        if (!statusResponse.ok) {
+          throw new Error("Task status check failed (HTTP " + statusResponse.status + ")");
+        }
+        
+        var taskData = await statusResponse.json().catch(function () {
+          return {};
+        });
+        
+        if (taskData.status === "completed") {
+          return taskData.data; // return the completed payload
+        }
+        
+        if (taskData.status === "failed") {
+          throw new Error(taskData.error || "Async task execution failed");
+        }
+        
+        if (taskData.status === "started") {
+          setStatus("Working... (Processing)");
+        }
+      }
+    }
+    
     return data;
   }
 

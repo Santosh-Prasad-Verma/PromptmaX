@@ -26,7 +26,13 @@ if not SECRET_KEY:
 
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = ['*'] if DEBUG else os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0').split(',')
+def env_list(name, default=''):
+    return [item.strip() for item in os.getenv(name, default).split(',') if item.strip()]
+
+
+ALLOWED_HOSTS = ['*'] if DEBUG else env_list('ALLOWED_HOSTS', 'localhost,127.0.0.1')
+if not DEBUG and '*' in ALLOWED_HOSTS and not env_bool('ALLOW_WILDCARD_HOSTS', False):
+    raise RuntimeError('Wildcard ALLOWED_HOSTS is not allowed when DEBUG=False')
 
 # Email - SMTP sender for verification and password reset emails.
 EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
@@ -68,6 +74,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -88,9 +95,16 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
+AUTH_PASSWORD_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', 'OPTIONS': {'min_length': 8}},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+]
+
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('GOOGLE_OAUTH2_CLIENT_ID', '')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('GOOGLE_OAUTH2_CLIENT_SECRET', '')
-SOCIAL_AUTH_REDIRECT_IS_HTTPS = False
+SOCIAL_AUTH_REDIRECT_IS_HTTPS = env_bool('SOCIAL_AUTH_REDIRECT_IS_HTTPS', not DEBUG)
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
 SOCIAL_AUTH_FIELDS_STORED_IN_SESSION = ['state']
 SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {
@@ -145,7 +159,12 @@ WSGI_APPLICATION = 'promptx_project.wsgi.application'
 DATABASE_URL = os.getenv('DATABASE_URL', '')
 if DATABASE_URL:
     import dj_database_url
-    DATABASES = {'default': dj_database_url.config(conn_max_age=600, ssl_require=False)}
+    DATABASES = {
+        'default': dj_database_url.config(
+            conn_max_age=int(os.getenv('DB_CONN_MAX_AGE', 600)),
+            ssl_require=env_bool('DB_SSL_REQUIRE', not DEBUG),
+        )
+    }
 else:
     DATABASES = {
         'default': {
@@ -200,12 +219,22 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.AnonRateThrottle',
         'rest_framework.throttling.UserRateThrottle',
+        'rest_framework.throttling.ScopedRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '60/minute',
-        'user': '100/minute',
+        'anon': os.getenv('DRF_ANON_THROTTLE', '60/minute'),
+        'user': os.getenv('DRF_USER_THROTTLE', '100/minute'),
         'auth_register': '3/10minutes',
         'auth_verify': '5/minute',
+        'auth_login': '10/minute',
+        'ai_light': '30/minute',
+        'ai_enhance': '20/minute',
+        'ai_generate': '8/minute',
+        'ai_scrape': '3/minute',
+        'ai_search': '10/minute',
+        'ai_batch': '2/minute',
+        'ai_multi_model': '2/minute',
+        'task_status': '60/minute',
     },
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
@@ -218,7 +247,7 @@ REST_FRAMEWORK = {
 # CORS
 CORS_ALLOW_ALL_ORIGINS = os.getenv('CORS_ALLOW_ALL_ORIGINS', 'false').lower() == 'true'
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:3000,http://localhost:8000').split(',')
+CORS_ALLOWED_ORIGINS = env_list('CORS_ALLOWED_ORIGINS', 'http://localhost:3000,http://localhost:8000')
 CORS_ALLOW_HEADERS = [
     'accept',
     'accept-encoding',
@@ -233,10 +262,12 @@ CORS_ALLOW_HEADERS = [
 ]
 CORS_ALLOW_METHODS = ['DELETE', 'GET', 'OPTIONS', 'PATCH', 'POST', 'PUT']
 
-CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000').split(',')
+CSRF_TRUSTED_ORIGINS = env_list('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000')
 
 # Security (enabled in production)
 if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    USE_X_FORWARDED_HOST = env_bool('USE_X_FORWARDED_HOST', False)
     SECURE_SSL_REDIRECT = True
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
@@ -282,6 +313,8 @@ PROMPTX = {
         'MAX_PAGES': int(os.getenv('SCRAPER_MAX_PAGES', 8)),
         'CHARS_PER_PAGE': int(os.getenv('SCRAPER_CHARS_PER_PAGE', 6000)),
         'REQUEST_TIMEOUT': int(os.getenv('SCRAPER_TIMEOUT', 12)),
+        'MAX_RESPONSE_BYTES': int(os.getenv('SCRAPER_MAX_RESPONSE_BYTES', 1_000_000)),
+        'MAX_REDIRECTS': int(os.getenv('SCRAPER_MAX_REDIRECTS', 5)),
     },
     'AI_CLIENT': {
         'REQUEST_TIMEOUT': int(os.getenv('AI_REQUEST_TIMEOUT', 30)),
@@ -356,6 +389,6 @@ LOGGING = {
 if JSON_LOGGER_AVAILABLE and not DEBUG:
     LOGGING['formatters']['json'] = {
         '()': 'pythonjsonlogger.jsonlogger.JsonFormatter',
-        'format': '%(timestamp)s %(level)s %(name)s %(message)s',
+        'format': '%(asctime)s %(levelname)s %(name)s %(message)s %(request_id)s %(method)s %(path)s %(status_code)s %(duration_ms)s %(user_id)s',
     }
     LOGGING['handlers']['console']['formatter'] = 'json'

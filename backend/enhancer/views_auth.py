@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.db import transaction
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -63,6 +64,16 @@ def serialize_user(user):
     }
 
 
+def normalize_email(email):
+    return (email or '').strip().lower()
+
+
+def username_for_email(email):
+    if not User.objects.filter(username=email).exists():
+        return email
+    return f"user_{uuid.uuid4().hex[:30]}"
+
+
 def _razorpay_client():
     if not settings.RAZORPAY_KEY_ID or not settings.RAZORPAY_KEY_SECRET:
         raise RuntimeError('RAZORPAY_NOT_CONFIGURED')
@@ -82,23 +93,24 @@ class RegisterView(APIView):
         if not serializer.is_valid():
             return Response({'success': False, 'error': 'INVALID_REQUEST', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-        email = serializer.validated_data['email']
+        email = normalize_email(serializer.validated_data['email'])
         password = serializer.validated_data['password']
         name = serializer.validated_data.get('name', '')
 
-        if User.objects.filter(email=email).exists():
-            user = User.objects.get(email=email)
-            if user.is_active:
-                return Response({'success': False, 'error': 'Email already registered'}, status=status.HTTP_409_CONFLICT)
-            user.delete()
+        with transaction.atomic():
+            existing = User.objects.select_for_update().filter(email__iexact=email).order_by('id').first()
+            if existing:
+                if existing.is_active:
+                    return Response({'success': False, 'error': 'Email already registered'}, status=status.HTTP_409_CONFLICT)
+                existing.delete()
 
-        user = User.objects.create_user(
-            username=email,
-            email=email,
-            password=password,
-            first_name=name,
-            is_active=False,
-        )
+            user = User.objects.create_user(
+                username=username_for_email(email),
+                email=email,
+                password=password,
+                first_name=name,
+                is_active=False,
+            )
 
         otp = generate_otp()
         cache_key = f'otp:{email}'
@@ -130,7 +142,7 @@ class VerifyOTPView(APIView):
         if not serializer.is_valid():
             return Response({'success': False, 'error': 'INVALID_REQUEST', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-        email = serializer.validated_data['email']
+        email = normalize_email(serializer.validated_data['email'])
         otp = serializer.validated_data['otp']
 
         cache_key = f'otp:{email}'
@@ -145,8 +157,8 @@ class VerifyOTPView(APIView):
         cache.delete(cache_key)
 
         try:
-            user = User.objects.get(email=email, is_active=False)
-        except User.DoesNotExist:
+            user = User.objects.get(email__iexact=email, is_active=False)
+        except (User.DoesNotExist, User.MultipleObjectsReturned):
             return Response({'success': False, 'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
         user.is_active = True
@@ -173,9 +185,9 @@ class ResendOTPView(APIView):
         if not serializer.is_valid():
             return Response({'success': False, 'error': 'INVALID_REQUEST', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-        email = serializer.validated_data['email']
+        email = normalize_email(serializer.validated_data['email'])
 
-        if not User.objects.filter(email=email, is_active=False).exists():
+        if not User.objects.filter(email__iexact=email, is_active=False).exists():
             return Response({'success': False, 'error': 'No pending registration found for this email'}, status=status.HTTP_404_NOT_FOUND)
 
         otp = generate_otp()
@@ -197,18 +209,19 @@ class ResendOTPView(APIView):
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
+    throttle_scope = 'auth_login'
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if not serializer.is_valid():
             return Response({'success': False, 'error': 'INVALID_REQUEST', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-        email = serializer.validated_data['email']
+        email = normalize_email(serializer.validated_data['email'])
         password = serializer.validated_data['password']
 
         try:
-            user = User.objects.get(email=email)
-        except User.DoesNotExist:
+            user = User.objects.get(email__iexact=email)
+        except (User.DoesNotExist, User.MultipleObjectsReturned):
             return Response({'success': False, 'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
 
         if not user.check_password(password):
@@ -232,18 +245,21 @@ class LoginView(APIView):
 
 class TokenObtainView(APIView):
     permission_classes = [AllowAny]
+    throttle_scope = 'auth_login'
 
     def post(self, request):
-        email = request.data.get('email', '').strip().lower()
+        email = normalize_email(request.data.get('email', ''))
         password = request.data.get('password', '')
 
         try:
-            user = User.objects.get(email=email)
-        except User.DoesNotExist:
+            user = User.objects.get(email__iexact=email)
+        except (User.DoesNotExist, User.MultipleObjectsReturned):
             return Response({'success': False, 'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
         if not user.check_password(password):
             return Response({'success': False, 'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        if not user.is_active:
+            return Response({'success': False, 'error': 'Account not verified'}, status=status.HTTP_403_FORBIDDEN)
 
         token, _ = Token.objects.get_or_create(user=user)
         return Response({'token': token.key}, status=status.HTTP_200_OK)
@@ -435,13 +451,13 @@ class PasswordResetRequestView(APIView):
         if not serializer.is_valid():
             return Response({'success': False, 'error': 'INVALID_REQUEST', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-        email = serializer.validated_data['email']
+        email = normalize_email(serializer.validated_data['email'])
         generic_response = {
             'success': True,
             'message': 'If an active account exists for this email, a reset code has been sent.',
         }
 
-        if not User.objects.filter(email=email, is_active=True).exists():
+        if not User.objects.filter(email__iexact=email, is_active=True).exists():
             return Response(generic_response, status=status.HTTP_200_OK)
 
         otp = generate_otp()
@@ -470,7 +486,7 @@ class PasswordResetConfirmView(APIView):
         if not serializer.is_valid():
             return Response({'success': False, 'error': 'INVALID_REQUEST', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-        email = serializer.validated_data['email']
+        email = normalize_email(serializer.validated_data['email'])
         otp = serializer.validated_data['otp']
         password = serializer.validated_data['password']
 
@@ -483,8 +499,8 @@ class PasswordResetConfirmView(APIView):
             return Response({'success': False, 'error': 'Invalid reset code'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            user = User.objects.get(email=email, is_active=True)
-        except User.DoesNotExist:
+            user = User.objects.get(email__iexact=email, is_active=True)
+        except (User.DoesNotExist, User.MultipleObjectsReturned):
             return Response({'success': False, 'error': 'Active account not found'}, status=status.HTTP_404_NOT_FOUND)
 
         user.set_password(password)

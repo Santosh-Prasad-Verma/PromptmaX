@@ -1,6 +1,8 @@
 import re
+import ipaddress
 import logging
 import requests
+import socket
 from urllib.parse import urljoin, urlparse, unquote
 from django.conf import settings
 
@@ -22,6 +24,90 @@ _VALUABLE_PATHS = [
     '/blog', '/careers', '/team', '/product', '/solutions',
     '/how-it-works', '/integrations', '/security', '/enterprise',
 ]
+
+
+def _is_public_ip(address):
+    ip = ipaddress.ip_address(address)
+    return not (
+        ip.is_private
+        or ip.is_loopback
+        or ip.is_link_local
+        or ip.is_multicast
+        or ip.is_reserved
+        or ip.is_unspecified
+    )
+
+
+def _validate_public_url(url):
+    parsed = urlparse(url)
+    if parsed.scheme not in {'http', 'https'}:
+        raise ValueError('Only http and https URLs are supported')
+    if not parsed.hostname:
+        raise ValueError('URL must include a hostname')
+
+    hostname = parsed.hostname.rstrip('.').lower()
+    if hostname in {'localhost', 'localhost.localdomain'}:
+        raise ValueError('Localhost URLs are not allowed')
+
+    try:
+        addresses = {
+            info[4][0]
+            for info in socket.getaddrinfo(hostname, parsed.port or (443 if parsed.scheme == 'https' else 80))
+        }
+    except socket.gaierror as exc:
+        raise ValueError('Could not resolve URL hostname') from exc
+
+    if not addresses or any(not _is_public_ip(address) for address in addresses):
+        raise ValueError('Private, local, or reserved network addresses are not allowed')
+
+
+def _safe_get(url, timeout):
+    scraper_config = settings.PROMPTX.get('SCRAPER', {})
+    max_redirects = scraper_config.get('MAX_REDIRECTS', 5)
+    max_bytes = scraper_config.get('MAX_RESPONSE_BYTES', 1_000_000)
+    current_url = url
+
+    for _ in range(max_redirects + 1):
+        _validate_public_url(current_url)
+        resp = requests.get(
+            current_url,
+            headers=_SCRAPE_HEADERS,
+            timeout=timeout,
+            allow_redirects=False,
+            stream=True,
+        )
+
+        if 300 <= resp.status_code < 400 and resp.headers.get('Location'):
+            current_url = urljoin(current_url, resp.headers['Location'])
+            resp.close()
+            continue
+
+        content_type = resp.headers.get('Content-Type', '').lower()
+        if content_type and not any(kind in content_type for kind in ('text/html', 'application/xhtml+xml', 'text/plain')):
+            resp.close()
+            raise ValueError('URL did not return an HTML or text response')
+
+        content_length = resp.headers.get('Content-Length')
+        if content_length and int(content_length) > max_bytes:
+            resp.close()
+            raise ValueError(f'Response too large; limit is {max_bytes} bytes')
+
+        chunks = []
+        total = 0
+        for chunk in resp.iter_content(chunk_size=65536, decode_unicode=False):
+            if not chunk:
+                continue
+            total += len(chunk)
+            if total > max_bytes:
+                resp.close()
+                raise ValueError(f'Response too large; limit is {max_bytes} bytes')
+            chunks.append(chunk)
+
+        resp._content = b''.join(chunks)
+        resp.encoding = resp.encoding or 'utf-8'
+        return resp
+
+    raise ValueError('Too many redirects')
 
 
 def _clean_html(html, max_chars=8000):
@@ -67,7 +153,7 @@ def scrape_url(url, max_chars=8000):
     scraper_config = settings.PROMPTX.get('SCRAPER', {})
     timeout = scraper_config.get('REQUEST_TIMEOUT', 12)
     try:
-        resp = requests.get(url, headers=_SCRAPE_HEADERS, timeout=timeout, allow_redirects=True)
+        resp = _safe_get(url, timeout)
         resp.raise_for_status()
         html = resp.text
         title, text = _clean_html(html, max_chars)
@@ -78,6 +164,8 @@ def scrape_url(url, max_chars=8000):
         return {'success': False, 'url': url, 'title': '', 'text': '', 'char_count': 0, 'links': [], 'error': f'Timed out after {timeout}s'}
     except requests.exceptions.HTTPError as e:
         return {'success': False, 'url': url, 'title': '', 'text': '', 'char_count': 0, 'links': [], 'error': f'HTTP {e.response.status_code}'}
+    except ValueError as e:
+        return {'success': False, 'url': url, 'title': '', 'text': '', 'char_count': 0, 'links': [], 'error': str(e)}
     except Exception as e:
         return {'success': False, 'url': url, 'title': '', 'text': '', 'char_count': 0, 'links': [], 'error': str(e)}
 

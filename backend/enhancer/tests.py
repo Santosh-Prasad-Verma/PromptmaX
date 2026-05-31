@@ -9,6 +9,7 @@ from .core.validator import PromptValidator
 from .core.fact_checker import FactChecker
 from .core.intent_classifier import IntentClassifier
 from .core.complexity_assessor import ComplexityAssessor
+from .core.scraper import scrape_url
 
 
 class IntentClassifierTests(TestCase):
@@ -184,6 +185,13 @@ class FactCheckerTests(TestCase):
         self.assertTrue(len(suspicious) > 0)
 
 
+class ScraperSecurityTests(TestCase):
+    def test_private_network_url_is_blocked(self):
+        result = scrape_url("http://127.0.0.1:8000/")
+        self.assertFalse(result["success"])
+        self.assertIn("not allowed", result["error"])
+
+
 class PipelineTests(TestCase):
     def setUp(self):
         self.pipeline = PromptXPipeline()
@@ -349,4 +357,3 @@ class SupabaseJWTAuthenticationTests(TestCase):
         
         # Verify unusable password is set for safety
         self.assertFalse(user.has_usable_password())
-

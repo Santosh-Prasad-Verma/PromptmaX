@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SECRET_KEY: "django-insecure-ci-testing-dummy-key-value-to-pass-checks"
-      DEBUG: "True"
+        DEBUG: "True"
+        MOCK_AI: "true"
     
     steps:
     - name: Checkout Code
@@ -25,7 +26,7 @@ jobs:
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -r backend/requirements.txt
 
     - name: Run Django Checks
       run: |
@@ -33,7 +34,7 @@ jobs:
 
     - name: Run Backend Unit Tests
       run: |
-        python backend/manage.py test backend/enhancer/
+        python backend/manage.py test enhancer
 
   deploy:
     name: Deploy to Render
