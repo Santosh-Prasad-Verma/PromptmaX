@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Developers - PromptmaX</title>
+  <meta name="description" content="PromptmaX developer workflows: build structured prompt APIs, automate model evaluations, and integrate prompt engineering OS.">
+  <meta name="theme-color" content="#f7f6e5">
+  <link rel="icon" type="image/png" href="/Public/promptmax-logo-cropped.png">
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://promptx-hkfx.onrender.com/developers">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://promptx-hkfx.onrender.com/developers">
+  <meta property="og:title" content="Developers - PromptmaX">
+  <meta property="og:description" content="PromptmaX developer workflows: build structured prompt APIs, automate model evaluations, and integrate prompt engineering OS.">
+  <meta property="og:image" content="https://promptx-hkfx.onrender.com/Public/promptmax-logo-cropped.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://promptx-hkfx.onrender.com/developers">
+  <meta property="twitter:title" content="Developers - PromptmaX">
+  <meta property="twitter:description" content="PromptmaX developer workflows: build structured prompt APIs, automate model evaluations, and integrate prompt engineering OS.">
+  <meta property="twitter:image" content="https://promptx-hkfx.onrender.com/Public/promptmax-logo-cropped.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600;700&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/page.css">
+  <script src="https://unpkg.com/lucide@latest" defer></script>
+</head>
+<body>
+  <div class="top-banner">
+    <strong>PromptmaX developer guide: integrate robust prompt pipelines.</strong>
+    <a href="/docs">View API Docs <i data-lucide="chevron-right" aria-hidden="true"></i></a>
+  </div>
+
+  <nav class="nav-shell" aria-label="Primary navigation">
+    <a href="/" class="brand" aria-label="PromptmaX home">
+      <img class="brand-logo" src="/Public/promptmax-logo-cropped.png" alt="PromptmaX">
+      <span class="sr-only">PromptmaX</span>
+    </a>
+
+    <div class="nav-links" id="nav-links">
+      <div class="nav-item">
+        <a class="nav-link" href="/product">Product <i data-lucide="chevron-down" aria-hidden="true"></i></a>
+        <div class="dropdown">
+          <a href="/chat">Prompt Playground <span>Enhance and analyze prompts live.</span></a>
+          <a href="/builder">AI Builder <span>Turn prompts into working app plans.</span></a>
+          <a href="/integrations">Integrations <span>Connect PromptmaX to your workflow.</span></a>
+        </div>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link" href="/use-cases">Use cases <i data-lucide="chevron-down" aria-hidden="true"></i></a>
+        <div class="dropdown">
+          <a href="/developers">Developers <span>Architecture, code, tests, and docs.</span></a>
+          <a href="/creators">Creators <span>Content briefs and reusable templates.</span></a>
+          <a href="/operators">Operators <span>SOPs, analysis, support, and research.</span></a>
+        </div>
+      </div>
+      <a class="nav-link" href="/workflow">Workflow</a>
+      <a class="nav-link" href="/resources">Resources</a>
+      <a class="nav-link" href="/about">Company</a>
+    </div>
+
+    <div class="nav-actions">
+      <a class="button secondary" href="/login">Sign in</a>
+      <a class="button primary" href="/chat"><i data-lucide="sparkles" aria-hidden="true"></i>Launch PromptmaX</a>
+      <button class="menu-button" id="menu-button" type="button" aria-label="Open menu" aria-controls="nav-links" aria-expanded="false">
+        <i data-lucide="menu" aria-hidden="true"></i>
+      </button>
+    </div>
+  </nav>
+
+  <main>
+    <section class="page-hero about-hero">
+      <div class="container hero-grid">
+        <div class="reveal">
+          <p class="eyebrow">Prompt engineering for engineers</p>
+          <h1>API-first prompt automation</h1>
+          <p class="lead">
+            Ditch fragile instruction wrappers. Integrate PromptmaX structured enhancement pipelines, auto-healing scoring loops, and A/B test variations directly into your backend code.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="/docs"><i data-lucide="terminal" aria-hidden="true"></i>View API Reference</a>
+            <a class="button secondary" href="https://github.com/Santosh-Prasad-Verma/PromptX" target="_blank" rel="noreferrer"><i data-lucide="github" aria-hidden="true"></i>Explore Repo</a>
+          </div>
+        </div>
+
+        <aside class="visual-panel clean reveal" aria-label="Developer workflow summary">
+          <div class="visual-top"><span>API Gateways</span><span>Production hard</span></div>
+          <div class="prompt-stack">
+            <div class="prompt-line highlight"><strong>Endpoint</strong><span><code>POST /api/v1/enhance/</code> — Enhance prompt</span></div>
+            <div class="prompt-line"><strong>Auth Mode</strong><span>Supabase JWT verification (Bearer tokens)</span></div>
+            <div class="prompt-line"><strong>Async Mode</strong><span>202 Accepted + Celery background task processing</span></div>
+          </div>
+          <div class="metrics-strip">
+            <div class="metric-tile"><strong>Response</strong><span>JSON structured</span></div>
+            <div class="metric-tile"><strong>Scoring</strong><span>6 dimensions</span></div>
+            <div class="metric-tile"><strong>Security</strong><span>SSRF protected</span></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section light">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <p class="section-kicker">Core System Architecture</p>
+            <h2>Built to solve prompt fragility.</h2>
+          </div>
+          <p>Every dynamic prompt is processed through a structured sanitization and validation pipeline to prevent prompt injection and guarantee deterministic AI behaviors.</p>
+        </div>
+
+        <div class="grid-3">
+          <article class="feature-card reveal">
+            <span class="icon-box"><i data-lucide="shield-alert" aria-hidden="true"></i></span>
+            <div>
+              <h3>SSRF & Redirect Protection</h3>
+              <p>Strict scraper sanitization prevents Server-Side Request Forgery and loops when gathering context from public URLs.</p>
+            </div>
+          </article>
+          <article class="feature-card reveal">
+            <span class="icon-box"><i data-lucide="cpu" aria-hidden="true"></i></span>
+            <div>
+              <h3>Celery Async Processing</h3>
+              <p>Long-running prompt evaluations and multi-model variations run on async workers to maintain fast API responses.</p>
+            </div>
+          </article>
+          <article class="feature-card reveal">
+            <span class="icon-box"><i data-lucide="rotate-cw" aria-hidden="true"></i></span>
+            <div>
+              <h3>Auto-Heal Feedback Loop</h3>
+              <p>Pipeline scores prompt quality and feeds suggestions back to the model automatically until quality scores maximize.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <p class="section-kicker">Integration Example</p>
+            <h2>Enhance prompts in 3 lines of code.</h2>
+          </div>
+          <p>Integrate structured prompt generation into your app services by making secure requests using standard HTTP libraries.</p>
+        </div>
+
+        <div class="terminal-box reveal">
+          <div class="terminal-top"><span>Python Integration Example</span><span>Terminal</span></div>
+          <pre class="terminal-body"><code>import requests
+
+url = <span class="purple">"https://promptmax-backend.onrender.com/api/v1/enhance/"</span>
+headers = {
+    <span class="purple">"Authorization"</span>: <span class="purple">"Bearer YOUR_SUPABASE_JWT_TOKEN"</span>,
+    <span class="purple">"Content-Type"</span>: <span class="purple">"application/json"</span>
+}
+payload = {
+    <span class="purple">"prompt"</span>: <span class="purple">"make a marketing copy assistant"</span>,
+    <span class="purple">"enhancement_level"</span>: <span class="purple">"expert"</span>
+}
+
+response = requests.post(url, json=payload, headers=headers)
+data = response.json()
+print(<span class="green">f"Enhanced Prompt: {data['enhanced']}"</span>)</code></pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a href="/" class="brand">
+            <img class="brand-logo" src="/Public/promptmax-logo-cropped.png" alt="PromptmaX">
+            <span class="sr-only">PromptmaX</span>
+          </a>
+          <p>Prompt engineering OS for enhancement, scoring, comparison, and reusable AI workflows.</p>
+        </div>
+        <div>
+          <h4>Product</h4>
+          <nav>
+            <a href="/product">Product</a>
+            <a href="/chat">Prompt Playground</a>
+            <a href="/builder">AI Builder</a>
+            <a href="/integrations">Integrations</a>
+          </nav>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <nav>
+            <a href="/resources">Resources</a>
+            <a href="/blog">Blog</a>
+            <a href="/docs">Docs</a>
+            <a href="https://github.com/Santosh-Prasad-Verma/PromptX" target="_blank" rel="noreferrer">GitHub</a>
+          </nav>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <nav>
+            <a href="/about">About</a>
+            <a href="/careers">Contribute</a>
+            <a href="/developers">Developers</a>
+            <a href="/operators">Operators</a>
+          </nav>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; <span id="year">2026</span> PromptmaX</span>
+        <span>Built for real prompt workflows.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/scripts/page.js"></script>
+</body>
+</html>
