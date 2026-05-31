@@ -272,6 +272,15 @@ textarea {
   text-overflow: ellipsis;
 }
 
+.user-chip-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
 .user-chip i {
   width: 18px;
   height: 18px;

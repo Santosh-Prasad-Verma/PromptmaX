@@ -30,7 +30,14 @@ document.addEventListener("DOMContentLoaded", function () {
     link.className = className;
     link.href = href;
     if (iconName) link.appendChild(icon(iconName));
-    link.appendChild(document.createTextNode(text));
+    if (className === "user-chip") {
+      var span = document.createElement("span");
+      span.className = "user-chip-text";
+      span.textContent = text;
+      link.appendChild(span);
+    } else {
+      link.appendChild(document.createTextNode(text));
+    }
     return link;
   }
 
