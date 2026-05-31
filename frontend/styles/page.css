@@ -72,8 +72,11 @@ textarea {
 }
 
 .top-banner i,
+.top-banner svg,
 .icon-box i,
-.mini-link i {
+.icon-box svg,
+.mini-link i,
+.mini-link svg {
   width: 16px;
   height: 16px;
 }
@@ -105,14 +108,14 @@ textarea {
 }
 
 .nav-shell > .brand {
-  width: 220px;
-  min-width: 220px;
+  width: 170px;
+  min-width: 170px;
   overflow: hidden;
 }
 
 .brand-logo {
-  width: 220px;
-  height: 56px;
+  width: 170px;
+  height: 44px;
   display: block;
   object-fit: contain;
   object-position: left center;
@@ -137,8 +140,8 @@ textarea {
 }
 
 .nav-shell .logo-plate {
-  width: 220px;
-  min-height: 56px;
+  width: 170px;
+  min-height: 44px;
   padding: 4px 0;
   border: 0;
   background: transparent;
@@ -180,10 +183,10 @@ textarea {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 10px 9px;
+  padding: 10px 8px;
   border-radius: 9px;
   color: #282820;
-  font-size: 0.94rem;
+  font-size: 0.92rem;
   font-weight: 760;
   transition: background 180ms ease;
 }
@@ -194,7 +197,8 @@ textarea {
   outline: none;
 }
 
-.nav-link i {
+.nav-link i,
+.nav-link svg {
   width: 14px;
   height: 14px;
   color: #282820;
@@ -261,7 +265,7 @@ textarea {
   align-items: center;
   gap: 8px;
   padding: 0 12px;
-  border: 2px solid rgba(23, 23, 23, 0.14);
+  border: 2px solid var(--ink);
   border-radius: 10px;
   background: #fffde8;
   color: var(--ink);
@@ -270,6 +274,12 @@ textarea {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  box-shadow: 0 2px 0 var(--ink);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+.user-chip:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 0 var(--ink);
 }
 
 .user-chip-text {
@@ -281,7 +291,8 @@ textarea {
   vertical-align: middle;
 }
 
-.user-chip i {
+.user-chip i,
+.user-chip svg {
   width: 18px;
   height: 18px;
   flex: 0 0 auto;
@@ -318,7 +329,8 @@ textarea {
   color: var(--ink);
 }
 
-.button i {
+.button i,
+.button svg {
   width: 18px;
   height: 18px;
   color: currentColor;
@@ -336,7 +348,8 @@ textarea {
   cursor: pointer;
 }
 
-.menu-button i {
+.menu-button i,
+.menu-button svg {
   width: 20px;
   height: 20px;
   color: var(--ink);

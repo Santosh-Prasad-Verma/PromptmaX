@@ -41,14 +41,65 @@ document.addEventListener("DOMContentLoaded", function () {
     return link;
   }
 
+  function buildGithubButton() {
+    var link = document.createElement("a");
+    link.className = "button secondary github-btn";
+    link.href = "https://github.com/Santosh-Prasad-Verma/PromptX";
+    link.target = "_blank";
+    link.rel = "noreferrer";
+    link.appendChild(icon("github"));
+    
+    var span = document.createElement("span");
+    span.id = "github-stars";
+    span.className = "github-stars-count";
+    var cachedStars = sessionStorage.getItem("github_stars");
+    span.textContent = cachedStars ? "★ " + cachedStars : "★ Star";
+    link.appendChild(span);
+    
+    return link;
+  }
+
+  function fetchAndCacheGithubStars() {
+    fetch("https://api.github.com/repos/Santosh-Prasad-Verma/PromptX")
+      .then(function (res) {
+        return res.json();
+      })
+      .then(function (data) {
+        if (data && typeof data.stargazers_count === "number") {
+          var count = data.stargazers_count;
+          sessionStorage.setItem("github_stars", String(count));
+          document.querySelectorAll(".github-stars-count").forEach(function (span) {
+            span.textContent = "★ " + count;
+          });
+        }
+      })
+      .catch(function (err) {
+        console.warn("Failed to fetch GitHub stars:", err);
+      });
+  }
+
   function updateAuthenticatedNav() {
     var token = localStorage.getItem("promptmax_token");
     var user = getStoredUser();
-    if (!token || !user) return;
+    
+    if (!token || !user) {
+      document.querySelectorAll(".nav-actions").forEach(function (navActions) {
+        if (!navActions.querySelector(".github-btn")) {
+          var githubBtn = buildGithubButton();
+          if (navActions.firstChild) {
+            navActions.insertBefore(githubBtn, navActions.firstChild);
+          } else {
+            navActions.appendChild(githubBtn);
+          }
+        }
+      });
+      return;
+    }
 
     document.querySelectorAll(".nav-actions").forEach(function (navActions) {
       navActions.textContent = "";
 
+      var githubBtn = buildGithubButton();
       var chip = buildLink("user-chip", "/pricing", "circle-user-round", getDisplayName(user));
       var plan = buildLink("button secondary", "/pricing", null, "Plan");
       var launch = buildLink("button primary", "/chat", "sparkles", "Launch PromptmaX");
@@ -61,6 +112,7 @@ document.addEventListener("DOMContentLoaded", function () {
       menu.setAttribute("aria-expanded", "false");
       menu.appendChild(icon("menu"));
 
+      navActions.appendChild(githubBtn);
       navActions.appendChild(chip);
       navActions.appendChild(plan);
       navActions.appendChild(launch);
@@ -74,6 +126,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   updateAuthenticatedNav();
+  fetchAndCacheGithubStars();
 
   var menuButton = document.getElementById("menu-button");
   var navLinks = document.getElementById("nav-links");
