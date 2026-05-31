@@ -16,13 +16,13 @@ def env_bool(name, default=False):
     return value.lower() in ('true', '1', 'yes', 'on')
 
 
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', os.environ.get('SECRET_KEY', ''))
 if not SECRET_KEY:
     # Only allow in dev to prevent silent production misconfigurations
     if os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes'):
         SECRET_KEY = 'django-insecure-promptx-dev-key-change-in-production'
     else:
-        raise RuntimeError('DJANGO_SECRET_KEY environment variable is required')
+        raise RuntimeError('DJANGO_SECRET_KEY or SECRET_KEY environment variable is required')
 
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
