@@ -31,7 +31,8 @@ def env_list(name, default=''):
 
 
 ALLOWED_HOSTS = ['*'] if DEBUG else env_list('ALLOWED_HOSTS', 'localhost,127.0.0.1')
-if not DEBUG and '*' in ALLOWED_HOSTS and not env_bool('ALLOW_WILDCARD_HOSTS', False):
+ALLOW_WILDCARD_HOSTS = env_bool('ALLOW_WILDCARD_HOSTS', False) or bool(os.getenv('RENDER'))
+if not DEBUG and '*' in ALLOWED_HOSTS and not ALLOW_WILDCARD_HOSTS:
     raise RuntimeError('Wildcard ALLOWED_HOSTS is not allowed when DEBUG=False')
 
 # Email - SMTP sender for verification and password reset emails.
