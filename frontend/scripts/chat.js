@@ -314,7 +314,19 @@ document.addEventListener("DOMContentLoaded", function () {
         e.stopPropagation();
         localStorage.removeItem("promptmax_token");
         localStorage.removeItem("promptmax_user");
-        window.location.href = "/";
+        
+        if (window.getSupabaseClient) {
+          window.getSupabaseClient(async function (supabase) {
+            if (supabase) {
+              try {
+                await supabase.auth.signOut();
+              } catch (err) {}
+            }
+            window.location.href = "/";
+          });
+        } else {
+          window.location.href = "/";
+        }
       };
     }
     if (window.lucide) window.lucide.createIcons();
