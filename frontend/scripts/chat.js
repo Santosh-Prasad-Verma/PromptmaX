@@ -200,10 +200,21 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   async function ensureSelectedPlan() {
+    // Attempt to load from cache first to guarantee instant profile rendering
+    var cachedUser = null;
+    try {
+      cachedUser = JSON.parse(localStorage.getItem("promptmax_user"));
+    } catch (e) {}
+
     if (!token()) {
       planReady = true;
       populateUserProfile(null);
       return;
+    }
+
+    // Instantly display cached user information while backend fetches in the background
+    if (cachedUser) {
+      populateUserProfile(cachedUser);
     }
 
     try {
@@ -214,24 +225,41 @@ document.addEventListener("DOMContentLoaded", function () {
       var data = await response.json().catch(function () {
         return {};
       });
-      if (!response.ok || !data.user) throw new Error("Session expired.");
-      localStorage.setItem("promptmax_user", JSON.stringify(data.user));
-      populateUserProfile(data.user);
       
-      if (!data.user.plan || !data.user.plan.plan) {
-        window.location.href = "/pricing?first=1";
-        return;
+      if (response.ok && data.user) {
+        localStorage.setItem("promptmax_user", JSON.stringify(data.user));
+        populateUserProfile(data.user);
+        
+        if (!data.user.plan || !data.user.plan.plan) {
+          window.location.href = "/pricing?first=1";
+          return;
+        }
+        planReady = true;
+        setStatus("");
+        loadHistory();
+      } else {
+        // Response not OK but we have cache -> fall back to cache instead of logging out!
+        if (cachedUser) {
+          console.warn("Backend auth/me failed, falling back to cached session");
+          planReady = true;
+          loadHistory(); // attempt to load history
+        } else {
+          throw new Error("Session expired.");
+        }
       }
-      planReady = true;
-      setStatus("");
-
-      // Fetch user history
-      loadHistory();
     } catch (error) {
-      localStorage.removeItem("promptmax_token");
-      localStorage.removeItem("promptmax_user");
-      planReady = true;
-      populateUserProfile(null);
+      console.error("Backend verification failed:", error);
+      if (cachedUser) {
+        console.warn("Retaining cached session user despite me endpoint failure");
+        populateUserProfile(cachedUser);
+        planReady = true;
+        loadHistory();
+      } else {
+        localStorage.removeItem("promptmax_token");
+        localStorage.removeItem("promptmax_user");
+        planReady = true;
+        populateUserProfile(null);
+      }
     }
   }
 

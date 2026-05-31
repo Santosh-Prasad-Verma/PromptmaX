@@ -1659,11 +1659,24 @@ body.sidebar-collapsed .sidebar-toggle-btn {
 
 .sidebar-top {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  flex-direction: column;
+  gap: 16px;
   padding: 16px;
   border-bottom: 2px solid rgba(23, 23, 23, 0.08);
+}
+
+.sidebar-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.sidebar-header-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--ink);
 }
 
 .sidebar-close-btn {

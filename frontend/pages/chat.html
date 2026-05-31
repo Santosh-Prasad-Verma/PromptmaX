@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600;700&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/styles/page.css?v=1.0.3">
+  <link rel="stylesheet" href="/styles/page.css?v=1.0.4">
   <script src="https://unpkg.com/lucide@latest" defer></script>
 </head>
 <body class="chat-page-body">
@@ -35,12 +35,15 @@
     <!-- Left Sidebar for History, Personalisation & Account Management -->
     <aside id="chat-sidebar" class="chat-sidebar">
       <div class="sidebar-top">
+        <div class="sidebar-header-row">
+          <span class="sidebar-header-title">Enhancements</span>
+          <button id="sidebar-close" class="sidebar-close-btn" aria-label="Close sidebar">
+            <i data-lucide="x" aria-hidden="true"></i>
+          </button>
+        </div>
         <button id="new-chat-btn" class="new-chat-btn">
           <i data-lucide="plus" aria-hidden="true"></i>
           <span>New Chat</span>
-        </button>
-        <button id="sidebar-close" class="sidebar-close-btn" aria-label="Close sidebar">
-          <i data-lucide="x" aria-hidden="true"></i>
         </button>
       </div>
 
