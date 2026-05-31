@@ -9,16 +9,21 @@
   <link rel="icon" type="image/png" href="/Public/promptmax-logo-cropped.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600;700&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght=500;600;700&family=Inter:wght=500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles/page.css">
   <script src="https://unpkg.com/lucide@latest" defer></script>
 </head>
 <body class="chat-page-body">
   <nav class="nav-shell chat-nav" aria-label="Chat navigation">
-    <a href="/" class="brand" aria-label="PromptmaX home">
-      <img class="brand-logo" src="/Public/promptmax-logo-cropped.png" alt="PromptmaX">
-      <span class="sr-only">PromptmaX</span>
-    </a>
+    <div class="chat-nav-left">
+      <button id="sidebar-toggle" class="sidebar-toggle-btn" aria-label="Toggle history">
+        <i data-lucide="menu" aria-hidden="true"></i>
+      </button>
+      <a href="/" class="brand" aria-label="PromptmaX home">
+        <img class="brand-logo" src="/Public/promptmax-logo-cropped.png" alt="PromptmaX">
+        <span class="sr-only">PromptmaX</span>
+      </a>
+    </div>
 
     <div class="chat-nav-actions">
       <a class="button secondary" href="/pricing">Plan</a>
@@ -27,29 +32,76 @@
   </nav>
 
   <main class="chat-page">
-      <section class="chat-workspace" aria-label="PromptmaX chat workspace">
-        <section id="chat-thread" class="chat-thread" aria-live="polite"></section>
+    <!-- Left Sidebar for History, Personalisation & Account Management -->
+    <aside id="chat-sidebar" class="chat-sidebar">
+      <div class="sidebar-top">
+        <button id="new-chat-btn" class="new-chat-btn">
+          <i data-lucide="plus" aria-hidden="true"></i>
+          <span>New Chat</span>
+        </button>
+      </div>
 
-        <form id="chat-form" class="chat-composer">
-          <div class="chat-input-row">
-            <select id="chat-mode" class="chat-mode-select" aria-label="Mode">
-              <option value="generate" selected>Generate</option>
-              <option value="enhance">Enhance</option>
-              <option value="analyze">Analyze</option>
-              <option value="abtest">A/B Test</option>
-            </select>
-            <textarea id="chat-prompt" class="chat-input" placeholder="Message PromptmaX..." rows="1" required></textarea>
-            <button id="chat-submit" class="chat-send" type="submit" aria-label="Send prompt">
-              <i data-lucide="arrow-up" aria-hidden="true"></i>
-            </button>
+      <div class="sidebar-middle">
+        <div class="sidebar-section-title">
+          <i data-lucide="history" aria-hidden="true"></i>
+          <span>Recent Enhancements</span>
+        </div>
+        <div id="history-list" class="history-list">
+          <div class="history-loading">
+            <i data-lucide="loader-circle" class="spinner" aria-hidden="true"></i>
+            <span>Loading history...</span>
           </div>
+        </div>
+      </div>
 
-          <div id="chat-status" class="chat-status" role="status" aria-live="polite"></div>
-        </form>
-      </section>
+      <div class="sidebar-bottom">
+        <div id="user-profile-card" class="user-profile-card">
+          <div class="user-avatar" id="user-avatar-initial">U</div>
+          <div class="user-details">
+            <span class="user-name" id="user-profile-name">My Account</span>
+            <span class="user-email" id="user-profile-email">Not signed in</span>
+            <div class="user-plan-badge" id="user-profile-plan">Free Plan</div>
+          </div>
+        </div>
+        
+        <div class="sidebar-actions">
+          <a href="/pricing" class="sidebar-action-btn">
+            <i data-lucide="credit-card" aria-hidden="true"></i>
+            <span>Plans & Billing</span>
+          </a>
+          <button id="logout-btn" class="sidebar-action-btn logout-btn">
+            <i data-lucide="log-out" aria-hidden="true"></i>
+            <span>Sign Out</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Chat Workspace -->
+    <section class="chat-workspace" aria-label="PromptmaX chat workspace">
+      <section id="chat-thread" class="chat-thread" aria-live="polite"></section>
+
+      <form id="chat-form" class="chat-composer">
+        <div class="chat-input-row">
+          <select id="chat-mode" class="chat-mode-select" aria-label="Mode">
+            <option value="generate" selected>Generate</option>
+            <option value="enhance">Enhance</option>
+            <option value="analyze">Analyze</option>
+            <option value="abtest">A/B Test</option>
+          </select>
+          <textarea id="chat-prompt" class="chat-input" placeholder="Message PromptmaX..." rows="1" required></textarea>
+          <button id="chat-submit" class="chat-send" type="submit" aria-label="Send prompt">
+            <i data-lucide="arrow-up" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        <div id="chat-status" class="chat-status" role="status" aria-live="polite"></div>
+      </form>
+    </section>
   </main>
 
   <script src="/scripts/page.js"></script>
   <script src="/scripts/chat.js"></script>
 </body>
 </html>
+

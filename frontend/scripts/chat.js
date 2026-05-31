@@ -202,6 +202,7 @@ document.addEventListener("DOMContentLoaded", function () {
   async function ensureSelectedPlan() {
     if (!token()) {
       planReady = true;
+      populateUserProfile(null);
       return;
     }
 
@@ -215,18 +216,157 @@ document.addEventListener("DOMContentLoaded", function () {
       });
       if (!response.ok || !data.user) throw new Error("Session expired.");
       localStorage.setItem("promptmax_user", JSON.stringify(data.user));
+      populateUserProfile(data.user);
+      
       if (!data.user.plan || !data.user.plan.plan) {
         window.location.href = "/pricing?first=1";
         return;
       }
       planReady = true;
       setStatus("");
+
+      // Fetch user history
+      loadHistory();
     } catch (error) {
       localStorage.removeItem("promptmax_token");
       localStorage.removeItem("promptmax_user");
       planReady = true;
+      populateUserProfile(null);
+    }
+  }
+
+  function populateUserProfile(user) {
+    var nameEl = document.getElementById("user-profile-name");
+    var emailEl = document.getElementById("user-profile-email");
+    var planEl = document.getElementById("user-profile-plan");
+    var avatarEl = document.getElementById("user-avatar-initial");
+
+    if (!user) {
+      if (nameEl) nameEl.textContent = "Guest User";
+      if (emailEl) emailEl.textContent = "Please sign in";
+      if (planEl) planEl.textContent = "Free Plan";
+      if (avatarEl) avatarEl.textContent = "G";
+      return;
     }
 
+    var displayName = user.name || user.first_name || "User";
+    if (nameEl) nameEl.textContent = displayName;
+    if (emailEl) emailEl.textContent = user.email || "";
+    if (planEl) {
+      planEl.textContent = (user.plan && user.plan.label) || "Free Plan";
+    }
+    if (avatarEl) {
+      var initial = (displayName.trim()[0] || user.email.trim()[0] || "U").toUpperCase();
+      avatarEl.textContent = initial;
+    }
+  }
+
+  async function loadHistory() {
+    var userToken = token();
+    if (!userToken) return;
+    try {
+      var response = await fetch("/api/v1/history/", {
+        headers: {
+          "Authorization": (userToken.indexOf(".") !== -1 ? "Bearer " : "Token ") + userToken
+        },
+        credentials: "same-origin"
+      });
+      if (!response.ok) throw new Error("Failed to load history");
+      var data = await response.json();
+      renderHistoryList(data.results || []);
+    } catch (error) {
+      console.error("History fetch error:", error);
+      var historyList = document.getElementById("history-list");
+      if (historyList) {
+        historyList.innerHTML = '<div class="history-error"><i data-lucide="alert-circle" aria-hidden="true"></i><span>Failed to load history</span></div>';
+        if (window.lucide) window.lucide.createIcons();
+      }
+    }
+  }
+
+  function renderHistoryList(items) {
+    var historyList = document.getElementById("history-list");
+    if (!historyList) return;
+    if (items.length === 0) {
+      historyList.innerHTML = '<div class="history-empty">No recent enhancements</div>';
+      return;
+    }
+
+    historyList.innerHTML = "";
+    items.forEach(function (item) {
+      var div = document.createElement("div");
+      div.className = "history-item";
+      div.dataset.id = item.id;
+
+      var dateStr = "";
+      try {
+        var date = new Date(item.created_at);
+        dateStr = date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+      } catch (e) {}
+
+      var titleText = item.original_prompt || "";
+      var displayTitle = titleText.substring(0, 30) + (titleText.length > 30 ? "..." : "");
+
+      div.innerHTML = `
+        <div class="history-item-content">
+          <span class="history-item-title">${escapeHTML(displayTitle || "Untitled enhancement")}</span>
+          <span class="history-item-meta">${escapeHTML(item.intent || "general")} • ${dateStr}</span>
+        </div>
+        <i data-lucide="chevron-right" class="history-item-arrow" aria-hidden="true"></i>
+      `;
+
+      div.addEventListener("click", function () {
+        loadHistoryItemIntoChat(item);
+        // On mobile, close sidebar on click
+        var sidebar = document.getElementById("chat-sidebar");
+        if (sidebar && window.innerWidth <= 768) {
+          sidebar.classList.remove("active");
+        }
+      });
+
+      historyList.appendChild(div);
+    });
+
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  function loadHistoryItemIntoChat(item) {
+    if (!thread) return;
+    thread.innerHTML = ""; // Clear active conversation
+
+    // 1. User original prompt message
+    addMessage("user", item.original_prompt, false);
+
+    // 2. Assistant enhanced output reconstruction
+    currentAssistantBubble = addMessage("assistant", "", false);
+
+    var formattedOutput = "";
+    if (item.enhanced_prompt) {
+      formattedOutput += "### Enhanced Prompt\n\n" + item.enhanced_prompt + "\n\n";
+    }
+
+    var details = [];
+    if (item.intent) details.push("- **Intent:** " + item.intent);
+    if (item.domain) details.push("- **Domain:** " + item.domain);
+    if (item.original_quality !== null && item.original_quality !== undefined) {
+      details.push("- **Original Quality:** " + Math.round(item.original_quality * 100) + "%");
+    }
+    if (item.enhanced_quality !== null && item.enhanced_quality !== undefined) {
+      details.push("- **Enhanced Quality:** " + Math.round(item.enhanced_quality * 100) + "%");
+    }
+    if (item.improvement !== null && item.improvement !== undefined) {
+      details.push("- **Improvement Delta:** +" + Math.round(item.improvement * 100) + "%");
+    }
+    if (item.processing_time_ms) {
+      details.push("- **Processing Time:** " + item.processing_time_ms + "ms");
+    }
+
+    if (details.length) {
+      formattedOutput += "### Quality Analysis\n" + details.join("\n") + "\n\n";
+    }
+
+    setOutput(formattedOutput, false);
+    setStatus("Loaded enhancement from history.");
   }
 
   function autoGrowInput() {
@@ -297,6 +437,47 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // Sidebar interactive event listeners
+  var newChatBtn = document.getElementById("new-chat-btn");
+  if (newChatBtn) {
+    newChatBtn.addEventListener("click", function () {
+      if (thread) thread.innerHTML = "";
+      currentAssistantBubble = null;
+      setStatus("New chat started.");
+      var sidebar = document.getElementById("chat-sidebar");
+      if (sidebar && window.innerWidth <= 768) {
+        sidebar.classList.remove("active");
+      }
+    });
+  }
+
+  var logoutBtn = document.getElementById("logout-btn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", function () {
+      localStorage.removeItem("promptmax_token");
+      localStorage.removeItem("promptmax_user");
+      window.location.href = "/";
+    });
+  }
+
+  var sidebarToggle = document.getElementById("sidebar-toggle");
+  var sidebar = document.getElementById("chat-sidebar");
+  if (sidebarToggle && sidebar) {
+    sidebarToggle.addEventListener("click", function (event) {
+      event.stopPropagation();
+      sidebar.classList.toggle("active");
+    });
+
+    // Close mobile sidebar when clicking main content
+    document.addEventListener("click", function (event) {
+      if (window.innerWidth <= 768 && sidebar.classList.contains("active")) {
+        if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) {
+          sidebar.classList.remove("active");
+        }
+      }
+    });
+  }
+
   if (!form) return;
 
   form.addEventListener("submit", async function (event) {
@@ -324,6 +505,8 @@ document.addEventListener("DOMContentLoaded", function () {
         data = await postJSON("/api/v1/analyze/", { prompt: prompt });
         setStatus("Analysis complete.");
         setOutput(formatAnalysis(data), false);
+        // Refresh history to include new entry
+        loadHistory();
         return;
       }
 
@@ -334,6 +517,8 @@ document.addEventListener("DOMContentLoaded", function () {
         });
         setStatus("A/B test complete.");
         setOutput(formatAbTest(data), false);
+        // Refresh history to include new entry
+        loadHistory();
         return;
       }
 
@@ -345,6 +530,8 @@ document.addEventListener("DOMContentLoaded", function () {
       });
       setStatus(data.model ? "Model: " + data.model : "Done.");
       setOutput(data.enhanced || data.text || data.enhanced_prompt || JSON.stringify(data, null, 2), false);
+      // Refresh history to include new entry
+      loadHistory();
     } catch (error) {
       setStatus(error.message);
       setOutput("**Request failed**\n\n" + error.message + "\n\nTry again with a clearer prompt or check the model configuration.", true);
