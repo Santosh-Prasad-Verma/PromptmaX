@@ -1,185 +1,122 @@
 <div align="center">
 
-<img src="./frontend/Public/promptmax-logo-cropped.png" alt="PromptmaX Logo" width="180" />
+<img src="./frontend/Public/promptmax-logo-cropped.png" alt="PromptmaX Logo" width="160" />
 
-# 🌌 PROMPTX — NEURAL PROMPT PROTOCOL
-**[ SYSTEM STATUS: OPERATIONAL ]**  
-*The ultimate AI orchestration layer for precision-engineered instructions.*
+# ✨ PromptmaX — AI Prompt Engineering Platform
 
-<br/>
+**Turn rough, simple prompts into precision-engineered, production-ready instructions.**
 
-![PromptX Architecture](assets/architecture_diagram.png)
-
-<br/>
-
-[![GitHub stars](https://img.shields.io/github/stars/Santosh-Prasad-Verma/PromptX?style=for-the-badge&color=7C4DFF&labelColor=1A237E)](https://github.com/Santosh-Prasad-Verma/PromptX/stargazers)
-[![GitHub issues](https://img.shields.io/github/issues/Santosh-Prasad-Verma/PromptX?style=for-the-badge&color=00B8D4&labelColor=006064)](https://github.com/Santosh-Prasad-Verma/PromptX/issues)
-[![License](https://img.shields.io/github/license/Santosh-Prasad-Verma/PromptX?style=for-the-badge&color=00C853&labelColor=1B5E20)](LICENSE)
-[![Python Version](https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-
-<br/>
-
-**[ 🚀 Quick Start ](#-initialization-sequence) • [ 🧠 Core Features ](#-feature-matrix) • [ 🏗️ Tech Stack ](#-tech-stack) • [ 📡 API Reference ](#-api-gateways) • [ 📊 Quality Engine ](#-quality-intelligence)**
+[Explore Platform](https://promptmax-backend.onrender.com) • [Quick Start](#-quick-start) • [Core Features](#-core-features) • [Tech Stack](#-tech-stack)
 
 ---
 
 </div>
 
-<br/>
+## 🧬 Overview
 
-## 🧬 NEURAL OVERVIEW
+**PromptmaX** is a next-generation AI prompt engineering platform. It uses a sophisticated **9-stage optimization pipeline** to dismantle rough, vague user inputs and reconstruct them into highly structured, context-rich, and boundary-safe instructions. 
 
-**PromptX** is a sophisticated AI-powered prompt enhancement ecosystem. It leverages a **9-stage neural pipeline** to dismantle raw, vague user inputs and reconstruct them into high-fidelity, professional instructions. By orchestrating multiple LLMs (Gemini, Groq, NVIDIA), PromptX ensures that your AI interactions are deterministic, structured, and consistently elite.
+Whether you are building custom AI agents, fine-tuning model behaviors, or running automated prompt pipelines, PromptmaX ensures your AI interactions are deterministic, safe, and consistently high-quality.
 
-### ⚡ Core Value Proposition
-- 🛠️ **Iterative Refinement**: Automated loops that polish prompts until they hit a near-perfect quality score.
-- 🔄 **Autonomous Fallback**: Smart chain of command — if Gemini limits hit, Groq or NVIDIA take over instantly.
-- 📐 **Structural Integrity**: Enforces strict personas, contexts, and constraints using the advanced CREATE algorithm.
-- 🔬 **Quality Intelligence**: Real-time 6-dimension scoring with visual heatmap feedback.
+---
 
-<br/>
-
-## 🏗️ THE PIPELINE ARCHITECTURE
-
-Instead of simple wrappers, PromptX uses a multi-layered processing stack:
-
-```markdown
-  [ 📥 RAW INPUT ]
-         │
-         ▼
-  ┌───────────────┐
-  │ 1. VALIDATION │ ── Checks sanitization & security
-  └───────┬───────┘
-          │
-  ┌───────▼───────┐
-  │ 2. ANALYSIS   │ ── NLP-driven intent & domain detection
-  └───────┬───────┘
-          │
-  ┌───────▼───────┐
-  │ 3. CONTEXT    │ ── Injects relevant persona & background
-  └───────┬───────┘
-          │
-  ┌───────▼───────┐
-  │ 4. ENHANCE    │ ── Multi-model CREATE algorithm execution
-  └───────┬───────┘
-          │
-  ┌───────▼───────┐
-  │ 5. VALIDATE   │ ── Quality gating & structural verification
-  └───────┬───────┘
-          │
-         ▼
-  [ 📤 OPTIMIZED ]
-```
-
-<br/>
-
-## ⚡ FEATURE MATRIX
-
-| Module | Status | Capability |
-| :--- | :---: | :--- |
-| **CREATE Engine** | 🟢 | Advanced Prompt Engineering Algorithm |
-| **Model Fallback** | 🟢 | Gemini ↔ Groq ↔ NVIDIA ↔ HF |
-| **Analyzer** | 🟢 | 6-Dimension Linguistic Quality Heatmap |
-| **A/B Testing** | 🟢 | Concise / Detailed / Structured Variants |
-| **Web Search** | 🟢 | Real-time web-context injection |
-| **Cyber UI** | 🟢 | Premium Dark-mode Platinum Interface |
-| **Batch API** | 🟢 | Bulk prompt processing & comparison |
-
-<br/>
-
-## 🚀 INITIALIZATION SEQUENCE
+## 🚀 Quick Start
 
 ### 📋 Prerequisites
-- Python 3.8+
-- [Gemini API Key](https://aistudio.google.com/apikey) (Primary)
-- [Groq/NVIDIA Keys](https://console.groq.com/) (Optional Fallbacks)
+- **Python 3.10+**
+- **Supabase Account** (for authentication and cloud database sync)
+- **Official Mistral AI API Key** (for prompt enhancements and scoring)
 
-### 🛠️ Step-by-Step Boot
-1. **Clone & Enter**
+### 🛠️ Local Installation
+
+1. **Clone the Repository**
    ```bash
-   git clone https://github.com/Santosh-Prasad-Verma/PromptX.git
-   cd PromptX
+   git clone https://github.com/Santosh-Prasad-Verma/PromptmaX.git
+   cd PromptmaX
    ```
 
-2. **Environment Setup**
+2. **Set Up a Virtual Environment**
    ```bash
    python -m venv venv
-   source venv/bin/activate  # Windows: venv\Scripts\activate
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
    pip install -r requirements.txt
    ```
 
-3. **Configure Secrets**
+3. **Configure Environment Variables**
+   Copy the example environment file and fill in your keys:
    ```bash
    cp .env.example .env
-   # Edit .env with your system keys
    ```
+   *Required variables to set:*
+   * `SUPABASE_URL` & `SUPABASE_ANON_KEY`
+   * `SUPABASE_JWT_SECRET` (used by Django to validate user tokens)
+   * `MISTRAL_API_KEY` (used for the core prompt engineering models)
 
-4. **Initialize Neural Core**
+4. **Initialize the Database & Run**
    ```bash
    cd backend
    python manage.py migrate
-   python manage.py runserver  # Terminal 1
+   python manage.py runserver
    ```
+   Open **[http://localhost:8000](http://localhost:8000)** in your browser to start using the app!
 
-5. **Launch Terminal Interface**
-   ```bash
-   python app.py  # Terminal 2 - Flask API
-   ```
+---
 
-<br/>
+## 🧠 Core Features
 
-## 📡 API GATEWAYS
+* **⚡ 9-Stage Enhancement Pipeline**: Automates the CREATE prompt algorithm (Context, Role, Exclusions, Action, Theme, Evaluation) with iterative self-healing loops to polish prompts until they hit target scores.
+* **📈 6-Dimension Quality Scoring**: Real-time quality evaluation analyzing *Clarity, Specificity, Structure, Context, Constraints, and Output Formatting* with interactive heatmap feedback.
+* **🔄 A/B Testing & Variations**: Generates three distinct style variations (Concise, Detailed, and Structured) for comparing responses.
+* **🌐 Web Search Context Injection**: Automatically crawls and pulls real-time information from the web to ground prompts with fresh factual context.
+* **🔐 Supabase SSO Authentication**: Next-gen secure user registration, email verification, and password resets powered directly by Supabase Auth and integrated seamlessly with a SQLite/Postgres backend.
+* **📂 Automated Cloud History Sync**: Safe dual-write database synchronization that auto-saves your prompt enhancements directly to the cloud.
 
-PromptX provides dual endpoints for maximum flexibility:
+---
 
-### 🔥 Flask API (`:5000`)
-- `POST /api/enhance`: Basic prompt optimization.
-- `POST /api/ab-test`: Generate three distinct style variants.
-- `POST /api/quality-heatmap`: Get linguistic scoring.
+## 🏗️ Pipeline Flow
 
-### 🐍 Django Enterprise (`:8000`)
-- `POST /api/v1/enhance/`: Full enterprise-grade pipeline.
-- `POST /api/v1/batch-enhance/`: Process multiple prompts simultaneously.
-- `POST /api/v1/validate/`: Fact-checking & structural validation.
+```mermaid
+flowchart TD
+    Input[📥 Raw User Prompt] --> Stage1[1. Input Validation]
+    Stage1 --> Stage2[2. NLP Quality Analysis]
+    Stage2 --> Stage3[3. Persona & Context Injection]
+    Stage3 --> Stage4[4. CREATE Engine Optimization]
+    Stage4 --> Stage5[5. Quality Gating & Validation]
+    Stage5 --> Output[📤 High-Fidelity Prompt]
+```
 
-<br/>
+---
 
-## 📊 QUALITY INTELLIGENCE
+## 🏗️ Tech Stack
 
-Every prompt is scored across 6 vital dimensions to ensure peak performance:
+* **Frontend**: Vanilla CSS (Premium cream & evergreen theme), Vanilla JavaScript, Lucide Icons, Google Fonts (Inter, EB Garamond)
+* **Backend**: Django (Python 3.10+), Django REST Framework
+* **Database**: SQLite (Local development) / PostgreSQL (Production)
+* **Authentication**: Supabase Auth (SSO Integration with JWT validation)
+* **AI Models**: Mistral AI API (exclusive official models)
+* **Background Tasks**: Celery, Redis (for async website scraping and prompt history synchronization)
 
-| Dimension | Description | Target |
-| :--- | :--- | :---: |
-| **Clarity** | Absence of ambiguous phrasing | 9+ |
-| **Specificity** | Granularity of requirements | 8+ |
-| **Structure** | Logical organization/formatting | 9+ |
-| **Context** | Background & Persona depth | 8+ |
-| **Constraints** | Boundaries & Forbidden actions | 7+ |
-| **Format** | Precise output specification | 9+ |
+---
 
-<br/>
+## 📁 Repository Structure
 
-## 🏗️ TECH STACK
-
-- **Logic Core**: Python 3.10+, Django, Flask
-- **Intelligence**: Google Gemini 2.0, NVIDIA AI, Groq Llama 3
-- **NLP Layer**: spaCy, TextBlob, tiktoken
-- **Database**: SQLite / PostgreSQL with Django ORM
-- **Visuals**: Next-gen CSS, Vanilla JavaScript, Framer inspirations
-
-<br/>
-
-## 🤝 CONTRIBUTION PROTOCOL
-
-We welcome neural engineers! Please review the [CONTRIBUTING.md](CONTRIBUTING.md) for architectural guidelines and coding standards.
-
-<br/>
+```markdown
+├── backend/                  # Django backend application
+│   ├── enhancer/             # Core prompt logic, views, models, and tasks
+│   └── promptx_project/      # Main Django server configuration and settings
+├── frontend/                 # Premium responsive frontend client
+│   ├── pages/                # Clean public pages and interactive chat workspace
+│   ├── scripts/              # Auth bridge, Supabase client, and chat controller
+│   └── styles/               # CSS styling sheets (cream theme & premium popups)
+├── supabase/                 # Database migrations and dashboard email templates
+└── render.yaml               # Infrastructure-as-code deployment blueprint
+```
 
 ---
 
 <div align="center">
 
-**PromptX • Built for the Elite AI Architect.**  
+**PromptmaX — Built for modern AI teams.**  
 Distributed under the MIT License.
 
 </div>
