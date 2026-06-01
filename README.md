@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./frontend/Public/promptmax-logo-cropped.png" alt="PromptmaX Logo" width="160" />
+<img src="./frontend/Public/promptMAX.png" alt="PromptmaX Logo" width="160" />
 
 # ✨ PromptmaX — AI Prompt Engineering Platform
 
