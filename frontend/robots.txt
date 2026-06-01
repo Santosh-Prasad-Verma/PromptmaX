@@ -3,9 +3,5 @@ Allow: /
 Disallow: /chat
 Disallow: /builder
 Disallow: /integrations
-Disallow: /login
-Disallow: /register
-Disallow: /forgot-password
-Disallow: /reset-password
 
 Sitemap: https://promptx-hkfx.onrender.com/sitemap.xml

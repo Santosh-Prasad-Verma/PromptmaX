@@ -47,10 +47,11 @@ Whether you are building custom AI agents, fine-tuning model behaviors, or runni
    ```bash
    cp .env.example .env
    ```
-   *Required variables to set:*
-   * `SUPABASE_URL` & `SUPABASE_ANON_KEY`
-   * `SUPABASE_JWT_SECRET` (used by Django to validate user tokens)
+   *Required variable to set:*
    * `MISTRAL_API_KEY` (used for the core prompt engineering models)
+
+   *Optional sync variables:*
+   * `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY`
 
 4. **Initialize the Database & Run**
    ```bash

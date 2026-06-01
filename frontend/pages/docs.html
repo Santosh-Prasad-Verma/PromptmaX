@@ -66,7 +66,6 @@
     </div>
 
     <div class="nav-actions">
-      <a class="button secondary" href="/login">Sign in</a>
       <a class="button primary" href="/chat"><i data-lucide="sparkles" aria-hidden="true"></i>Launch PromptmaX</a>
       <button class="menu-button" id="menu-button" type="button" aria-label="Open menu" aria-controls="nav-links" aria-expanded="false">
         <i data-lucide="menu" aria-hidden="true"></i>
@@ -218,7 +217,7 @@ ALLOWED_HOSTS=127.0.0.1,localhost</code></pre>
           <span class="method get">GET</span>
           <code>/api/v1/api/projects/</code>
         </div>
-        <p>List prompt projects for authenticated users.</p>
+        <p>List prompt projects in the open workspace.</p>
       </div>
       <div class="endpoint">
         <div class="endpoint-header">
@@ -241,7 +240,6 @@ ALLOWED_HOSTS=127.0.0.1,localhost</code></pre>
       <table class="param-table">
         <tr><th>Code</th><th>Meaning</th><th>Fix</th></tr>
         <tr><td class="param-name">400</td><td>Invalid request body or missing prompt.</td><td>Send valid JSON and required fields.</td></tr>
-        <tr><td class="param-name">401</td><td>Authentication required for protected project/history routes.</td><td>Sign in or send a valid token.</td></tr>
         <tr><td class="param-name">429</td><td>Provider or application limit reached.</td><td>Retry later or use another configured provider.</td></tr>
         <tr><td class="param-name">500</td><td>Unexpected server error.</td><td>Check logs and environment configuration.</td></tr>
       </table>

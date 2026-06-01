@@ -6,12 +6,8 @@ document.addEventListener("DOMContentLoaded", function () {
   var submitButton = document.getElementById("chat-submit");
   var modeSelect = document.getElementById("chat-mode");
   var activeMode = (modeSelect && modeSelect.value) || "generate";
-  var planReady = false;
+  var planReady = true;
   var currentAssistantBubble = null;
-
-  function token() {
-    return localStorage.getItem("promptmax_token") || "";
-  }
 
   function setStatus(text) {
     if (status) status.textContent = text || "";
@@ -180,10 +176,6 @@ document.addEventListener("DOMContentLoaded", function () {
     var headers = {
       "Content-Type": "application/json",
     };
-    var userToken = token();
-    if (userToken) {
-      headers["Authorization"] = (userToken.indexOf(".") !== -1 ? "Bearer " : "Token ") + userToken;
-    }
     var response = await fetch(path, {
       method: "POST",
       headers: headers,
@@ -204,14 +196,8 @@ document.addEventListener("DOMContentLoaded", function () {
         await new Promise(function (resolve) {
           setTimeout(resolve, 1000);
         });
-        
-        var statusHeaders = {};
-        if (userToken) {
-          statusHeaders["Authorization"] = (userToken.indexOf(".") !== -1 ? "Bearer " : "Token ") + userToken;
-        }
-        
+
         var statusResponse = await fetch(statusUrl, {
-          headers: statusHeaders,
           credentials: "same-origin",
         });
         
@@ -240,144 +226,22 @@ document.addEventListener("DOMContentLoaded", function () {
     return data;
   }
 
-  async function ensureSelectedPlan() {
-    // Attempt to load from cache first to guarantee instant profile rendering
-    var cachedUser = null;
-    try {
-      cachedUser = JSON.parse(localStorage.getItem("promptmax_user"));
-    } catch (e) {}
-
-    if (!token()) {
-      planReady = true;
-      populateUserProfile(null);
-      return;
-    }
-
-    // Instantly display cached user information while backend fetches in the background
-    if (cachedUser) {
-      populateUserProfile(cachedUser);
-    }
-
-    try {
-      var response = await fetch("/api/v1/auth/me/", {
-        headers: { Authorization: (token().indexOf(".") !== -1 ? "Bearer " : "Token ") + token() },
-        credentials: "same-origin",
-      });
-      var data = await response.json().catch(function () {
-        return {};
-      });
-      
-      if (response.ok && data.user) {
-        localStorage.setItem("promptmax_user", JSON.stringify(data.user));
-        populateUserProfile(data.user);
-        
-        }
-        planReady = true;
-        setStatus("");
-        loadHistory();
-      } else {
-        // Response not OK but we have cache -> fall back to cache instead of logging out!
-        if (cachedUser) {
-          console.warn("Backend auth/me failed, falling back to cached session");
-          planReady = true;
-          loadHistory(); // attempt to load history
-        } else {
-          throw new Error("Session expired.");
-        }
-      }
-    } catch (error) {
-      console.error("Backend verification failed:", error);
-      if (cachedUser) {
-        console.warn("Retaining cached session user despite me endpoint failure");
-        populateUserProfile(cachedUser);
-        planReady = true;
-        loadHistory();
-      } else {
-        localStorage.removeItem("promptmax_token");
-        localStorage.removeItem("promptmax_user");
-        planReady = true;
-        populateUserProfile(null);
-      }
-    }
-  }
-
-  function populateUserProfile(user) {
+  function initializeOpenAccessProfile() {
     var nameEl = document.getElementById("user-profile-name");
     var emailEl = document.getElementById("user-profile-email");
     var planEl = document.getElementById("user-profile-plan");
     var avatarEl = document.getElementById("user-avatar-initial");
-    var logoutBtn = document.getElementById("logout-btn");
 
-    if (!user) {
-      if (nameEl) nameEl.textContent = "Guest User";
-      if (emailEl) emailEl.textContent = "Please sign in";
-      if (planEl) planEl.textContent = "Free Plan";
-      if (avatarEl) avatarEl.textContent = "G";
-      
-      // If guest, customize the logout button to be a sign-in button
-      if (logoutBtn) {
-        logoutBtn.innerHTML = '<i data-lucide="log-in" aria-hidden="true"></i><span>Sign In</span>';
-        logoutBtn.className = "popup-item"; // keep popup-item styling
-        logoutBtn.onclick = function(e) {
-          e.stopPropagation();
-          window.location.href = "/login";
-        };
-      }
-
-      // Display prompt history call-to-action for guests instead of spinner
-      var historyList = document.getElementById("history-list");
-      if (historyList) {
-        historyList.innerHTML = '<div class="history-empty">Please <a href="/login" style="color: #005346; font-weight: 800; text-decoration: underline;">Sign In</a> to save and view your enhancement history.</div>';
-      }
-      if (window.lucide) window.lucide.createIcons();
-      return;
-    }
-
-    var displayName = user.name || user.first_name || "User";
-    if (nameEl) nameEl.textContent = displayName;
-    if (emailEl) emailEl.textContent = user.email || "";
-    if (planEl) {
-      planEl.textContent = (user.plan && user.plan.label) || "Free Plan";
-    }
-    if (avatarEl) {
-      var initial = (displayName.trim()[0] || user.email.trim()[0] || "U").toUpperCase();
-      avatarEl.textContent = initial;
-    }
-
-    // Logged in: keep logout button as standard logout trigger
-    if (logoutBtn) {
-      logoutBtn.innerHTML = '<i data-lucide="log-out" aria-hidden="true"></i><span>Sign Out</span>';
-      logoutBtn.className = "popup-item logout-btn";
-      logoutBtn.onclick = function(e) {
-        e.stopPropagation();
-        localStorage.removeItem("promptmax_token");
-        localStorage.removeItem("promptmax_user");
-        
-        if (window.getSupabaseClient) {
-          window.getSupabaseClient(async function (supabase) {
-            if (supabase) {
-              try {
-                await supabase.auth.signOut();
-              } catch (err) {}
-            }
-            window.location.href = "/";
-          });
-        } else {
-          window.location.href = "/";
-        }
-      };
-    }
+    if (nameEl) nameEl.textContent = "Open Access";
+    if (emailEl) emailEl.textContent = "No sign in required";
+    if (planEl) planEl.textContent = "Free Plan";
+    if (avatarEl) avatarEl.textContent = "P";
     if (window.lucide) window.lucide.createIcons();
   }
 
   async function loadHistory() {
-    var userToken = token();
-    if (!userToken) return;
     try {
       var response = await fetch("/api/v1/history/", {
-        headers: {
-          "Authorization": (userToken.indexOf(".") !== -1 ? "Bearer " : "Token ") + userToken
-        },
         credentials: "same-origin"
       });
       if (!response.ok) throw new Error("Failed to load history");
@@ -524,7 +388,8 @@ document.addEventListener("DOMContentLoaded", function () {
     return lines.join("\n");
   }
 
-  ensureSelectedPlan();
+  initializeOpenAccessProfile();
+  loadHistory();
   if (window.lucide) window.lucide.createIcons();
 
   if (modeSelect) {

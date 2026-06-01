@@ -6,11 +6,7 @@ from pathlib import Path
 
 
 def render_frontend(request, template_name):
-    context = {
-        'SUPABASE_URL': getattr(settings, 'SUPABASE_URL', ''),
-        'SUPABASE_ANON_KEY': getattr(settings, 'SUPABASE_ANON_KEY', ''),
-    }
-    response = render(request, template_name, context)
+    response = render(request, template_name)
     if settings.DEBUG:
         add_never_cache_headers(response)
     return response

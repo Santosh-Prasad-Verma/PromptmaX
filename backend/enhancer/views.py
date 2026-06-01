@@ -16,9 +16,8 @@ from django.db.models import Count, Prefetch, Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, viewsets
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.pagination import PageNumberPagination
 
 from .serializers import (
@@ -203,7 +202,6 @@ class TaskStatusView(APIView):
 
 
 class EnhancePromptView(APIView):
-    authentication_classes = [TokenAuthentication]
     permission_classes = [AllowAny]
     throttle_scope = "ai_enhance"
 
@@ -408,7 +406,6 @@ class EnhancePromptView(APIView):
 
 
 class AnalyzePromptView(APIView):
-    authentication_classes = [TokenAuthentication]
     permission_classes = [AllowAny]
     throttle_scope = "ai_light"
 
@@ -544,7 +541,6 @@ class ComparePromptsView(APIView):
 
 
 class ABTestView(APIView):
-    authentication_classes = [TokenAuthentication]
     permission_classes = [AllowAny]
     throttle_scope = "ai_generate"
 

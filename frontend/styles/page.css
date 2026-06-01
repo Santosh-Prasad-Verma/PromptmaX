@@ -595,8 +595,7 @@ h3 {
 .feature-card,
 .process-card,
 .resource-card,
-.role-card,
-.login-card {
+.role-card {
   min-height: 210px;
   display: grid;
   align-content: space-between;
@@ -2814,8 +2813,7 @@ body.sidebar-collapsed .sidebar-toggle-btn {
   .feature-card,
   .process-card,
   .resource-card,
-  .role-card,
-  .login-card {
+  .role-card {
     min-height: 0;
     padding: 18px;
   }

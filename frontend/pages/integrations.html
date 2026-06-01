@@ -66,7 +66,6 @@
     </div>
 
     <div class="nav-actions">
-      <a class="button secondary" href="/login">Sign in</a>
       <a class="button primary" href="/chat"><i data-lucide="sparkles" aria-hidden="true"></i>Launch PromptmaX</a>
       <button class="menu-button" id="menu-button" type="button" aria-label="Open menu" aria-controls="nav-links" aria-expanded="false">
         <i data-lucide="menu" aria-hidden="true"></i>
@@ -156,7 +155,6 @@
           <pre class="terminal-body"><code>const response = await fetch(<span class="purple">"https://promptmax-backend.onrender.com/api/v1/enhance/"</span>, {
   method: <span class="purple">"POST"</span>,
   headers: {
-    <span class="purple">"Authorization"</span>: <span class="purple">"Bearer YOUR_TOKEN"</span>,
     <span class="purple">"Content-Type"</span>: <span class="purple">"application/json"</span>
   },
   body: JSON.stringify({

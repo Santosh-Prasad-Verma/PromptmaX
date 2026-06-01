@@ -20,10 +20,6 @@
       "dest": "manage.py"
     },
     {
-      "src": "/auth/(.*)",
-      "dest": "manage.py"
-    },
-    {
       "src": "/(.*\\.(css|js|gif|svg|png|jpg|jpeg|ico|webmanifest))",
       "dest": "frontend/$1"
     },

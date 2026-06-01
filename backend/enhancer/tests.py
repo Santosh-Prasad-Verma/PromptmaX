@@ -1,6 +1,6 @@
 """Tests for PromptX."""
 
-from django.test import TestCase, override_settings
+from django.test import TestCase
 from rest_framework.test import APIClient
 from .core.pipeline import PromptXPipeline
 from .core.analyzer import PromptAnalyzer
@@ -314,46 +314,20 @@ class APIEndpointTests(TestCase):
         self.assertEqual(response.data['total'], 3)
 
 
-class SupabaseJWTAuthenticationTests(TestCase):
+class AuthenticationDisabledTests(TestCase):
     def setUp(self):
         self.client = APIClient()
-        self.secret = 'test-supabase-jwt-secret-very-long-and-secure-123456789'
-        
-    @override_settings(SUPABASE_JWT_SECRET='test-supabase-jwt-secret-very-long-and-secure-123456789')
-    def test_supabase_authentication_success_and_provision(self):
-        import jwt
-        from django.contrib.auth.models import User
-        from django.test import override_settings
 
-        # 1. Create a mock Supabase payload
-        payload = {
-            'sub': '550e8400-e29b-41d4-a716-446655440000',
-            'email': 'supabase.test.user@example.com',
-            'aud': 'authenticated',
-            'user_metadata': {
-                'full_name': 'Test Supabase User'
-            }
-        }
-        
-        # 2. Sign the token with our test secret
-        token = jwt.encode(payload, self.secret, algorithm='HS256')
-        
-        # Verify user does not exist in Django yet
+    def test_authorization_header_does_not_authenticate_or_provision(self):
+        from django.contrib.auth.models import User
+
         self.assertFalse(User.objects.filter(email='supabase.test.user@example.com').exists())
-        
-        # 3. Call the Enhance endpoint with Bearer token
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ignored-token')
         response = self.client.post('/api/v1/enhance/', {
-            'prompt': 'verify supabase auth integration',
+            'prompt': 'verify open access integration',
             'enhancement_level': 'basic'
         }, format='json')
-        
-        # 4. Assert response is 200 OK and user was provisioned
+
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(User.objects.filter(email='supabase.test.user@example.com').exists())
-        
-        user = User.objects.get(email='supabase.test.user@example.com')
-        self.assertEqual(user.first_name, 'Test Supabase User')
-        
-        # Verify unusable password is set for safety
-        self.assertFalse(user.has_usable_password())
+        self.assertFalse(User.objects.filter(email='supabase.test.user@example.com').exists())

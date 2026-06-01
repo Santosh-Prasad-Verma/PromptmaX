@@ -220,30 +220,12 @@ def sync_user_plan(supabase_user_id, plan, price_rs=0):
 
 def get_supabase_user_id(request):
     """
-    Extract the Supabase user ID (sub) from a request that was
-    authenticated via SupabaseJWTAuthentication.
+    Return a Supabase user ID only when earlier code explicitly attached
+    decoded Supabase payload metadata to the request.
 
     Returns the UUID string or None.
     """
     payload = getattr(request, 'supabase_jwt_payload', None)
     if payload:
         return payload.get('sub')
-
-    auth_header = request.META.get('HTTP_AUTHORIZATION', '')
-    if not auth_header.lower().startswith('bearer '):
-        return None
-
-    token = auth_header.split()[1]
-    try:
-        import jwt as pyjwt
-        from django.conf import settings
-        secret = getattr(settings, 'SUPABASE_JWT_SECRET', '')
-        if not secret:
-            return None
-        payload = pyjwt.decode(
-            token, secret, algorithms=['HS256'],
-            options={"verify_aud": False, "verify_exp": True}
-        )
-        return payload.get('sub')
-    except Exception:
-        return None
+    return None

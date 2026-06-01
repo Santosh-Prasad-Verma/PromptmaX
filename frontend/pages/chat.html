@@ -26,7 +26,6 @@
     </div>
 
     <div class="chat-nav-actions">
-      <a class="button secondary" href="/pricing">Plan</a>
       <a class="button primary" href="/"><i data-lucide="home" aria-hidden="true"></i>Home</a>
     </div>
   </nav>
@@ -64,30 +63,21 @@
         <!-- Floating Profile Popup Menu (ChatGPT style) -->
         <div id="profile-popup-menu" class="profile-popup-menu">
           <div class="popup-header">
-            <span class="popup-title">Account Settings</span>
+            <span class="popup-title">PromptmaX</span>
           </div>
           <div class="popup-divider"></div>
-          <a href="/pricing" class="popup-item">
-            <i data-lucide="credit-card" aria-hidden="true"></i>
-            <span>Plans & Billing</span>
-          </a>
           <a href="/docs" class="popup-item">
             <i data-lucide="help-circle" aria-hidden="true"></i>
             <span>Help & Docs</span>
           </a>
-          <div class="popup-divider"></div>
-          <button id="logout-btn" class="popup-item logout-btn">
-            <i data-lucide="log-out" aria-hidden="true"></i>
-            <span>Sign Out</span>
-          </button>
         </div>
 
         <div id="user-profile-card" class="user-profile-card" role="button" aria-haspopup="true" aria-expanded="false" tabindex="0">
           <div class="user-profile-card-left">
-            <div class="user-avatar" id="user-avatar-initial">U</div>
+            <div class="user-avatar" id="user-avatar-initial">P</div>
             <div class="user-details">
-              <span class="user-name" id="user-profile-name">My Account</span>
-              <span class="user-email" id="user-profile-email">Not signed in</span>
+              <span class="user-name" id="user-profile-name">Open Access</span>
+              <span class="user-email" id="user-profile-email">No sign in required</span>
               <div class="user-plan-badge" id="user-profile-plan">Free Plan</div>
             </div>
           </div>
@@ -120,12 +110,6 @@
   </main>
 
   <script src="/scripts/page.js"></script>
-  <script>
-    window.SUPABASE_URL = "{{ SUPABASE_URL }}";
-    window.SUPABASE_ANON_KEY = "{{ SUPABASE_ANON_KEY }}";
-  </script>
-  <script src="/scripts/supabase-client.js"></script>
   <script src="/scripts/chat.js?v=1.0.5"></script>
 </body>
 </html>
-
