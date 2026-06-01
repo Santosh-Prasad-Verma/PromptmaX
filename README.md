@@ -24,7 +24,7 @@ Whether you are building custom AI agents, fine-tuning model behaviors, or runni
 
 ### 📋 Prerequisites
 - **Python 3.10+**
-- **Supabase Account** (for authentication and cloud database sync)
+- **Supabase Account** (for cloud database storage - optional)
 - **Official Mistral AI API Key** (for prompt enhancements and scoring)
 
 ### 🛠️ Local Installation
@@ -68,8 +68,7 @@ Whether you are building custom AI agents, fine-tuning model behaviors, or runni
 * **📈 6-Dimension Quality Scoring**: Real-time quality evaluation analyzing *Clarity, Specificity, Structure, Context, Constraints, and Output Formatting* with interactive heatmap feedback.
 * **🔄 A/B Testing & Variations**: Generates three distinct style variations (Concise, Detailed, and Structured) for comparing responses.
 * **🌐 Web Search Context Injection**: Automatically crawls and pulls real-time information from the web to ground prompts with fresh factual context.
-* **🔐 Supabase SSO Authentication**: Next-gen secure user registration, email verification, and password resets powered directly by Supabase Auth and integrated seamlessly with a SQLite/Postgres backend.
-* **📂 Automated Cloud History Sync**: Safe dual-write database synchronization that auto-saves your prompt enhancements directly to the cloud.
+* ** Automated Cloud History Sync**: Safe dual-write database synchronization that auto-saves your prompt enhancements directly to the cloud.
 
 ---
 

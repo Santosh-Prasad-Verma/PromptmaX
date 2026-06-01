@@ -620,11 +620,11 @@ class IdeasView(APIView):
 
 
 class PromptHistoryView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     pagination_class = PageNumberPagination
 
     def get(self, request):
-        queryset = PromptHistory.objects.filter(user=request.user).select_related('user').order_by('-created_at')
+        queryset = PromptHistory.objects.filter(user=request.user if request.user.is_authenticated else None).select_related('user').order_by('-created_at')
         paginator = self.pagination_class()
         page = paginator.paginate_queryset(queryset, request)
 
@@ -681,7 +681,7 @@ class BatchEnhanceView(APIView):
 
 
 class FeedbackView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = FeedbackSerializer(data=request.data)
@@ -689,7 +689,7 @@ class FeedbackView(APIView):
             return Response({'success': False, 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            history = PromptHistory.objects.get(id=serializer.validated_data['prompt_id'], user=request.user)
+            history = PromptHistory.objects.get(id=serializer.validated_data['prompt_id'], user=request.user if request.user.is_authenticated else None)
             history.user_rating = serializer.validated_data['rating']
             history.user_feedback = serializer.validated_data.get('feedback', '')
             history.save()
@@ -729,37 +729,37 @@ class HealthCheckView(APIView):
 
 class PromptProjectViewSet(viewsets.ModelViewSet):
     serializer_class = PromptProjectSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
-        return PromptProject.objects.filter(user=self.request.user)
+        return PromptProject.objects.filter(user=self.request.user if self.request.user.is_authenticated else None)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(user=self.request.user if self.request.user.is_authenticated else None)
 
 class PromptAssetViewSet(viewsets.ModelViewSet):
     serializer_class = PromptAssetSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         versions = PromptVersion.objects.order_by('-version_number')
         return (
             PromptAsset.objects
-            .filter(user=self.request.user)
+            .filter(user=self.request.user if self.request.user.is_authenticated else None)
             .select_related('project', 'user')
             .prefetch_related(Prefetch('versions', queryset=versions, to_attr='prefetched_versions'))
             .annotate(versions_total=Count('versions'))
         )
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(user=self.request.user if self.request.user.is_authenticated else None)
 
     @action(detail=True, methods=['post'])
     def fork(self, request, pk=None):
         try:
             asset = (
                 PromptAsset.objects
-                .filter(Q(user=request.user) | Q(is_public=True), pk=pk)
+                .filter(Q(user=request.user if request.user.is_authenticated else None) | Q(is_public=True), pk=pk)
                 .prefetch_related('versions')
                 .get()
             )
@@ -769,12 +769,12 @@ class PromptAssetViewSet(viewsets.ModelViewSet):
         base_name = f"{asset.name} (Forked)"
         fork_name = base_name
         suffix = 2
-        while PromptAsset.objects.filter(user=request.user, name=fork_name).exists():
+        while PromptAsset.objects.filter(user=request.user if request.user.is_authenticated else None, name=fork_name).exists():
             fork_name = f"{base_name} {suffix}"
             suffix += 1
         
         new_asset = PromptAsset.objects.create(
-            user=request.user,
+            user=request.user if request.user.is_authenticated else None,
             name=fork_name,
             description=asset.description,
             is_public=False
@@ -814,7 +814,7 @@ class PromptAssetViewSet(viewsets.ModelViewSet):
         public_assets = (
             PromptAsset.objects
             .filter(is_public=True)
-            .exclude(user=request.user)
+            .exclude(user=request.user if request.user.is_authenticated else None)
             .select_related('project', 'user')
             .prefetch_related(Prefetch('versions', queryset=versions, to_attr='prefetched_versions'))
             .annotate(versions_total=Count('versions'))
@@ -842,7 +842,7 @@ class PromptAssetViewSet(viewsets.ModelViewSet):
 
         with transaction.atomic():
             try:
-                asset = PromptAsset.objects.select_for_update().get(pk=pk, user=request.user)
+                asset = PromptAsset.objects.select_for_update().get(pk=pk, user=request.user if request.user.is_authenticated else None)
             except PromptAsset.DoesNotExist:
                 return Response({'error': 'Asset not found'}, status=status.HTTP_404_NOT_FOUND)
             latest_version = asset.versions.order_by('-version_number').first()
@@ -851,7 +851,7 @@ class PromptAssetViewSet(viewsets.ModelViewSet):
             history_ref = None
             if history_id:
                 try:
-                    history_ref = PromptHistory.objects.get(id=history_id, user=request.user)
+                    history_ref = PromptHistory.objects.get(id=history_id, user=request.user if request.user.is_authenticated else None)
                 except PromptHistory.DoesNotExist:
                     pass
 
@@ -873,10 +873,10 @@ class PromptAssetViewSet(viewsets.ModelViewSet):
 
 class PromptVersionViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = PromptVersionSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
-        return PromptVersion.objects.filter(asset__user=self.request.user)
+        return PromptVersion.objects.filter(asset__user=self.request.user if self.request.user.is_authenticated else None)
 
 class ExecutePromptView(APIView):
     permission_classes = [AllowAny]

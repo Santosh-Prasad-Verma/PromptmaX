@@ -119,8 +119,6 @@ document.addEventListener("DOMContentLoaded", function () {
       navActions.textContent = "";
 
       var githubBtn = buildGithubButton();
-      var chip = buildLink("user-chip", "/pricing", "circle-user-round", getDisplayName(user));
-      var plan = buildLink("button secondary", "/pricing", null, "Plan");
       var launch = buildLink("button primary", "/chat", "sparkles", "Launch PromptmaX");
       var menu = document.createElement("button");
       menu.className = "menu-button";

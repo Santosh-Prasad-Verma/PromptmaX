@@ -271,9 +271,6 @@ document.addEventListener("DOMContentLoaded", function () {
         localStorage.setItem("promptmax_user", JSON.stringify(data.user));
         populateUserProfile(data.user);
         
-        if (!data.user.plan || !data.user.plan.plan) {
-          window.location.href = "/pricing?first=1";
-          return;
         }
         planReady = true;
         setStatus("");

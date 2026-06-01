@@ -186,7 +186,7 @@ class PaymentOrder(models.Model):
         (STATUS_FAILED, 'Failed'),
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='promptmax_payments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='promptmax_payments')
     plan = models.CharField(max_length=20, choices=UserPlan.PLAN_CHOICES)
     amount_rs = models.PositiveIntegerField()
     amount_paise = models.PositiveIntegerField()
@@ -215,7 +215,7 @@ class PromptProject(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='projects')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='projects')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -233,7 +233,7 @@ class PromptAsset(models.Model):
     """Equivalent to a repository for a single prompt idea."""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     project = models.ForeignKey(PromptProject, on_delete=models.CASCADE, related_name='assets', null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='prompt_assets')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='prompt_assets')
     name = models.CharField(max_length=150)
     description = models.TextField(blank=True)
     is_public = models.BooleanField(default=False)

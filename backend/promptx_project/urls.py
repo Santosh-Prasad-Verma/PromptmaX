@@ -49,6 +49,5 @@ def serve_frontend(request, path=''):
 urlpatterns = [
     path('', serve_frontend),
     path('api/v1/', include('enhancer.urls')),
-    path('', include('social_django.urls')),
     re_path(r'^(?P<path>.+)/?$', serve_frontend),
 ]
