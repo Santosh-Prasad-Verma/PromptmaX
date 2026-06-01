@@ -214,6 +214,7 @@ CORS_ALLOWED_ORIGINS = env_list('CORS_ALLOWED_ORIGINS', 'http://localhost:3000,h
 CORS_ALLOW_HEADERS = [
     'accept',
     'accept-encoding',
+    'authorization',
     'content-type',
     'dnt',
     'origin',
