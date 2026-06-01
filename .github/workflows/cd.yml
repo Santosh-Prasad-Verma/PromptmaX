@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SECRET_KEY: "django-insecure-ci-testing-dummy-key-value-to-pass-checks"
-        DEBUG: "True"
-        MOCK_AI: "true"
+      DEBUG: "True"
+      MOCK_AI: "true"
     
     steps:
     - name: Checkout Code
