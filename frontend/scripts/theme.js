@@ -20,10 +20,12 @@
   function updateIcon(mode) {
     var btn = document.getElementById('theme-toggle');
     if (!btn) return;
-    var icon = btn.querySelector('[data-lucide]');
-    if (icon) {
-      icon.setAttribute('data-lucide', mode === 'dark' ? 'sun' : 'moon');
-      if (window.lucide) lucide.createIcons({ nodes: [icon] });
+    
+    // Reset inner icon element
+    btn.innerHTML = '<i data-lucide="' + (mode === 'dark' ? 'sun' : 'moon') + '" aria-hidden="true"></i>';
+    
+    if (window.lucide) {
+      window.lucide.createIcons({ nodes: [btn.firstElementChild] });
     }
     btn.setAttribute('aria-label', mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
   }
@@ -53,13 +55,20 @@
   });
 
   // Bind toggle button
-  document.addEventListener('DOMContentLoaded', function () {
+  function initThemeToggle() {
     var btn = document.getElementById('theme-toggle');
     if (btn) {
+      btn.removeEventListener('click', toggle);
       btn.addEventListener('click', toggle);
       updateIcon(getTheme());
     }
-  });
+  }
+
+  // Bind as early as possible
+  initThemeToggle();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initThemeToggle);
+  }
 
   // Expose API
   window.PromptMaxTheme = { toggle: toggle, getTheme: getTheme, setTheme: setTheme };
