@@ -338,8 +338,8 @@
   --metric-text: rgba(255, 255, 255, 0.5);
   --dark-section-head-text: rgba(255, 255, 255, 0.7);
   --dark-section-color: #f4f4f5;
-  --dark-card-text: rgba(255, 255, 255, 0.65);
-  --dark-card-detail-text: rgba(255, 255, 255, 0.75);
+  --dark-card-text: rgba(24, 24, 27, 0.7);
+  --dark-card-detail-text: rgba(24, 24, 27, 0.85);
   --prompt-output-head-color: rgba(255, 255, 255, 0.55);
   --thinking-dot-color: #c084fc;
   --output-highlight: #c084fc;

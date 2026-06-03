@@ -807,8 +807,9 @@
     }
 
     .capability-card.dark {
-      background: var(--text-primary);
-      color: var(--bg-highlight);
+      background: #171717;
+      color: #fffde8;
+      border-color: rgba(255, 255, 255, 0.1);
     }
 
     .capability-card i {
@@ -818,7 +819,7 @@
     }
 
     .capability-card.dark i {
-      color: var(--accent-secondary);
+      color: #ead7ff;
     }
 
     .capability-card h3 {
@@ -835,7 +836,7 @@
     }
 
     .capability-card.dark p {
-      color: var(--dark-card-text);
+      color: rgba(255, 253, 232, 0.68);
     }
 
     .detail-list {
@@ -856,7 +857,7 @@
     }
 
     .capability-card.dark .detail-list li {
-      color: var(--dark-card-detail-text);
+      color: rgba(255, 253, 232, 0.78);
     }
 
     .detail-list li::before {
@@ -869,7 +870,26 @@
     }
 
     .capability-card.dark .detail-list li::before {
-      background: var(--accent-secondary);
+      background: #ead7ff;
+    }
+
+    /* Dark theme overrides to keep it dark but match dark theme colors */
+    [data-theme="dark"] .capability-card.dark {
+      background: #0d0d0d;
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    [data-theme="dark"] .capability-card.dark p {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    [data-theme="dark"] .capability-card.dark .detail-list li {
+      color: rgba(255, 255, 255, 0.85);
+    }
+    [data-theme="dark"] .capability-card.dark i {
+      color: #c084fc;
+    }
+    [data-theme="dark"] .capability-card.dark .detail-list li::before {
+      background: #c084fc;
     }
 
     .project-box {

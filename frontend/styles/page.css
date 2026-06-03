@@ -448,6 +448,7 @@ h3 {
   background:
     linear-gradient(135deg, #151515 0%, #202020 48%, #111 100%);
   border-color: var(--border-strong);
+  color: var(--dark-section-color);
 }
 
 .about-hero h1 {
@@ -525,7 +526,7 @@ h3 {
 
 .metric-tile strong {
   display: block;
-  color: var(--text-on-accent);
+  color: var(--dark-section-color);
   font-size: 1.4rem;
 }
 
@@ -688,7 +689,7 @@ h3 {
 
 .dark-panel {
   background: var(--bg-primary);
-  color: var(--bg-surface);
+  color: var(--text-primary);
 }
 
 .cream-panel {
@@ -702,7 +703,7 @@ h3 {
   padding: 18px;
   border-radius: 12px;
   background: var(--bg-terminal);
-  color: var(--bg-surface);
+  color: var(--terminal-body-color);
   border: 2px solid var(--dark-section-prompt-border);
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   font-size: 0.88rem;
@@ -712,6 +713,50 @@ h3 {
 
 .terminal strong {
   color: var(--text-accent-highlight);
+}
+
+.terminal-box {
+  margin-top: 28px;
+  border: 1px solid var(--terminal-border-color);
+  border-radius: 20px;
+  background: var(--terminal-bg);
+  overflow: hidden;
+}
+
+.terminal-top {
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--terminal-top-border);
+  color: var(--terminal-top-color);
+  font-size: 0.8rem;
+  font-weight: 760;
+}
+
+.terminal-body {
+  margin: 0;
+  padding: 18px;
+  white-space: pre-wrap;
+  color: var(--terminal-body-color);
+  font: 600 0.9rem/1.7 Consolas, "SFMono-Regular", monospace;
+}
+
+.terminal-body .green {
+  color: var(--terminal-green);
+}
+
+.terminal-body .purple {
+  color: var(--terminal-purple);
+}
+
+.terminal-body code {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background: transparent;
+  padding: 0;
 }
 
 .pipeline {
@@ -769,7 +814,7 @@ h3 {
 }
 
 .dark .mini-link {
-  color: var(--text-on-accent);
+  color: var(--dark-section-color);
 }
 
 .form-grid {
@@ -855,7 +900,7 @@ h3 {
   background:
     radial-gradient(circle at 30% 20%, var(--resource-dark-glow), transparent 6rem),
     linear-gradient(135deg, var(--resource-dark-start), var(--resource-dark-end));
-  color: var(--text-on-accent);
+  color: var(--dark-section-color);
 }
 
 .resource-card-top i {
