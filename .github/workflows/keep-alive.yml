@@ -1,0 +1,17 @@
+name: Keep Render Alive
+
+on:
+  schedule:
+    - cron: '*/14 * * * *'  # every 14 minutes
+  workflow_dispatch:  # manual trigger
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Backend
+        run: |
+          curl -sf https://promptx-backend.onrender.com/health/ || echo "Backend ping failed"
+      - name: Ping Frontend
+        run: |
+          curl -sf https://promptx-hkfx.onrender.com/ || echo "Frontend ping failed"
