@@ -6,6 +6,7 @@
   <title>Developers - PromptmaX</title>
   <meta name="description" content="PromptmaX developer workflows: build structured prompt APIs, automate model evaluations, and integrate prompt engineering OS.">
   <meta name="theme-color" content="#f7f6e5">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" type="image/png" href="/Public/promptmax-logo-cropped.png">
   
   <!-- Canonical URL -->
@@ -28,6 +29,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600;700&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('promptmax-theme');
+      var sys = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', saved || sys);
+    })();
+  </script>
+  <link rel="stylesheet" href="/styles/themes.css">
   <link rel="stylesheet" href="/styles/page.css">
   <script src="https://unpkg.com/lucide@latest" defer></script>
 </head>
@@ -216,6 +225,7 @@ print(<span class="green">f"Enhanced Prompt: {data['enhanced']}"</span>)</code><
     </div>
   </footer>
 
+  <script src="/scripts/theme.js"></script>
   <script src="/scripts/page.js"></script>
 </body>
 </html>

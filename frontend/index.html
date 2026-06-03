@@ -6,6 +6,7 @@
   <title>PromptmaX | Prompt Engineering OS</title>
   <meta name="description" content="PromptmaX turns rough ideas into production-ready prompts with enhancement, scoring, comparison, saved workflows, and reusable prompt templates.">
   <meta name="theme-color" content="#f7f6e5">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" type="image/png" href="/Public/promptmax-logo-cropped.png">
   
   <!-- Canonical URL -->
@@ -51,19 +52,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600;700&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest" defer></script>
+  <script>
+    (function() {
+      var saved = localStorage.getItem('promptmax-theme');
+      var sys = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', saved || sys);
+    })();
+  </script>
+  <link rel="stylesheet" href="/styles/themes.css">
   <style>
     :root {
-      --cream: #f7f6e5;
-      --cream-2: #efeed8;
-      --ink: #171717;
-      --muted: #77776a;
-      --soft: #dbdac5;
-      --green: #005346;
-      --lavender: #ead7ff;
-      --lavender-2: #f3e7ff;
-      --panel: #181818;
-      --panel-2: #222222;
-      --line: rgba(23, 23, 23, 0.15);
       --radius: 16px;
       --max: 1340px;
       --font-serif: "EB Garamond", Georgia, serif;
@@ -76,7 +74,7 @@
     }
 
     html {
-      background: var(--cream);
+      background: var(--bg-surface);
       scroll-behavior: smooth;
     }
 
@@ -86,8 +84,8 @@
       background:
         radial-gradient(circle at 15% 22%, rgba(255, 255, 255, 0.75), transparent 18rem),
         radial-gradient(circle at 86% 14%, rgba(234, 215, 255, 0.32), transparent 22rem),
-        linear-gradient(180deg, var(--cream), var(--cream-2));
-      color: var(--ink);
+        linear-gradient(180deg, var(--bg-surface), var(--cream-2));
+      color: var(--text-primary);
       font-family: var(--font-sans);
       overflow-x: hidden;
       text-rendering: geometricPrecision;
@@ -110,8 +108,8 @@
       justify-content: center;
       gap: 32px;
       padding: 12px 24px;
-      background: var(--green);
-      color: #fffbe7;
+      background: var(--accent);
+      color: var(--bg-highlight);
       font-size: 0.98rem;
       font-weight: 800;
       text-align: center;
@@ -138,7 +136,7 @@
       align-items: center;
       gap: 14px;
       padding: 10px 10px 10px 14px;
-      border: 2px solid rgba(23, 23, 23, 0.12);
+      border: 2px solid var(--border);
       border-radius: 10px;
       background: rgba(250, 249, 229, 0.82);
       box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
@@ -198,20 +196,20 @@
       align-items: center;
       justify-content: center;
       flex: 0 0 38px;
-      border: 2px solid var(--ink);
+      border: 2px solid var(--text-primary);
       border-radius: 9px;
-      background: var(--ink);
-      color: var(--cream);
+      background: var(--text-primary);
+      color: var(--bg-surface);
       font-size: 0.78rem;
       line-height: 1;
       font-weight: 900;
       letter-spacing: 0.02em;
-      box-shadow: 0 3px 0 rgba(23, 23, 23, 0.14);
+      box-shadow: 0 3px 0 var(--border-medium);
     }
 
     .brand strong {
       display: block;
-      color: var(--ink);
+      color: var(--text-primary);
       font-size: 1.34rem;
       line-height: 1;
       font-weight: 850;
@@ -239,7 +237,7 @@
       gap: 6px;
       padding: 10px 9px;
       border-radius: 9px;
-      color: #282820;
+      color: var(--text-nav);
       font-size: 0.94rem;
       font-weight: 760;
       transition: background 180ms ease;
@@ -264,9 +262,9 @@
       display: grid;
       gap: 4px;
       padding: 10px;
-      border: 2px solid rgba(23, 23, 23, 0.12);
+      border: 2px solid var(--border);
       border-radius: 12px;
-      background: #fffde8;
+      background: var(--bg-surface);
       box-shadow: 0 22px 55px rgba(48, 45, 24, 0.18);
       opacity: 0;
       transform: translateY(8px);
@@ -286,7 +284,7 @@
       gap: 2px;
       padding: 10px;
       border-radius: 8px;
-      color: var(--ink);
+      color: var(--text-primary);
     }
 
     .dropdown a:hover {
@@ -294,7 +292,7 @@
     }
 
     .dropdown span {
-      color: var(--muted);
+      color: var(--text-muted);
       font-size: 0.8rem;
       line-height: 1.35;
     }
@@ -304,7 +302,7 @@
       align-items: center;
       gap: 10px;
       padding-left: 22px;
-      border-left: 1px solid rgba(23, 23, 23, 0.12);
+      border-left: 1px solid var(--border);
     }
 
     .button {
@@ -314,30 +312,30 @@
       justify-content: center;
       gap: 10px;
       padding: 12px 20px;
-      border: 2px solid var(--ink);
+      border: 2px solid var(--text-primary);
       border-radius: 10px;
-      background: var(--lavender);
-      color: var(--ink);
+      background: var(--accent-secondary);
+      color: var(--text-primary);
       font-size: 0.98rem;
       font-weight: 820;
       white-space: nowrap;
-      box-shadow: 0 2px 0 var(--ink);
+      box-shadow: 0 2px 0 var(--text-primary);
       transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
     }
 
     .button:hover {
       transform: translateY(-2px);
-      box-shadow: 0 5px 0 var(--ink);
+      box-shadow: 0 5px 0 var(--text-primary);
       background: var(--lavender-2);
     }
 
     .button.secondary {
-      background: #fffde8;
+      background: var(--bg-surface);
     }
 
     .button.dark {
-      background: var(--ink);
-      color: #fffbe7;
+      background: var(--text-primary);
+      color: var(--bg-highlight);
       box-shadow: none;
     }
 
@@ -350,10 +348,10 @@
       display: none;
       width: 46px;
       height: 46px;
-      border: 2px solid var(--ink);
+      border: 2px solid var(--text-primary);
       border-radius: 10px;
-      background: #fffde8;
-      color: var(--ink);
+      background: var(--bg-surface);
+      color: var(--text-primary);
       cursor: pointer;
     }
 
@@ -386,18 +384,18 @@
       font-size: clamp(4.5rem, 10.2vw, 7.4rem);
       line-height: 0.86;
       font-weight: 600;
-      color: var(--ink);
+      color: var(--text-primary);
       letter-spacing: -0.03em;
     }
 
     .hero h1 .muted {
-      color: #8f8f81;
+      color: var(--text-meta);
     }
 
     .hero-copy {
       max-width: 520px;
       margin: 36px auto 0;
-      color: var(--ink);
+      color: var(--text-primary);
       font-size: clamp(1.08rem, 2vw, 1.36rem);
       line-height: 1.35;
       font-weight: 650;
@@ -413,7 +411,7 @@
 
     .availability {
       margin-top: 18px;
-      color: #747466;
+      color: var(--text-meta);
       font-size: 0.88rem;
       font-weight: 600;
       max-width: 520px;
@@ -431,18 +429,18 @@
     }
 
     .prompt-output-box {
-      border: 3px solid var(--ink);
+      border: 3px solid var(--text-primary);
       border-radius: 18px;
-      box-shadow: 0 7px 0 rgba(23, 23, 23, 0.14);
+      box-shadow: 0 7px 0 var(--border-medium);
     }
 
     .prompt-input-box {
       padding: 14px 16px;
-      border: 3px solid var(--ink);
+      border: 3px solid var(--text-primary);
       border-radius: 16px;
-      background: #fffde8;
-      box-shadow: 0 6px 0 rgba(23, 23, 23, 0.12);
-      color: var(--ink);
+      background: var(--bg-surface);
+      box-shadow: 0 6px 0 var(--border);
+      color: var(--text-primary);
     }
 
     .prompt-input-head,
@@ -459,7 +457,7 @@
     }
 
     .prompt-input-head {
-      color: #68685e;
+      color: var(--text-meta);
     }
 
     .prompt-input-line {
@@ -469,7 +467,7 @@
       align-items: center;
       gap: 10px;
       overflow: hidden;
-      color: var(--ink);
+      color: var(--text-primary);
       font-size: 1.02rem;
       line-height: 1.35;
       font-weight: 760;
@@ -496,14 +494,14 @@
     .typing-caret {
       width: 2px;
       height: 23px;
-      background: var(--ink);
+      background: var(--text-primary);
       animation: caretBlink 760ms steps(1, end) infinite;
     }
 
     .prompt-output-box {
       padding: 18px 20px 20px;
-      background: var(--ink);
-      color: #fffbe7;
+      background: var(--text-primary);
+      color: var(--bg-highlight);
       min-height: 252px;
     }
 
@@ -768,16 +766,16 @@
 
     .light-section {
       padding: 96px 0;
-      background: var(--cream);
-      color: var(--ink);
+      background: var(--bg-surface);
+      color: var(--text-primary);
     }
 
     .light-section .section-kicker {
-      color: var(--green);
+      color: var(--accent);
     }
 
     .light-section .section-head p {
-      color: #68685e;
+      color: var(--text-meta);
     }
 
     .box-grid {
@@ -801,22 +799,22 @@
       justify-content: space-between;
       border: 2px solid rgba(23, 23, 23, 0.11);
       border-radius: 28px;
-      background: #fffde8;
+      background: var(--bg-surface);
     }
 
     .capability-card.dark {
-      background: var(--ink);
-      color: #fffbe7;
+      background: var(--text-primary);
+      color: var(--bg-highlight);
     }
 
     .capability-card i {
       width: 30px;
       height: 30px;
-      color: var(--green);
+      color: var(--accent);
     }
 
     .capability-card.dark i {
-      color: var(--lavender);
+      color: var(--accent-secondary);
     }
 
     .capability-card h3 {
@@ -827,7 +825,7 @@
 
     .capability-card p {
       margin: 0;
-      color: #69695f;
+      color: var(--text-meta);
       line-height: 1.58;
       font-weight: 650;
     }
@@ -848,7 +846,7 @@
       display: flex;
       align-items: center;
       gap: 9px;
-      color: #4f4f46;
+      color: var(--text-body);
       font-size: 0.9rem;
       font-weight: 750;
     }
@@ -863,11 +861,11 @@
       height: 7px;
       flex: 0 0 auto;
       border-radius: 999px;
-      background: var(--green);
+      background: var(--accent);
     }
 
     .capability-card.dark .detail-list li::before {
-      background: var(--lavender);
+      background: var(--accent-secondary);
     }
 
     .project-box {
@@ -878,7 +876,7 @@
       justify-content: space-between;
       border: 2px solid rgba(23, 23, 23, 0.11);
       border-radius: 28px;
-      background: #fffde8;
+      background: var(--bg-surface);
       transition: transform 180ms ease, box-shadow 180ms ease;
     }
 
@@ -890,7 +888,7 @@
     .project-box i {
       width: 28px;
       height: 28px;
-      color: var(--green);
+      color: var(--accent);
     }
 
     .project-box h3 {
@@ -900,7 +898,7 @@
 
     .project-box p {
       margin: 0;
-      color: #6d6d62;
+      color: var(--text-meta);
       line-height: 1.55;
       font-weight: 600;
       font-size: 0.94rem;
@@ -914,7 +912,7 @@
       justify-content: center;
       padding: 90px 20px;
       overflow: hidden;
-      background: var(--cream);
+      background: var(--bg-surface);
     }
 
     .cta-card {
@@ -930,7 +928,7 @@
       padding: 42px;
       border: 2px solid rgba(23, 23, 23, 0.13);
       border-radius: 34px;
-      background: #fffde8;
+      background: var(--bg-surface);
       text-align: center;
       box-shadow: 0 22px 60px rgba(48, 45, 24, 0.12);
     }
@@ -948,7 +946,7 @@
     .cta-card p {
       margin: 0;
       max-width: 600px;
-      color: #606058;
+      color: var(--text-meta);
       font-size: 1.08rem;
       line-height: 1.55;
       font-weight: 650;
@@ -956,7 +954,7 @@
 
     .footer {
       padding: 56px 0 34px;
-      background: #fffde8;
+      background: var(--bg-surface);
       border-top: 2px solid rgba(23, 23, 23, 0.09);
     }
 
@@ -968,14 +966,14 @@
 
     .footer p,
     .footer a {
-      color: #68685e;
+      color: var(--text-meta);
       font-weight: 650;
       font-size: 0.92rem;
     }
 
     .footer h4 {
       margin: 0 0 14px;
-      color: var(--ink);
+      color: var(--text-primary);
       font-size: 0.92rem;
     }
 
@@ -991,8 +989,8 @@
       gap: 18px;
       margin-top: 42px;
       padding-top: 22px;
-      border-top: 1px solid rgba(23, 23, 23, 0.1);
-      color: #77776a;
+      border-top: 1px solid var(--border-subtle);
+      color: var(--text-meta);
       font-weight: 650;
       font-size: 0.88rem;
       flex-wrap: wrap;
@@ -1035,9 +1033,9 @@
         flex-direction: column;
         align-items: stretch;
         padding: 10px;
-        border: 2px solid rgba(23, 23, 23, 0.12);
+        border: 2px solid var(--border);
         border-radius: 12px;
-        background: #fffde8;
+        background: var(--bg-surface);
       }
 
       .nav-links.open {
@@ -1271,6 +1269,9 @@
     </div>
 
     <div class="nav-actions">
+      <button id="theme-toggle" class="menu-button" type="button" aria-label="Switch to dark mode">
+        <i data-lucide="moon" aria-hidden="true"></i>
+      </button>
       <a class="button primary" href="/chat"><i data-lucide="sparkles" aria-hidden="true"></i>Launch PromptmaX</a>
       <button class="menu-button" id="menu-button" type="button" aria-label="Open menu" aria-controls="nav-links" aria-expanded="false">
         <i data-lucide="menu" aria-hidden="true"></i>
@@ -1538,6 +1539,7 @@ After: structured expert instruction</pre>
     </div>
   </footer>
 
+  <script src="/scripts/theme.js"></script>
   <script src="/scripts/page.js"></script>
 </body>
 </html>

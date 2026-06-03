@@ -6,6 +6,7 @@
   <title>Prompt Playground - PromptmaX</title>
   <meta name="description" content="Use PromptmaX to turn rough prompts into structured, production-ready instructions.">
   <meta name="theme-color" content="#f7f6e5">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" type="image/png" href="/Public/promptmax-logo-cropped.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,6 +27,9 @@
     </div>
 
     <div class="chat-nav-actions">
+      <button id="theme-toggle" class="menu-button" type="button" aria-label="Switch to dark mode">
+        <i data-lucide="moon" aria-hidden="true"></i>
+      </button>
       <a class="button primary" href="/"><i data-lucide="home" aria-hidden="true"></i>Home</a>
     </div>
   </nav>
@@ -109,6 +113,7 @@
     </section>
   </main>
 
+  <script src="/scripts/theme.js"></script>
   <script src="/scripts/page.js"></script>
   <script src="/scripts/chat.js?v=1.0.5"></script>
 </body>

@@ -1,0 +1,354 @@
+/* ============================================
+   PromptmaX Design Tokens — Light & Dark Themes
+   ============================================ */
+
+:root {
+  /* ── Surface / Background ── */
+  --bg-primary: #f7f6e5;
+  --bg-secondary: #efeed8;
+  --bg-surface: #fffde8;
+  --bg-input: #fffefa;
+  --bg-highlight: #fffbe7;
+  --bg-code: #111111;
+  --bg-code-inline: rgba(23, 23, 23, 0.08);
+  --bg-card-dark: #202020;
+  --bg-terminal: #0f0f0f;
+
+  /* ── Text ── */
+  --text-primary: #171717;
+  --text-nav: #282820;
+  --text-chat: #25251f;
+  --text-lead: #48483f;
+  --text-body: #4f4f46;
+  --text-secondary: #57574d;
+  --text-list: #535348;
+  --text-label: #4a4a42;
+  --text-pill: #303028;
+  --text-muted: #757566;
+  --text-meta: #77776a;
+  --text-small: #666658;
+  --text-footer-link: #34342c;
+  --text-footer-bottom: #6d6d60;
+  --text-code: #1f1f1b;
+  --text-on-accent: #fffbe7;
+  --text-accent-highlight: #f6e7ff;
+
+  /* ── Accent ── */
+  --accent: #005346;
+  --accent-hover: #006b58;
+  --accent-secondary: #ead7ff;
+  --accent-secondary-2: #f4e8ff;
+  --accent-subtle: rgba(0, 83, 70, 0.08);
+  --accent-subtle-2: rgba(0, 83, 70, 0.12);
+  --accent-subtle-3: rgba(0, 83, 70, 0.38);
+  --green-glow: rgba(0, 83, 70, 0.22);
+
+  /* ── Border ── */
+  --border: rgba(23, 23, 23, 0.12);
+  --border-medium: rgba(23, 23, 23, 0.14);
+  --border-strong: rgba(23, 23, 23, 0.16);
+  --border-subtle: rgba(23, 23, 23, 0.1);
+  --border-faint: rgba(23, 23, 23, 0.08);
+  --border-fainter: rgba(23, 23, 23, 0.06);
+  --border-faintest: rgba(23, 23, 23, 0.05);
+  --border-faintest-3: rgba(23, 23, 23, 0.03);
+  --border-dropdown: rgba(23, 23, 23, 0.18);
+  --border-solid: #171717;
+
+  /* ── Shadow ── */
+  --shadow: rgba(61, 57, 32, 0.08);
+  --shadow-medium: rgba(61, 57, 32, 0.12);
+  --shadow-strong: rgba(61, 57, 32, 0.15);
+  --shadow-elevated: rgba(61, 57, 32, 0.18);
+  --shadow-hero: rgba(51, 48, 27, 0.18);
+  --shadow-dropdown: rgba(48, 45, 24, 0.18);
+  --shadow-inset: rgba(255, 255, 255, 0.5);
+  --shadow-inset-faint: rgba(255, 255, 255, 0.9);
+  --shadow-inset-border: rgba(23, 23, 23, 0.08);
+  --shadow-chip: 0 2px 0 var(--border-solid);
+  --shadow-chip-hover: 0 3px 0 var(--border-solid);
+  --shadow-button: 0 2px 0 var(--border-solid);
+  --shadow-button-hover: 0 5px 0 var(--border-solid);
+
+  /* ── Semantic: Success ── */
+  --success-bg: #effaf3;
+  --success-border: rgba(0, 83, 70, 0.28);
+
+  /* ── Semantic: Error ── */
+  --error: #9b1c1c;
+  --error-accent: #dc3545;
+  --error-bg: #fff1f1;
+  --error-text: #8a1c1c;
+  --error-border: rgba(155, 28, 28, 0.32);
+  --error-subtle: rgba(220, 53, 69, 0.08);
+
+  /* ── Decorative: body gradient ── */
+  --body-glow-1: rgba(255, 255, 255, 0.74);
+  --body-glow-2: rgba(234, 215, 255, 0.32);
+  --body-gradient-end: var(--bg-secondary);
+
+  /* ── Decorative: hero art gradient ── */
+  --hero-art-glow: rgba(234, 215, 255, 0.9);
+  --hero-art-green: rgba(0, 83, 70, 0.16);
+  --hero-art-start: #fffbe7;
+  --hero-art-end: #efeed8;
+
+  /* ── Decorative: resource card top ── */
+  --resource-glow: rgba(234, 215, 255, 0.92);
+  --resource-gradient-start: #fdfbe2;
+  --resource-gradient-end: #e9e6cf;
+
+  /* ── Decorative: resource card top dark variant ── */
+  --resource-dark-glow: rgba(234, 215, 255, 0.32);
+  --resource-dark-start: #171717;
+  --resource-dark-end: #2a2a2a;
+
+  /* ── Decorative: result panel ── */
+  --result-glow: rgba(234, 215, 255, 0.16);
+  --result-surface: rgba(247, 246, 229, 0.05);
+  --result-border: rgba(247, 246, 229, 0.12);
+  --result-text: rgba(247, 246, 229, 0.84);
+  --result-text-muted: rgba(247, 246, 229, 0.55);
+  --result-text-meta: rgba(247, 246, 229, 0.66);
+  --result-text-label: rgba(247, 246, 229, 0.62);
+  --result-text-tag: rgba(247, 246, 229, 0.78);
+  --result-highlight: #fffbe7;
+  --result-highlight-accent: #f6e7ff;
+
+  /* ── Decorative: visual panel / dark sections ── */
+  --dark-section-text: rgba(247, 246, 229, 0.7);
+  --dark-section-text-strong: rgba(247, 246, 229, 0.72);
+  --dark-section-text-meta: rgba(247, 246, 229, 0.68);
+  --dark-section-border: rgba(247, 246, 229, 0.14);
+  --dark-section-surface: rgba(247, 246, 229, 0.08);
+  --dark-section-pill-border: rgba(247, 246, 229, 0.18);
+  --dark-section-score-bg: rgba(247, 246, 229, 0.06);
+  --dark-section-prompt-bg: #111;
+  --dark-section-prompt-border: rgba(247, 246, 229, 0.1);
+
+  /* ── Misc ── */
+  --white-alpha-66: rgba(255, 253, 232, 0.66);
+  --white-alpha-48: rgba(255, 253, 232, 0.48);
+  --white-alpha-78: rgba(255, 253, 232, 0.78);
+  --white-alpha-96: rgba(255, 255, 255, 0.96);
+  --white-alpha-98: rgba(255, 255, 255, 0.98);
+  --cream-alpha-86: rgba(250, 249, 229, 0.86);
+  --cream-alpha-92: rgba(247, 246, 229, 0.92);
+  --footer-gradient-glow: rgba(234, 215, 255, 0.38);
+
+  /* ── Transition ── */
+  --transition-theme: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+/* ============================================
+   Dark Theme
+   ============================================ */
+[data-theme="dark"] {
+  /* ── Surface / Background ── */
+  --bg-primary: #0F1A15;
+  --bg-secondary: #131F19;
+  --bg-surface: #162212;
+  --bg-input: #1A2A1E;
+  --bg-highlight: #1E3324;
+  --bg-code: #0A120E;
+  --bg-code-inline: rgba(232, 240, 235, 0.1);
+  --bg-card-dark: #1E2D1A;
+  --bg-terminal: #0A0F0C;
+
+  /* ── Text ── */
+  --text-primary: #E8F0EB;
+  --text-nav: #D0DED5;
+  --text-chat: #E0ECE4;
+  --text-lead: #B8CCBF;
+  --text-body: #A8BFB0;
+  --text-secondary: #98B0A2;
+  --text-list: #9CB3A4;
+  --text-label: #A0B8A9;
+  --text-pill: #C8DED0;
+  --text-muted: #7A9485;
+  --text-meta: #6E8879;
+  --text-small: #7A9485;
+  --text-footer-link: #C0D4C6;
+  --text-footer-bottom: #6E8879;
+  --text-code: #D0DED5;
+  --text-on-accent: #0F1A15;
+  --text-accent-highlight: #C9A8F0;
+
+  /* ── Accent ── */
+  --accent: #4CAF7A;
+  --accent-hover: #5EC08A;
+  --accent-secondary: #2A1F3D;
+  --accent-secondary-2: #1F1630;
+  --accent-subtle: rgba(76, 175, 122, 0.12);
+  --accent-subtle-2: rgba(76, 175, 122, 0.18);
+  --accent-subtle-3: rgba(76, 175, 122, 0.35);
+  --green-glow: rgba(76, 175, 122, 0.25);
+
+  /* ── Border ── */
+  --border: rgba(232, 240, 235, 0.1);
+  --border-medium: rgba(232, 240, 235, 0.12);
+  --border-strong: rgba(232, 240, 235, 0.16);
+  --border-subtle: rgba(232, 240, 235, 0.08);
+  --border-faint: rgba(232, 240, 235, 0.06);
+  --border-fainter: rgba(232, 240, 235, 0.05);
+  --border-faintest: rgba(232, 240, 235, 0.04);
+  --border-faintest-3: rgba(232, 240, 235, 0.03);
+  --border-dropdown: rgba(232, 240, 235, 0.14);
+  --border-solid: #2A3D2E;
+
+  /* ── Shadow ── */
+  --shadow: rgba(0, 0, 0, 0.25);
+  --shadow-medium: rgba(0, 0, 0, 0.35);
+  --shadow-strong: rgba(0, 0, 0, 0.4);
+  --shadow-elevated: rgba(0, 0, 0, 0.45);
+  --shadow-hero: rgba(0, 0, 0, 0.5);
+  --shadow-dropdown: rgba(0, 0, 0, 0.5);
+  --shadow-inset: rgba(255, 255, 255, 0.05);
+  --shadow-inset-faint: rgba(255, 255, 255, 0.08);
+  --shadow-inset-border: rgba(232, 240, 235, 0.06);
+
+  /* ── Semantic: Success ── */
+  --success-bg: #0E2A1A;
+  --success-border: rgba(76, 175, 122, 0.3);
+
+  /* ── Semantic: Error ── */
+  --error: #F87171;
+  --error-accent: #EF4444;
+  --error-bg: #2A1215;
+  --error-text: #FCA5A5;
+  --error-border: rgba(248, 113, 113, 0.3);
+  --error-subtle: rgba(239, 68, 68, 0.12);
+
+  /* ── Decorative: body gradient ── */
+  --body-glow-1: rgba(76, 175, 122, 0.06);
+  --body-glow-2: rgba(42, 31, 61, 0.15);
+  --body-gradient-end: #131F19;
+
+  /* ── Decorative: hero art gradient ── */
+  --hero-art-glow: rgba(42, 31, 61, 0.4);
+  --hero-art-green: rgba(76, 175, 122, 0.12);
+  --hero-art-start: #1A2A1E;
+  --hero-art-end: #0F1A15;
+
+  /* ── Decorative: resource card top ── */
+  --resource-glow: rgba(42, 31, 61, 0.4);
+  --resource-gradient-start: #162212;
+  --resource-gradient-end: #1A2A1E;
+
+  /* ── Decorative: resource card top dark variant ── */
+  --resource-dark-glow: rgba(42, 31, 61, 0.2);
+  --resource-dark-start: #0F1A15;
+  --resource-dark-end: #1A2A1E;
+
+  /* ── Decorative: result panel ── */
+  --result-glow: rgba(42, 31, 61, 0.12);
+  --result-surface: rgba(232, 240, 235, 0.04);
+  --result-border: rgba(232, 240, 235, 0.1);
+  --result-text: rgba(232, 240, 235, 0.88);
+  --result-text-muted: rgba(232, 240, 235, 0.5);
+  --result-text-meta: rgba(232, 240, 235, 0.6);
+  --result-text-label: rgba(232, 240, 235, 0.55);
+  --result-text-tag: rgba(232, 240, 235, 0.75);
+  --result-highlight: #1E3324;
+  --result-highlight-accent: #2A1F3D;
+
+  /* ── Decorative: visual panel / dark sections ── */
+  --dark-section-text: rgba(232, 240, 235, 0.7);
+  --dark-section-text-strong: rgba(232, 240, 235, 0.75);
+  --dark-section-text-meta: rgba(232, 240, 235, 0.6);
+  --dark-section-border: rgba(232, 240, 235, 0.12);
+  --dark-section-surface: rgba(232, 240, 235, 0.06);
+  --dark-section-pill-border: rgba(232, 240, 235, 0.14);
+  --dark-section-score-bg: rgba(232, 240, 235, 0.05);
+  --dark-section-prompt-bg: #0A120E;
+  --dark-section-prompt-border: rgba(232, 240, 235, 0.08);
+
+  /* ── Misc ── */
+  --white-alpha-66: rgba(22, 34, 18, 0.66);
+  --white-alpha-48: rgba(15, 26, 21, 0.48);
+  --white-alpha-78: rgba(15, 26, 21, 0.78);
+  --white-alpha-96: rgba(15, 26, 21, 0.96);
+  --white-alpha-98: rgba(15, 26, 21, 0.98);
+  --cream-alpha-86: rgba(15, 26, 21, 0.86);
+  --cream-alpha-92: rgba(22, 34, 18, 0.92);
+  --footer-gradient-glow: rgba(42, 31, 61, 0.2);
+}
+
+/* ── Theme transition (applied to body & key surfaces) ── */
+[data-theme] body,
+[data-theme] .nav-shell,
+[data-theme] .feature-card,
+[data-theme] .process-card,
+[data-theme] .resource-card,
+[data-theme] .role-card,
+[data-theme] .chat-panel,
+[data-theme] .chat-sidebar,
+[data-theme] .chat-composer,
+[data-theme] .chat-message.user .chat-bubble,
+[data-theme] .chat-avatar,
+[data-theme] .user-chip,
+[data-theme] .button,
+[data-theme] .docs-sidebar,
+[data-theme] .docs-content,
+[data-theme] .auth-panel,
+[data-theme] .auth-side,
+[data-theme] .footer,
+[data-theme] .modal,
+[data-theme] .price-card,
+[data-theme] .job-card,
+[data-theme] .perk-card,
+[data-theme] .value-item,
+[data-theme] .newsletter-card,
+[data-theme] .featured-resource,
+[data-theme] .resource-hero-card,
+[data-theme] .doc-callout,
+[data-theme] .endpoint,
+[data-theme] .dropdown,
+[data-theme] .terminal,
+[data-theme] .chat-output,
+[data-theme] .chat-status,
+[data-theme] .profile-popup-menu,
+[data-theme] .mode-button {
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+[data-theme] .markdown-body code,
+[data-theme] .markdown-body pre,
+[data-theme] .field input,
+[data-theme] .field textarea,
+[data-theme] .field select,
+[data-theme] .newsletter-form input,
+[data-theme] .chat-input,
+[data-theme] .chat-input-row .chat-input,
+[data-theme] .chat-mode-select {
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+/* ── Theme Toggle Button ── */
+#theme-toggle {
+  width: 40px;
+  height: 40px;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--border-solid);
+  border-radius: 10px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease;
+  flex-shrink: 0;
+}
+
+#theme-toggle:hover {
+  transform: translateY(-1px);
+}
+
+#theme-toggle i,
+#theme-toggle svg {
+  width: 18px;
+  height: 18px;
+  color: var(--accent);
+  stroke: currentColor;
+}
