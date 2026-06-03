@@ -115,6 +115,14 @@ textarea {
   filter: none;
 }
 
+[data-theme="dark"] .brand-logo {
+  filter: brightness(2.2) contrast(1.5) invert(1) hue-rotate(180deg);
+}
+
+[data-theme="dark"] .brand-logo.clean-logo {
+  filter: none;
+}
+
 .logo-plate {
   display: inline-flex;
   align-items: center;

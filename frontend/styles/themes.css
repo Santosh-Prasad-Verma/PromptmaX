@@ -136,6 +136,43 @@
   --cream-alpha-92: rgba(247, 246, 229, 0.92);
   --footer-gradient-glow: rgba(234, 215, 255, 0.38);
 
+  /* ── Homepage-specific ── */
+  --nav-bg: rgba(250, 249, 229, 0.82);
+  --nav-inset-shadow: rgba(255, 255, 255, 0.5);
+  --panel: #171717;
+  --hover-bg: rgba(23, 23, 23, 0.06);
+  --card-border: rgba(23, 23, 23, 0.11);
+  --card-shadow: rgba(48, 45, 24, 0.12);
+  --section-kicker-dark: #cbb6ff;
+  --flow-card-border: rgba(255, 248, 221, 0.12);
+  --flow-card-bg: rgba(255, 248, 221, 0.055);
+  --flow-card-inset: rgba(255, 255, 255, 0.08);
+  --flow-card-large-bg-start: rgba(234, 215, 255, 0.12);
+  --flow-card-large-bg-end: rgba(255, 248, 221, 0.045);
+  --flow-card-text: rgba(255, 248, 221, 0.67);
+  --terminal-bg: #0d0d0d;
+  --terminal-border-color: rgba(255, 248, 221, 0.14);
+  --terminal-top-border: rgba(255, 248, 221, 0.1);
+  --terminal-top-color: rgba(255, 248, 221, 0.55);
+  --terminal-body-color: #ece2c5;
+  --terminal-green: #8ff0c0;
+  --terminal-purple: #d8b8ff;
+  --metric-border: rgba(255, 248, 221, 0.1);
+  --metric-bg: rgba(255, 248, 221, 0.06);
+  --metric-text: rgba(255, 248, 221, 0.58);
+  --dark-section-head-text: rgba(255, 248, 221, 0.72);
+  --dark-section-color: #fff8dd;
+  --dark-card-text: rgba(255, 251, 231, 0.68);
+  --dark-card-detail-text: rgba(255, 251, 231, 0.78);
+  --prompt-output-head-color: rgba(255, 251, 231, 0.62);
+  --thinking-dot-color: #d8b8ff;
+  --output-highlight: #d8b8ff;
+  --mic-dot-color: #6d35ff;
+  --mic-dot-shadow: rgba(109, 53, 255, 0.34);
+  --dark-grid-line: rgba(255, 255, 255, 0.04);
+  --dark-grid-glow-1: rgba(234, 215, 255, 0.16);
+  --dark-grid-glow-2: rgba(0, 83, 70, 0.34);
+
   /* ── Transition ── */
   --transition-theme: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
 }
@@ -272,6 +309,43 @@
   --cream-alpha-86: rgba(15, 26, 21, 0.86);
   --cream-alpha-92: rgba(22, 34, 18, 0.92);
   --footer-gradient-glow: rgba(42, 31, 61, 0.2);
+
+  /* ── Homepage-specific ── */
+  --nav-bg: rgba(15, 26, 21, 0.85);
+  --nav-inset-shadow: rgba(255, 255, 255, 0.05);
+  --panel: #0F1A15;
+  --hover-bg: rgba(232, 240, 235, 0.08);
+  --card-border: rgba(232, 240, 235, 0.1);
+  --card-shadow: rgba(0, 0, 0, 0.3);
+  --section-kicker-dark: #C9A8F0;
+  --flow-card-border: rgba(232, 240, 235, 0.1);
+  --flow-card-bg: rgba(232, 240, 235, 0.04);
+  --flow-card-inset: rgba(255, 255, 255, 0.03);
+  --flow-card-large-bg-start: rgba(42, 31, 61, 0.2);
+  --flow-card-large-bg-end: rgba(232, 240, 235, 0.03);
+  --flow-card-text: rgba(232, 240, 235, 0.6);
+  --terminal-bg: #0A120E;
+  --terminal-border-color: rgba(232, 240, 235, 0.1);
+  --terminal-top-border: rgba(232, 240, 235, 0.08);
+  --terminal-top-color: rgba(232, 240, 235, 0.5);
+  --terminal-body-color: #C0D4C6;
+  --terminal-green: #5EC08A;
+  --terminal-purple: #C9A8F0;
+  --metric-border: rgba(232, 240, 235, 0.08);
+  --metric-bg: rgba(232, 240, 235, 0.04);
+  --metric-text: rgba(232, 240, 235, 0.5);
+  --dark-section-head-text: rgba(232, 240, 235, 0.7);
+  --dark-section-color: #E8F0EB;
+  --dark-card-text: rgba(232, 240, 235, 0.65);
+  --dark-card-detail-text: rgba(232, 240, 235, 0.75);
+  --prompt-output-head-color: rgba(232, 240, 235, 0.55);
+  --thinking-dot-color: #C9A8F0;
+  --output-highlight: #C9A8F0;
+  --mic-dot-color: #8B5CF6;
+  --mic-dot-shadow: rgba(139, 92, 246, 0.34);
+  --dark-grid-line: rgba(232, 240, 235, 0.03);
+  --dark-grid-glow-1: rgba(42, 31, 61, 0.2);
+  --dark-grid-glow-2: rgba(76, 175, 122, 0.2);
 }
 
 /* ── Theme transition (applied to body & key surfaces) ── */
@@ -308,7 +382,18 @@
 [data-theme] .chat-output,
 [data-theme] .chat-status,
 [data-theme] .profile-popup-menu,
-[data-theme] .mode-button {
+[data-theme] .mode-button,
+[data-theme] .dark-section,
+[data-theme] .light-section,
+[data-theme] .cta-section,
+[data-theme] .cta-card,
+[data-theme] .flow-card,
+[data-theme] .capability-card,
+[data-theme] .project-box,
+[data-theme] .hero,
+[data-theme] .prompt-input-box,
+[data-theme] .prompt-output-box,
+[data-theme] .terminal-box {
   transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
 }
 
