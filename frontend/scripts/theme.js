@@ -31,7 +31,7 @@
   function updateMetaColor(mode) {
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) {
-      meta.content = mode === 'dark' ? '#0F1A15' : '#f7f6e5';
+      meta.content = mode === 'dark' ? '#0a0a0a' : '#f7f6e5';
     }
   }
 
