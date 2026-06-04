@@ -11,7 +11,10 @@ jobs:
     steps:
       - name: Ping Backend
         run: |
-          curl -sf https://promptx-backend.onrender.com/health/ || echo "Backend ping failed"
-      - name: Ping Frontend
+          curl -sf https://promptmax-backend.onrender.com/api/v1/health/ || echo "Backend ping failed"
+      - name: Ping Frontend (Canonical)
         run: |
-          curl -sf https://promptx-hkfx.onrender.com/ || echo "Frontend ping failed"
+          curl -sf https://promptx-hkfx.onrender.com/ || echo "Frontend (Canonical) ping failed"
+      - name: Ping Frontend (Alternative)
+        run: |
+          curl -sf https://promptmax-backend.onrender.com/ || echo "Frontend (Alternative) ping failed"
