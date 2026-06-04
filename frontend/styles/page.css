@@ -541,8 +541,28 @@ h3 {
 }
 
 .section.dark {
-  background: var(--bg-primary);
-  color: var(--bg-surface);
+  background: var(--panel);
+  color: var(--dark-section-color);
+}
+
+.section.dark h1,
+.section.dark h2,
+.section.dark h3 {
+  color: var(--dark-section-color);
+}
+
+.section.dark p,
+.section.dark .lead {
+  color: var(--dark-section-text);
+}
+
+.section.dark .section-head p {
+  color: var(--dark-section-head-text);
+}
+
+.section.dark .section-kicker,
+.section.dark .eyebrow {
+  color: var(--section-kicker-dark);
 }
 
 .section.light {
@@ -802,7 +822,7 @@ h3 {
 .dark .pill {
   border-color: var(--dark-section-pill-border);
   background: var(--dark-section-surface);
-  color: var(--bg-surface);
+  color: var(--dark-section-color);
 }
 
 .mini-link {
@@ -2500,8 +2520,8 @@ body.sidebar-collapsed .sidebar-toggle-btn {
   padding: 18px;
   border: 2px solid var(--border);
   border-radius: 12px;
-  background: #111;
-  color: var(--bg-highlight);
+  background: var(--bg-code);
+  color: var(--terminal-body-color);
 }
 
 .docs-content pre code {
